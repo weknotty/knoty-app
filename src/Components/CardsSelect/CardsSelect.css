@@ -1,0 +1,15 @@
+.cardBorder{
+    border:3px solid #F87A6D;
+}
+.galleryCardContainer{
+    height: 260px;
+}
+.cardImg{
+    height: 60%;
+}
+
+@media screen and (max-width: 600px) {
+    .galleryCardContainer{
+        height: 200px;
+    }
+} 

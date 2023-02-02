@@ -1,0 +1,7 @@
+.feedbackInput{
+  height: 350px;
+  position: relative;
+}
+.feedbackInput::placeholder{
+  position: absolute;
+}

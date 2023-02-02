@@ -1,0 +1,13 @@
+.profileImageMid{
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+}
+
+@media screen and (max-width: 600px) {
+    .profileImageMid{
+        height: 75px;
+        width: 75px;
+    }
+      
+} 

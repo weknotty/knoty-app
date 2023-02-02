@@ -1,0 +1,23 @@
+.profileSm {
+  height: 50px;
+  width: 50px;
+}
+.indicator {
+  height: 15px;
+  width: 15px;
+  background-color: #45eca6;
+  border-radius: 50%;
+  bottom: 0;
+  right: 0;
+}
+
+@media screen and (max-width: 600px) {
+  .profileSm {
+    height: 35px;
+    width: 35px;
+  }
+  .indicator {
+    height: 10px;
+    width: 10px;
+  }
+}

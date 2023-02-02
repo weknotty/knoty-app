@@ -1,0 +1,19 @@
+.friendsList {
+  min-height: 550px;
+}
+.profileImageSm{
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+}
+.addConnectionPopup{
+  position: absolute;
+  top: 35%;
+  height: 150px;
+}
+ @media screen and (max-width: 600px) {
+    .friendsList {
+        min-height: 350px;
+      }
+      
+} 

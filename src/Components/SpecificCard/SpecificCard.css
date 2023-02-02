@@ -1,0 +1,20 @@
+.cardImg {
+  height: 50%;
+  max-width: 325px;
+  object-fit: cover;
+}
+.cardTextFont {
+  font-size: 16px;
+  font-weight: 500;
+  width: 325px;
+}
+
+.specificCardContainer {
+  height: 500px;
+}
+
+.accepedMissionOverlay {
+  background: rgba(0, 0, 0, 0.7);
+  position: absolute;
+  height: 50%;
+}
