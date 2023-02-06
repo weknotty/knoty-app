@@ -28,14 +28,21 @@
 
 .animated {
   animation: animated 0.5s ease-in-out;
-transition: all 1s ease-in-out;
+  transition: all 1s ease-in-out;
 }
 
 @keyframes animated {
-from {
-  opacity: 0;
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
-to {
-  opacity: 1;
-}
+
+.centerAbs {
+  right: 15px;
+  top: 25px;
+  opacity: 0.5;
+  position: absolute;
 }

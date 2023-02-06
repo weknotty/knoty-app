@@ -8,10 +8,10 @@ const BottomBar = () => {
         <div onClick={()=>changeViewState(0)} className="col-auto d-flex flex-column justify-content-center align-items-center pointer ">
           <img src="/assets/icons/home.svg" height="25" width="25" />
         </div>
-        <div onClick={()=>changeViewState(1)} className="col-auto d-flex flex-column justify-content-center align-items-center pointer ">
+        <div onClick={()=>changeViewState(0)} className="col-auto d-flex flex-column justify-content-center align-items-center pointer ">
           <img src="/assets/icons/profile.svg" height="25" width="25" />
         </div>
-        <div onClick={()=>changeViewState(0)} className="col-auto d-flex flex-column justify-content-center align-items-center pointer ">
+        <div onClick={()=>changeViewState(4)} className="col-auto d-flex flex-column justify-content-center align-items-center pointer ">
           <img src="/assets/icons/favourites.svg" height="25" width="25" />
         </div>
         <div onClick={()=>changeViewState(4)} className="col-auto d-flex flex-column justify-content-center align-items-center pointer ">

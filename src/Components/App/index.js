@@ -11,6 +11,9 @@ import UserManual from "../UserManual";
 import SpecificCard from "../SpecificCard";
 import { useEffect, useState } from "react";
 import KnotyTimer from "../KnotyTimer";
+import { useDispatch } from "react-redux";
+import { auth, getUserID, updateUserStatus } from "../../firebase";
+import { setIsUserActive, setUserID } from "../../Redux/Utils";
 
 const View = ({ state }) => {
   if (state == 0) {
@@ -38,16 +41,33 @@ const View = ({ state }) => {
 
 const App = () => {
   const [appState, setAppState] = useState(0);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        setIsUserActive(dispatch, false);
+        window.location.href = "/";
+        return;
+      }
+      await updateUserStatus(user.uid, true);
+      // setIsUserActive(dispatch, true);
+      setUserID(dispatch, user.uid);
+      return;
+    });
+  }, []);
+
   useEffect(() => {
     document.addEventListener("changeState", (e) => {
       setAppState(e.detail);
     });
   }, []);
+
   return (
     <div className="col-12 d-flex flex-column justify-content-between align-items-center  fullHeight">
       <TopBar />
-      {/* <View state={appState}/> */}
-      <EditProfile/>
+      <View state={appState} />
+      {/* <EditProfile/>
       <ChoosePartner/>
       <ContactingPartner/>
       <Feedback/>
@@ -55,7 +75,7 @@ const App = () => {
       <CardsSelect/>
       <UserManual/>
       <SpecificCard/>        
-      <KnotyTimer/>
+      <KnotyTimer/> */}
       <BottomBar />
     </div>
   );

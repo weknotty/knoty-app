@@ -1,12 +1,35 @@
 import { useEffect, useState } from "react";
+import { loginWithGoogle } from "../../firebase";
+import GoogleButton from "../GoogleButton";
 import Welcome from "../Welcome";
 const Login = () => {
+  const [googleSignin, setGoogleSignin] = useState(false);
+  const [appleSignin, setAppleSignin] = useState(false);
   const [showAnimation, setShowAnimation] = useState(true);
   useEffect(()=>{
     setTimeout(() => {
       setShowAnimation(false)
     }, 1500);
   },[])
+
+  useEffect(() => {
+    if (googleSignin) {
+      const fireAsync = async () => {
+        const isLogged = await loginWithGoogle();
+        console.log(isLogged.user);
+        console.log(isLogged);
+
+        if (isLogged) {
+          const fireAsync = async () => {
+            window.location.href = "/app";
+          };
+          fireAsync();
+        }
+      };
+      fireAsync();
+      setGoogleSignin(false);
+    }
+  }, [googleSignin]);
   if (showAnimation) {
     return (
       <div className="col-12 d-flex flex-column justify-content-center align-items-center">
@@ -22,10 +45,7 @@ const Login = () => {
           text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text
           text text text text text
         </span>
-        <div className="col-10 d-flex flex-row justify-content-evenly align-items-center greyBtn text-dark rounded-pill p-2 btnShadow mt-3">
-          <span className="col-8 text-start w-4">LOG IN WITH GOOGLE</span>
-          <img src="/assets/icons/google.svg" height="30" width="30" />
-        </div>
+        <GoogleButton text="LOGIN WITH GOOGLE"/>
         <div className="col-10 d-flex flex-row justify-content-evenly align-items-center greyBtn text-dark rounded-pill p-2 btnShadow mt-3">
           <span className="col-8 text-start w-4">LOG IN WITH FACEBOOK</span>
           <img src="/assets/icons/facebook.svg" height="30" width="30" />
