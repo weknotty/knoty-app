@@ -30,3 +30,7 @@ export const setPartnerImage = (dispatch, value) => {
   dispatch(utils.setPartnerImage(value));
   return;
 };
+export const setPendingMatchStatus = (dispatch, value) => {
+  dispatch(utils.setPendingMatchStatus(value));
+  return;
+};

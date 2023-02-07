@@ -19,14 +19,12 @@ const ChoosePartnerPopup = ({ setShowPopup }) => {
       }
       findMatchByCode(secretCode, userID).then(async (res) => {
         if (!res) {
-          setToast({ state: "warning", text: "No match found with this number." });
           setSubmit(false);
+          return;
         }
         setToast({ state: "success", text: "Match found!" });
-        setPartnerImage(dispatch, res.partner.profileImageUrl);
+        setPartnerImage(dispatch, res.partner?.profileImageUrl);
         setSecretCode(dispatch, secretCode);
-        // updatePartnerData(payload);
-        // await createNewMatch(userID, res.partner.id, res.user, res.partner);
         changeViewState(2);
       });
     }

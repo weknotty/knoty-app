@@ -8,7 +8,6 @@ const PreviewImage = () => {
   const userID = useSelector((state) => state.user.userID);
   const profileImageUrl = useSelector((state) => state.user.profileImageUrl);
   const [isUploading, setsetIsUploading] = useState(false);
-
   return (
     <div className="col-auto d-flex flex-column justify-content-center align-items-center position-relative userProfileContainer">
       <div className="col-auto d-flex flex-column justify-content-center align-items-center position-relative mt-3">

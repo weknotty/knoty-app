@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { collection, query, where, getFirestore, getDocs, doc, getDoc, setDoc, addDoc, deleteDoc, updateDoc } from "firebase/firestore";
+import { collection, query, where, getFirestore, getDocs, doc, getDoc, setDoc, addDoc, deleteDoc, updateDoc, onSnapshot } from "firebase/firestore";
 import { getStorage, ref, uploadBytes } from "firebase/storage";
 
 import {
@@ -130,12 +130,20 @@ export const findMatchByCode = async (code, id) => {
   const ref = collection(db, "users");
   const q = query(ref, where("secretCode", "==", code));
   const res = await getDocs(q);
+
   if (res.empty) {
+    setToast({ state: "warning", text: "No match found with this number." });
     return false;
   }
 
   // check if there is pending request;
-  
+  const matchesRef = collection(db, "matches");
+  const mq = query(matchesRef, where("userID", "==", res.docs[0].id));
+  const matchesData = await getDocs(mq);
+  if (!matchesData.empty) {
+    setToast({ state: "warning", text: "Your match is already having request connection." });
+    return false;
+  }
   const user = await getUserProfile(id);
 
   return { user, partner: { ...res.docs[0].data(), id: res.docs[0].id } };
@@ -146,18 +154,49 @@ export const createNewMatch = async (id, partnerID, userPayload, partnerPayload)
   // console.log("partnerID",partnerID)
   // console.log("userPayload",userPayload)
   // console.log("partnerPayload",partnerPayload)
+
   const ref = collection(db, "matches");
   const matchPayload = {
     userID: id,
     partnerID,
     user: userPayload,
     partner: partnerPayload,
-    matchStatus:"pending"
+    participants: [id, partnerID],
+    initiator: id,
+    userStatus: "approved",
+    partnerStatus: "pending",
   };
   await addDoc(ref, matchPayload);
+  setToast({ state: "success", text: "Matched successfuly!" });
+  return;
 };
 export const updateUserStatus = async (id, value) => {
   const ref = doc(db, "users", id);
-  await updateDoc(ref, { userActive: value }).catch((err)=>console.log(err))
+  await updateDoc(ref, { userActive: value }).catch((err) => console.log(err));
   return;
+};
+
+export const checkPendingMatches = async (id) => {
+  const matchesRef = collection(db, "matches");
+  console.log(id);
+  const mq = query(matchesRef, where("participants", "array-contains", id), where("partnerStatus", "==", "pending"));
+
+  const matchesData = await getDocs(mq);
+  if (matchesData.empty) {
+    return false;
+  }
+  const data = matchesData.docs[0].data();
+  if (data.initiator == id) {
+    return { ...data.partner, matchStatus: "approved" };
+  }
+  return { ...data.user, matchStatus: "pending" };
+};
+
+export const FindMatch = async (id) => {
+  const ref = collection(db, "matches");
+  const q = query(ref,where("participants", "array-contains", id));
+
+  return onSnapshot(q, (doc) => {
+    console.log("Current data: ", doc.docs[0].data());
+  });
 };

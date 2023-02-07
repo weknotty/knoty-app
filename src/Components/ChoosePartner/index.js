@@ -35,6 +35,12 @@ const ChoosePartner = () => {
       >
         OK, THAT'S IT
       </div>
+      <div
+        onClick={() => changeViewState(0)}
+        className="col-10 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill p-2 mb-1 midFont pointer"
+      >
+        CANCEL
+      </div>
     </div>
   );
 };

@@ -6,12 +6,17 @@
 .example-enter {
   opacity: 0.01;
 }
-
+.pendingMatch {
+  height: 100px;
+  width: 120px;
+}
 .example-enter.example-enter-active {
   opacity: 1;
   transition: opacity 500ms ease-in;
 }
-
+.pinkBorder {
+  border: 1px solid pink;
+}
 .example-leave {
   opacity: 1;
 }
@@ -37,13 +42,13 @@
 }
 .aboutMeText {
   height: 75px;
-position: relative;
+  position: relative;
 }
 
-.thumbHolder{
+.thumbHolder {
   height: 150px;
   width: 150px;
-  border:1px solid grey;
+  border: 1px solid grey;
   border-radius: 50%;
 }
 /* @media screen and (max-width: 600px) {

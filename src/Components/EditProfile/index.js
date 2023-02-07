@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { TransitionGroup } from "react-transition-group";
-import { getUserProfile, updateProfileData } from "../../firebase";
+import { checkPendingMatches, getUserProfile, updateProfileData } from "../../firebase";
 import { changeViewState, handleUploadChange, setToast } from "../../Utils";
 import "./EditProfile.css";
 import countries from "../../countries.json";
 import ButtonLoader from "../ButtonLoader";
 import PreviewImage from "../PreviewImage";
 import { setActivePartner, setProfileImageUrl } from "../../Redux/Utils";
-
+import * as utils from "../../Redux/Utils";
+import PendingMatch from "../PendingMatch";
 const EditProfile = () => {
   const [username, setUsername] = useState("");
   const [about, setAbout] = useState("");
@@ -20,9 +21,13 @@ const EditProfile = () => {
   const [secretCode, setSecretCode] = useState("");
   const [submit, setSubmit] = useState(false);
   const [isReady, setisReady] = useState(false);
+  const [testtem, settest] = useState({value:"walla"});
 
   // const userSelector = useSelector((state) => state.user);
   const userID = useSelector((state) => state.user.userID);
+  const pendingMatchStatus = useSelector((state) => state.user.pendingMatchStatus);
+
+  
   const dispatch = useDispatch();
 
   const handleProfileErrors = (value) => {
@@ -38,7 +43,8 @@ const EditProfile = () => {
     const fireAsync = async () => {
       const userProfile = await getUserProfile(userID);
       setProfileImageUrl(dispatch, userProfile?.profileImageUrl);
-      setActivePartner(dispatch,userProfile?.hasActivePartner)
+      setActivePartner(dispatch, userProfile?.hasActivePartner);
+      setisReady(true);
       setSecretCode(userProfile?.secretCode);
       if (userProfile.hasOwnProperty("profile")) {
         const profile = userProfile?.profile;
@@ -49,7 +55,6 @@ const EditProfile = () => {
         setAge(profile?.age);
         setCountry(profile?.country);
         setMySentence(profile?.mySentence);
-        setisReady(true);
       } else {
         setisReady(true);
       }
@@ -60,7 +65,26 @@ const EditProfile = () => {
   }, [userID]);
 
   useEffect(() => {
+    const fireAsync = async () => {
+      const res = await checkPendingMatches(userID);
+      if (!res) {
+        return;
+      }
+      utils.setSecretCode(dispatch, res.secretCode);
+      utils.setPartnerImage(dispatch, res?.profileImageUrl);
+      utils.setPendingMatchStatus(dispatch, res.matchStatus);
+    };
+    if (userID) {
+      fireAsync();
+    }
+  }, [userID]);
+
+  // submit form
+  useEffect(() => {
     if (submit) {
+      settest((prev)=>{
+        return {...prev,value:"two"}
+      })
       if (!username || username.length < 3) {
         handleProfileErrors("Username should have minimum 3 characters.");
         setSubmit(false);
@@ -102,13 +126,14 @@ const EditProfile = () => {
     }
   }, [submit]);
 
-  if (!userID || !isReady) {
+  if (!isReady) {
     return <ButtonLoader state={true} text="Loading..." />;
   }
   return (
     <div className="animated col-xxl-3 col-xl-5 col-lg-6 col-md-6 col-sm-11 col-11 d-flex flex-column m-auto justify-content-xxl-between justify-content-xl-between justify-content-lg-between justify-content-md-end justify-content-sm-end justify-content-end align-items-center align-self-end profileContainer">
       {/* profile image control */}
       <PreviewImage />
+      <PendingMatch pendingMatchStatus={pendingMatchStatus} />
       {/* about */}
       <div className="col-12 d-flex flex-column justify-content-center align-items-center mb-3">
         <span className="col-12 text-start w-5">My Username</span>

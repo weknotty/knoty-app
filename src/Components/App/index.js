@@ -11,7 +11,7 @@ import UserManual from "../UserManual";
 import SpecificCard from "../SpecificCard";
 import { useEffect, useState } from "react";
 import KnotyTimer from "../KnotyTimer";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { auth, getUserID, updateUserStatus } from "../../firebase";
 import { setIsUserActive, setUserID } from "../../Redux/Utils";
 
@@ -42,17 +42,20 @@ const View = ({ state }) => {
 const App = () => {
   const [appState, setAppState] = useState(0);
   const dispatch = useDispatch();
+  const userID = useSelector((state) => state.user.userID);
 
   useEffect(() => {
     auth.onAuthStateChanged(async (user) => {
       if (!user) {
-        setIsUserActive(dispatch, false);
+        // setIsUserActive(dispatch, false);
         window.location.href = "/";
         return;
       }
       await updateUserStatus(user.uid, true);
       // setIsUserActive(dispatch, true);
-      setUserID(dispatch, user.uid);
+      if (!userID) {
+        setUserID(dispatch, user.uid);
+      }
       return;
     });
   }, []);

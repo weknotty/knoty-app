@@ -9,7 +9,8 @@ export const userSlice = createSlice({
     profileImageUrl: "",
     hasActivePartner: false,
     secretCode:"",
-    partnerImage:""
+    partnerImage:"",
+    pendingMatchStatus:""
   },
   reducers: {
     setUserActive: (state, action) => {
@@ -33,11 +34,14 @@ export const userSlice = createSlice({
     setPartnerImage: (state, action) => {
       state.partnerImage = action.payload;
     },
+    setPendingMatchStatus: (state, action) => {
+      state.pendingMatchStatus = action.payload;
+    },
   },
 });
 
 // this is for dispatch
-export const { setUserActive, setUserProfile, setUserID, setProfileImageUrl, setActivePartner,setSecretCode,setPartnerImage } = userSlice.actions;
+export const { setUserActive, setUserProfile, setUserID, setProfileImageUrl, setActivePartner,setSecretCode,setPartnerImage,setPendingMatchStatus } = userSlice.actions;
 
 // this is for configureStore
 export default userSlice.reducer;
