@@ -8,9 +8,16 @@ export const userSlice = createSlice({
     userID: "",
     profileImageUrl: "",
     hasActivePartner: false,
-    secretCode:"",
-    partnerImage:"",
-    pendingMatchStatus:""
+    secretCode: "",
+    partnerImage: "",
+    pendingMatchStatus: "",
+    profileFull: false,
+    hasPendingMatch: false,
+    partnerID: "",
+    matchSignature: "",
+    cardsCategory:"",
+    cardsList:[]
+    
   },
   reducers: {
     setUserActive: (state, action) => {
@@ -37,11 +44,44 @@ export const userSlice = createSlice({
     setPendingMatchStatus: (state, action) => {
       state.pendingMatchStatus = action.payload;
     },
+    setProfileFull: (state, action) => {
+      state.profileFull = action.payload;
+    },
+    setHasPendingMatch: (state, action) => {
+      state.hasPendingMatch = action.payload;
+    },
+    setPartnerID: (state, action) => {
+      state.partnerID = action.payload;
+    },
+    setMatchSiganture: (state, action) => {
+      state.matchSignature = action.payload;
+    },
+    setCardsCategory: (state, action) => {
+      state.cardsCategory = action.payload;
+    },
+    setCardsList: (state, action) => {
+      state.cardsList = action.payload;
+    },
   },
 });
 
 // this is for dispatch
-export const { setUserActive, setUserProfile, setUserID, setProfileImageUrl, setActivePartner,setSecretCode,setPartnerImage,setPendingMatchStatus } = userSlice.actions;
+export const {
+  setUserActive,
+  setUserProfile,
+  setUserID,
+  setProfileImageUrl,
+  setActivePartner,
+  setSecretCode,
+  setPartnerImage,
+  setPendingMatchStatus,
+  setProfileFull,
+  setHasPendingMatch,
+  setPartnerID,
+  setMatchSiganture,
+  setCardsCategory,
+  setCardsList
+} = userSlice.actions;
 
 // this is for configureStore
 export default userSlice.reducer;

@@ -88,7 +88,7 @@ export const handleNewEntry = async (uid, dispatch) => {
     console.log("new user!!");
     const newDocRef = doc(db, "users", uid);
     const code = generateCode();
-    const basicSettings = { profileFull: false, secretCode: code, hasActivePartner: false, userActive: true };
+    const basicSettings = { profileFull: false, secretCode: code, hasActivePartner: false, userActive: true, hasPendingMatch: false };
     await setDoc(newDocRef, basicSettings).catch((err) => console.log(err));
     return;
   }
@@ -125,27 +125,41 @@ export const getUserProfile = async (id) => {
   }
   return res.data();
 };
-
-export const findMatchByCode = async (code, id) => {
+export const getUserProfileByCode = async (code) => {
   const ref = collection(db, "users");
   const q = query(ref, where("secretCode", "==", code));
+
+  const res = await getDocs(q);
+  if (res.empty) {
+    return false;
+  }
+  return res.docs[0].data();
+};
+export const findMatchByCode = async (code, id, signature, partnerID) => {
+  const ref = collection(db, "users");
+  const q = query(ref, where("secretCode", "==", code), where("profileFull", "==", true));
   const res = await getDocs(q);
 
   if (res.empty) {
     setToast({ state: "warning", text: "No match found with this number." });
     return false;
   }
-
-  // check if there is pending request;
-  const matchesRef = collection(db, "matches");
-  const mq = query(matchesRef, where("userID", "==", res.docs[0].id));
-  const matchesData = await getDocs(mq);
-  if (!matchesData.empty) {
-    setToast({ state: "warning", text: "Your match is already having request connection." });
+  if (res.docs[0].id == id) {
+    setToast({ state: "warning", text: "Nice,But you cannot make a match with yourself." });
     return false;
   }
-  const user = await getUserProfile(id);
 
+  const matchesRef = collection(db, "matches");
+  const mq = query(matchesRef, where("participants", "array-contains", partnerID), where("matchStatus", "in", ["approved", "pending"]));
+
+  const matchesData = await getDocs(mq);
+
+  if (!matchesData.empty) {
+    setToast({ state: "warning", text: "Your match is already have connection." });
+    return false;
+  }
+
+  const user = await getUserProfile(id);
   return { user, partner: { ...res.docs[0].data(), id: res.docs[0].id } };
 };
 
@@ -156,6 +170,7 @@ export const createNewMatch = async (id, partnerID, userPayload, partnerPayload)
   // console.log("partnerPayload",partnerPayload)
 
   const ref = collection(db, "matches");
+  const signature = v4();
   const matchPayload = {
     userID: id,
     partnerID,
@@ -165,9 +180,13 @@ export const createNewMatch = async (id, partnerID, userPayload, partnerPayload)
     initiator: id,
     userStatus: "approved",
     partnerStatus: "pending",
+    matchStatus: "pending",
+    signature: signature,
   };
   await addDoc(ref, matchPayload);
   setToast({ state: "success", text: "Matched successfuly!" });
+  await setMatchSignature(id, partnerID, signature);
+  await turnOnPendingMatch(id, partnerID);
   return;
 };
 export const updateUserStatus = async (id, value) => {
@@ -176,10 +195,10 @@ export const updateUserStatus = async (id, value) => {
   return;
 };
 
-export const checkPendingMatches = async (id) => {
+export const checkPendingMatches = async (id, matchSignature) => {
   const matchesRef = collection(db, "matches");
   console.log(id);
-  const mq = query(matchesRef, where("participants", "array-contains", id), where("partnerStatus", "==", "pending"));
+  const mq = query(matchesRef, where("signature", "==", matchSignature), where("partnerStatus", "==", "pending"));
 
   const matchesData = await getDocs(mq);
   if (matchesData.empty) {
@@ -191,12 +210,125 @@ export const checkPendingMatches = async (id) => {
   }
   return { ...data.user, matchStatus: "pending" };
 };
+export const cancelMatch = async (id, matchType, status, matchSignature, partnerID) => {
+  const matchesRef = collection(db, "matches");
+  const mq = query(matchesRef, where("signature", "==", matchSignature), where("matchStatus", "==", matchType));
+  const res = await getDocs(mq);
+  const data = res.docs[0].data();
+  const matchDocRef = doc(db, "matches", res.docs[0].id);
+  await updateDoc(matchDocRef, { ...data, matchStatus: status });
+  await removeMatchSignature(id, partnerID);
+  changeViewState(1);
+  setToast({ state: "success", text: "Done." });
+  return;
+};
 
-export const FindMatch = async (id) => {
+export const turnOffPendingMatch = async (id, partnerID) => {
+  const userRef = doc(db, "users", id);
+  const partnerRef = doc(db, "users", partnerID);
+  await Promise.all[(updateDoc(userRef, { hasPendingMatch: false }), updateDoc(partnerRef, { hasPendingMatch: false }))];
+
+  changeViewState(0);
+};
+export const turnOnPendingMatch = async (id, partnerID) => {
+  const userRef = doc(db, "users", id);
+  const partnerRef = doc(db, "users", partnerID);
+  await Promise.all[(updateDoc(userRef, { hasPendingMatch: true }), updateDoc(partnerRef, { hasPendingMatch: true }))];
+};
+export const setMatchSignature = async (id, partnerID, signature) => {
+  const userRef = doc(db, "users", id);
+  const partnerRef = doc(db, "users", partnerID);
+  await Promise.all[(updateDoc(userRef, { matchSignature: signature }), updateDoc(partnerRef, { matchSignature: signature }))];
+};
+export const removeMatchSignature = async (id, partnerID) => {
+  const userRef = doc(db, "users", id);
+  const partnerRef = doc(db, "users", partnerID);
+  await Promise.all[(updateDoc(userRef, { matchSignature: "" }), updateDoc(partnerRef, { matchSignature: "" }))];
+};
+export const turnOnActivePartner = async (id, partnerID) => {
+  const userRef = doc(db, "users", id);
+  const partnerRef = doc(db, "users", partnerID);
+  await Promise.all[
+    (updateDoc(userRef, { hasActivePartner: true, hasPendingMatch: false }), updateDoc(partnerRef, { hasActivePartner: true, hasPendingMatch: false }))
+  ];
+};
+export const turnOffActivePartner = async (id, partnerID) => {
+  const userRef = doc(db, "users", id);
+  const partnerRef = doc(db, "users", partnerID);
+  await Promise.all[(updateDoc(userRef, { hasActivePartner: false }), updateDoc(partnerRef, { hasActivePartner: false }))];
+};
+export const ApproveMatch = async (id) => {
+  const matchesRef = collection(db, "matches");
+  console.log(id);
+  const mq = query(matchesRef, where("participants", "array-contains", id), where("matchStatus", "==", "pending"));
+  const res = await getDocs(mq);
+  const data = res.docs[0].data();
+  const matchDocRef = doc(db, "matches", res.docs[0].id);
+  await updateDoc(matchDocRef, { ...data, matchStatus: "approved", partnerStatus: "approved" });
+  setToast({ state: "success", text: "Approved!" });
+
+  changeViewState(4);
+};
+
+export const FindMatch = (matchSignature) => {
   const ref = collection(db, "matches");
-  const q = query(ref,where("participants", "array-contains", id));
+  const q = query(ref, where("signature", "==", matchSignature));
+  return q;
+};
 
-  return onSnapshot(q, (doc) => {
-    console.log("Current data: ", doc.docs[0].data());
+export const profileRef = (id) => {
+  const ref = doc(db, "users", id);
+  return ref;
+};
+
+export const getMatchesList = async (userID) => {
+  const matchesRef = collection(db, "matches");
+  const mq = query(matchesRef, where("participants", "array-contains", userID), where("matchStatus", "==", "approved"));
+  const mq2 = query(matchesRef, where("participants", "array-contains", userID), where("matchStatus", "==", "done"));
+
+  const res = await getDocs(mq);
+  const res2 = await getDocs(mq2);
+
+  if (res.empty && res2.empty) {
+    return false;
+  }
+  const total = [...res.docs, ...res2.docs];
+  const mapped = total.map((el) => {
+    console.log(el.data());
+    const elem = el.data();
+    if (elem.initiator == userID) {
+      return { ...elem.partner, userID: el.id, partnerID: elem.partnerID };
+    }
+    return { ...elem.user, userID: el.id, partnerID: elem.userID };
+  });
+
+  return mapped;
+};
+
+export const getCategories = async () => {
+  const ref = collection(db, "categories");
+  const res = await getDocs(ref);
+  const mapped = res.docs.map((el) => {
+    return el.data();
+  });
+  return mapped;
+};
+export const getCategoriesByType = async (category) => {
+  const ref = collection(db, "cards");
+  const q = query(ref, where("category", "==", category));
+  const res = await getDocs(q);
+  if (res.empty) {
+    return false;
+  }
+  const mapped = res.docs.map((el) => {
+    return el.data();
+  });
+  return mapped;
+};
+
+export const setCards = async (list) => {
+  const ref = collection(db, "categories");
+  list.forEach(async (el) => {
+    await addDoc(ref, el);
   });
 };

@@ -21,13 +21,12 @@ const EditProfile = () => {
   const [secretCode, setSecretCode] = useState("");
   const [submit, setSubmit] = useState(false);
   const [isReady, setisReady] = useState(false);
-  const [testtem, settest] = useState({value:"walla"});
 
   // const userSelector = useSelector((state) => state.user);
   const userID = useSelector((state) => state.user.userID);
   const pendingMatchStatus = useSelector((state) => state.user.pendingMatchStatus);
+  const hasPendingMatch = useSelector((state) => state.user.hasPendingMatch);
 
-  
   const dispatch = useDispatch();
 
   const handleProfileErrors = (value) => {
@@ -44,8 +43,10 @@ const EditProfile = () => {
       const userProfile = await getUserProfile(userID);
       setProfileImageUrl(dispatch, userProfile?.profileImageUrl);
       setActivePartner(dispatch, userProfile?.hasActivePartner);
-      setisReady(true);
       setSecretCode(userProfile?.secretCode);
+      setisReady(true);
+      utils.setProfileFull(dispatch, userProfile.profileFull);
+      utils.setHasPendingMatch(dispatch, userProfile.hasPendingMatch);
       if (userProfile.hasOwnProperty("profile")) {
         const profile = userProfile?.profile;
         setUsername(profile?.username);
@@ -64,27 +65,11 @@ const EditProfile = () => {
     }
   }, [userID]);
 
-  useEffect(() => {
-    const fireAsync = async () => {
-      const res = await checkPendingMatches(userID);
-      if (!res) {
-        return;
-      }
-      utils.setSecretCode(dispatch, res.secretCode);
-      utils.setPartnerImage(dispatch, res?.profileImageUrl);
-      utils.setPendingMatchStatus(dispatch, res.matchStatus);
-    };
-    if (userID) {
-      fireAsync();
-    }
-  }, [userID]);
+
 
   // submit form
   useEffect(() => {
     if (submit) {
-      settest((prev)=>{
-        return {...prev,value:"two"}
-      })
       if (!username || username.length < 3) {
         handleProfileErrors("Username should have minimum 3 characters.");
         setSubmit(false);
@@ -120,6 +105,7 @@ const EditProfile = () => {
         mySentence,
       };
       updateProfileData(userID, payload).then(() => {
+        utils.setProfileFull(dispatch, true);
         setSubmit(false);
         return;
       });
@@ -133,7 +119,7 @@ const EditProfile = () => {
     <div className="animated col-xxl-3 col-xl-5 col-lg-6 col-md-6 col-sm-11 col-11 d-flex flex-column m-auto justify-content-xxl-between justify-content-xl-between justify-content-lg-between justify-content-md-end justify-content-sm-end justify-content-end align-items-center align-self-end profileContainer">
       {/* profile image control */}
       <PreviewImage />
-      <PendingMatch pendingMatchStatus={pendingMatchStatus} />
+      <PendingMatch hasPendingMatch={hasPendingMatch} />
       {/* about */}
       <div className="col-12 d-flex flex-column justify-content-center align-items-center mb-3">
         <span className="col-12 text-start w-5">My Username</span>

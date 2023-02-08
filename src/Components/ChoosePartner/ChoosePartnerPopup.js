@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createNewMatch, findMatchByCode } from "../../firebase";
-import { setPartnerImage, setSecretCode } from "../../Redux/Utils";
+import { setPartnerImage, setPendingMatchStatus, setSecretCode } from "../../Redux/Utils";
 import { changeViewState, setToast } from "../../Utils";
 import "./ChoosePartner.css";
 
@@ -9,6 +9,9 @@ const ChoosePartnerPopup = ({ setShowPopup }) => {
   const [secretCode, setSecretCodeLocal] = useState("");
   const [submit, setSubmit] = useState(false);
   const userID = useSelector((state) => state.user.userID);
+  const matchSignature = useSelector((state) => state.user.matchSignature);
+  const partnerID = useSelector((state) => state.user.partnerID);
+
   const dispatch = useDispatch();
   useEffect(() => {
     if (submit) {
@@ -17,7 +20,8 @@ const ChoosePartnerPopup = ({ setShowPopup }) => {
         setSubmit(false);
         return;
       }
-      findMatchByCode(secretCode, userID).then(async (res) => {
+      setPendingMatchStatus(dispatch,"");
+      findMatchByCode(secretCode, userID,matchSignature,partnerID).then(async (res) => {
         if (!res) {
           setSubmit(false);
           return;
@@ -28,7 +32,7 @@ const ChoosePartnerPopup = ({ setShowPopup }) => {
         changeViewState(2);
       });
     }
-  }, [submit]);
+  }, [submit,matchSignature]);
 
   return (
     <div className="col-10 d-flex flex-column justify-content-center align-items-center greyBtn btnShadow addConnectionPopup" id="addConnectionPopup">

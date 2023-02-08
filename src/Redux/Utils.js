@@ -34,3 +34,27 @@ export const setPendingMatchStatus = (dispatch, value) => {
   dispatch(utils.setPendingMatchStatus(value));
   return;
 };
+export const setProfileFull = (dispatch, value) => {
+  dispatch(utils.setProfileFull(value));
+  return;
+};
+export const setHasPendingMatch = (dispatch, value) => {
+  dispatch(utils.setHasPendingMatch(value));
+  return;
+};
+export const setPartnerID = (dispatch, value) => {
+  dispatch(utils.setPartnerID(value));
+  return;
+};
+export const setMatchSiganture = (dispatch, value) => {
+  dispatch(utils.setMatchSiganture(value));
+  return;
+};
+export const setCardsCategory = (dispatch, value) => {
+  dispatch(utils.setCardsCategory(value));
+  return;
+};
+export const setCardsList = (dispatch, value) => {
+  dispatch(utils.setCardsList(value));
+  return;
+};

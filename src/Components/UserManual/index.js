@@ -1,3 +1,4 @@
+import { changeViewState } from "../../Utils";
 import "./UserManual.css";
 const UserManual = () => {
   return (
@@ -15,7 +16,7 @@ const UserManual = () => {
         </div>
         <span className="text-center mt-5">Additional text for explanation. Additional text for explanation. Additional text for explanation.</span>
       </div>
-      <div className="col-6 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill  mt-3 p-2 mb-3 midFont pointer">
+      <div onClick={()=>changeViewState(7)} className="col-6 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill  mt-3 p-2 mb-3 midFont pointer">
         OK, I GOT IT
       </div>
     </div>

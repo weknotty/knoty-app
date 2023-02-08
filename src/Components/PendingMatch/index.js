@@ -1,7 +1,7 @@
 import { changeViewState } from "../../Utils";
 
-const PendingMatch = ({ pendingMatchStatus }) => {
-  if (!pendingMatchStatus) {
+const PendingMatch = ({ hasPendingMatch }) => {
+  if (!hasPendingMatch) {
     return null;
   }
   return (

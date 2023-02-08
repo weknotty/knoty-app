@@ -37,6 +37,12 @@ const View = ({ state }) => {
   if (state == 6) {
     return <UserManual />;
   }
+  if(state == 7){
+    return <SpecificCard/> 
+  }
+  if(state == 8){
+    return <KnotyTimer/>
+  }
 };
 
 const App = () => {
@@ -77,7 +83,7 @@ const App = () => {
       <UserProfile/>
       <CardsSelect/>
       <UserManual/>
-      <SpecificCard/>        
+             
       <KnotyTimer/> */}
       <BottomBar />
     </div>
