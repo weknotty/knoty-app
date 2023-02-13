@@ -1,5 +1,4 @@
 import {setSomething} from "./firebase"
-
 const cards = [
     {
       id: v4(),
@@ -80,4 +79,5 @@ const cards = [
       category: "Cateogry-Three",
     },
   ];
+
 

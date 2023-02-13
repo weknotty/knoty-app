@@ -15,9 +15,11 @@ export const userSlice = createSlice({
     hasPendingMatch: false,
     partnerID: "",
     matchSignature: "",
-    cardsCategory:"",
-    cardsList:[]
-    
+    cardsCategory: "",
+    cardsList: [],
+    interactedCards: [],
+    hasActiveGame: false,
+    gameSignature: "",
   },
   reducers: {
     setUserActive: (state, action) => {
@@ -62,6 +64,15 @@ export const userSlice = createSlice({
     setCardsList: (state, action) => {
       state.cardsList = action.payload;
     },
+    setInteractedCards: (state, action) => {
+      state.interactedCards = action.payload;
+    },
+    setHasActiveGame: (state, action) => {
+      state.hasActiveGame = action.payload;
+    },
+    setGameSignature: (state, action) => {
+      state.gameSignature = action.payload;
+    },
   },
 });
 
@@ -80,7 +91,10 @@ export const {
   setPartnerID,
   setMatchSiganture,
   setCardsCategory,
-  setCardsList
+  setCardsList,
+  setInteractedCards,
+  setHasActiveGame,
+  setGameSignature
 } = userSlice.actions;
 
 // this is for configureStore

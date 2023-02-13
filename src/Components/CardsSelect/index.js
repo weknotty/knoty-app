@@ -9,7 +9,7 @@ const GalleryCard = ({ imageUrl, category, handleCardClick }) => {
   return (
     <div
       onClick={() => handleCardClick(category)}
-      className="animated col-xxl-3 col-xl-3 col-lg-4 col-md-4 col-sm-5 col-5 d-flex flex-column justify-content-center align-items-center cardBorder m-2 galleryCardContainer rounded-3"
+      className="animated col-xxl-3 col-xl-3 col-lg-4 col-md-4 col-sm-5 col-5 d-flex flex-column justify-content-center align-items-center cardBorder m-2 galleryCardContainer rounded-3 pointer"
     >
       <img src={imageUrl} className="cardImg m-1 col-11" />
       <span className="col-11 text-center mb-2 w-5 midFont align-self-center">{category}</span>
@@ -29,7 +29,6 @@ const CardsSelect = () => {
   const handleCardClick = async (category) => {
     console.log(category);
     const cards = await getCategoriesByType(category);
-    console.log(cards)
     setCardsList(dispatch, cards);
     setCardsCategory(dispatch, category);
     changeViewState(7);
@@ -37,7 +36,7 @@ const CardsSelect = () => {
   };
 
   return (
-    <div className="animated col-12 d-flex flex-column justify-content-start align-items-center profileContainer">
+    <div className="animated col-12 d-flex flex-column justify-content-start align-items-center profileContainer animated">
       <div className="col-xxl-5 col-xl-5 col-lg-6 col-md-6 col-sm-11 col-11 d-flex flex-row flex-wrap m-auto justify-content-center align-items-center align-self-end  position-relative align-self-start">
         <div className="col-12 d-flex flex-row justify-content-center align-items-center position-relative">
           <img src="/assets/icons/question.svg" height="25" width="25" className="position-absolute start-0 ms-2" />

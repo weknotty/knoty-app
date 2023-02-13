@@ -2,7 +2,17 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPendingMatches, FindMatch, profileRef, turnOffActivePartner, turnOffPendingMatch, turnOnActivePartner } from "../firebase";
 import { onSnapshot } from "firebase/firestore";
-import { setHasPendingMatch, setPartnerImage, setPendingMatchStatus, setSecretCode, setActivePartner, setMatchSiganture } from "../Redux/Utils";
+import {
+  setHasPendingMatch,
+  setPartnerImage,
+  setPendingMatchStatus,
+  setSecretCode,
+  setActivePartner,
+  setMatchSiganture,
+  setInteractedCards,
+  setHasActiveGame,
+  setGameSignature,
+} from "../Redux/Utils";
 
 const Manager = () => {
   const dispatch = useDispatch();
@@ -27,7 +37,7 @@ const Manager = () => {
     const unsubscribe = onSnapshot(FindMatch(matchSignature), async (doc) => {
       try {
         const docData = doc.docs[0].data();
-        console.log(docData);
+        // console.log(docData);
         if (docData.matchStatus == "rejected" || docData.matchStatus == "done") {
           console.log("change state of pending in db to false");
           await turnOffPendingMatch(userID, docData.partner.id);
@@ -44,7 +54,7 @@ const Manager = () => {
     return () => {
       unsubscribe();
     };
-  }, [hasPendingMatch, hasActivePartner,matchSignature]);
+  }, [hasPendingMatch, hasActivePartner, matchSignature]);
 
   // if profile filled listen to doc
   useEffect(() => {
@@ -54,15 +64,19 @@ const Manager = () => {
     // console.log("adding profile doc listener");
     const unsubscribe = onSnapshot(profileRef(userID), (doc) => {
       const docData = doc.data();
-      console.log(docData);
+      // console.log(docData);
       const hasPendingMatchUpdate = docData.hasPendingMatch;
       const hasActivePartner = docData.hasActivePartner;
       const matchSignature = docData.matchSignature;
-
-      console.log("settin pending match to", hasPendingMatchUpdate);
+      const hasActiveGame = docData.hasActiveGame;
+      const gameSignature = docData.gameSignature;
+      const cards = docData.cards;
       setHasPendingMatch(dispatch, hasPendingMatchUpdate);
       setActivePartner(dispatch, hasActivePartner);
-      setMatchSiganture(dispatch,matchSignature)
+      setMatchSiganture(dispatch, matchSignature);
+      setInteractedCards(dispatch, cards);
+      setHasActiveGame(dispatch, hasActiveGame);
+      setGameSignature(dispatch, gameSignature);
     });
     return () => {
       unsubscribe();
@@ -71,7 +85,7 @@ const Manager = () => {
 
   useEffect(() => {
     const fireAsync = async () => {
-      const res = await checkPendingMatches(userID,matchSignature);
+      const res = await checkPendingMatches(userID, matchSignature);
       if (!res) {
         return;
       }

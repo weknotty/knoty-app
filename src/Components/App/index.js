@@ -14,6 +14,7 @@ import KnotyTimer from "../KnotyTimer";
 import { useDispatch, useSelector } from "react-redux";
 import { auth, getUserID, updateUserStatus } from "../../firebase";
 import { setIsUserActive, setUserID } from "../../Redux/Utils";
+import { changeViewState } from "../../Utils";
 
 const View = ({ state }) => {
   if (state == 0) {
@@ -37,11 +38,11 @@ const View = ({ state }) => {
   if (state == 6) {
     return <UserManual />;
   }
-  if(state == 7){
-    return <SpecificCard/> 
+  if (state == 7) {
+    return <SpecificCard />;
   }
-  if(state == 8){
-    return <KnotyTimer/>
+  if (state == 8) {
+    return <KnotyTimer />;
   }
 };
 
@@ -49,6 +50,7 @@ const App = () => {
   const [appState, setAppState] = useState(0);
   const dispatch = useDispatch();
   const userID = useSelector((state) => state.user.userID);
+  const hasActiveGame = useSelector((state) => state.user.hasActiveGame);
 
   useEffect(() => {
     auth.onAuthStateChanged(async (user) => {
@@ -65,7 +67,14 @@ const App = () => {
       return;
     });
   }, []);
-
+  useEffect(() => {
+    if (hasActiveGame) {
+      changeViewState(8);
+      return;
+    } else {
+      changeViewState(0);
+    }
+  }, [hasActiveGame]);
   useEffect(() => {
     document.addEventListener("changeState", (e) => {
       setAppState(e.detail);

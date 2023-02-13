@@ -58,3 +58,17 @@ export const setCardsList = (dispatch, value) => {
   dispatch(utils.setCardsList(value));
   return;
 };
+export const setInteractedCards = (dispatch, value) => {
+  dispatch(utils.setInteractedCards(value));
+  return;
+};
+
+export const setGameSignature = (dispatch, value) => {
+  dispatch(utils.setGameSignature(value));
+  return;
+};
+
+export const setHasActiveGame = (dispatch, value) => {
+  dispatch(utils.setHasActiveGame(value));
+  return;
+};

@@ -4,7 +4,8 @@ import { useSelector } from "react-redux";
 
 const BottomBar = () => {
   const hasActivePartner = useSelector((state) => state.user.hasActivePartner);
-  if (!hasActivePartner) {
+  const hasActiveGame = useSelector((state) => state.user.hasActiveGame);
+  if (!hasActivePartner || hasActiveGame) {
     return (
       <div className="col-12 d-flex flex-row justify-content-center align-items-center velevtBg bottomBarContainer">
         <div className="col-xxl-3 col-xl-5 col-lg-6 col-md-6 col-sm-12 col-12 d-flex flex-row justify-content-evenly align-items-center">
