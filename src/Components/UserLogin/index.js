@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { loginWithEmail, loginWithGoogle } from "../../firebase";
+import { useDispatch } from "react-redux";
+import { handleNewEntry, loginWithEmail, loginWithGoogle } from "../../firebase";
 import { setToast, validateEmail, validatePassword } from "../../Utils";
 import ButtonLoader from "../ButtonLoader";
 import Password from "../Password";
@@ -8,7 +9,7 @@ const UserLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submit, setSubmit] = useState(false);
-
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (submit) {
@@ -48,8 +49,14 @@ const UserLogin = () => {
         <span className="col-10 mb-4 fs-3">User Login</span>
         <div className="col-10 d-flex flex-column justify-content-center align-items-center">
           <input type="text" onChange={(e) => setEmail(e.target.value)} value={email} className="form-control rounded-1 greyBtn" placeholder="EMAIL *" />
-          <Password customValidation={validatePassword} message="Password should have minimum 6 characters." placeholder="PASSWORD *" setvalue={setPassword} value={password}/>
-          <a href="/forgot" className="text-white align-self-start mt-3">
+          <Password
+            customValidation={validatePassword}
+            message="Password should have minimum 6 characters."
+            placeholder="PASSWORD *"
+            setvalue={setPassword}
+            value={password}
+          />
+          <a href="/forgotpass" className="text-white align-self-start mt-3">
             Forgot Password
           </a>
         </div>

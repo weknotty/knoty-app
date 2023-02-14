@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { auth, getUserID, updateUserStatus } from "../../firebase";
 import { setIsUserActive, setUserID } from "../../Redux/Utils";
 import { changeViewState } from "../../Utils";
+import Favourites from "../Favourites";
 
 const View = ({ state }) => {
   if (state == 0) {
@@ -44,6 +45,9 @@ const View = ({ state }) => {
   if (state == 8) {
     return <KnotyTimer />;
   }
+  if (state == 9) {
+    return <Favourites />;
+  }
 };
 
 const App = () => {
@@ -56,6 +60,8 @@ const App = () => {
     auth.onAuthStateChanged(async (user) => {
       if (!user) {
         // setIsUserActive(dispatch, false);
+        // await updateUserStatus(user.uid, false);
+
         window.location.href = "/";
         return;
       }
@@ -68,13 +74,21 @@ const App = () => {
     });
   }, []);
   useEffect(() => {
+    window.$(window).on("unload", function(e) {
+      updateUserStatus(userID, false).then(()=>null)
+      // Do Something
+  });
+
+   
+  }, [userID]);
+  useEffect(() => {
     if (hasActiveGame) {
       changeViewState(8);
       return;
-    } else {
-      changeViewState(0);
     }
+
   }, [hasActiveGame]);
+
   useEffect(() => {
     document.addEventListener("changeState", (e) => {
       setAppState(e.detail);
@@ -83,6 +97,7 @@ const App = () => {
 
   return (
     <div className="col-12 d-flex flex-column justify-content-between align-items-center  fullHeight">
+      {/* <div onClick={()=>updateUserStatus(userID, false).then(()=>null)} >CLICK</div> */}
       <TopBar />
       <View state={appState} />
       {/* <EditProfile/>

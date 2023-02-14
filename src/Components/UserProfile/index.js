@@ -74,7 +74,6 @@ const UserProfile = () => {
 
   useEffect(() => {
     const fireAsync = async () => {
-      console.log(secretCode);
       
       const res = await getUserProfile(changeUser ? userID : partnerID);
       if (!res) {

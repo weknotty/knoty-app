@@ -10,6 +10,7 @@ import PreviewImage from "../PreviewImage";
 import { setActivePartner, setProfileImageUrl } from "../../Redux/Utils";
 import * as utils from "../../Redux/Utils";
 import PendingMatch from "../PendingMatch";
+import MatchName from "../MatchName";
 const EditProfile = () => {
   const [username, setUsername] = useState("");
   const [about, setAbout] = useState("");
@@ -21,12 +22,16 @@ const EditProfile = () => {
   const [secretCode, setSecretCode] = useState("");
   const [submit, setSubmit] = useState(false);
   const [isReady, setisReady] = useState(false);
+  const [points, setPoints] = useState("");
 
   // const userSelector = useSelector((state) => state.user);
   const userID = useSelector((state) => state.user.userID);
   const pendingMatchStatus = useSelector((state) => state.user.pendingMatchStatus);
   const hasPendingMatch = useSelector((state) => state.user.hasPendingMatch);
+  const hasActivePartner = useSelector((state) => state.user.hasActivePartner);
+  const profileFull = useSelector((state) => state.user.profileFull);
 
+  
   const dispatch = useDispatch();
 
   const handleProfileErrors = (value) => {
@@ -56,6 +61,7 @@ const EditProfile = () => {
         setAge(profile?.age);
         setCountry(profile?.country);
         setMySentence(profile?.mySentence);
+        setPoints(userProfile?.points || "0")
       } else {
         setisReady(true);
       }
@@ -116,9 +122,10 @@ const EditProfile = () => {
     return <ButtonLoader state={true} text="Loading..." />;
   }
   return (
-    <div className="animated col-xxl-3 col-xl-5 col-lg-6 col-md-6 col-sm-11 col-11 d-flex flex-column m-auto justify-content-xxl-between justify-content-xl-between justify-content-lg-between justify-content-md-end justify-content-sm-end justify-content-end align-items-center align-self-end profileContainer">
+    <div className="animated col-xxl-3 col-xl-5 col-lg-6 col-md-6 col-sm-11 col-11 d-flex flex-column justify-content-xxl-between justify-content-xl-between justify-content-lg-between justify-content-md-end justify-content-sm-end justify-content-end align-items-center profileContainer">
       {/* profile image control */}
       <PreviewImage />
+      <MatchName hasActivePartner={hasActivePartner}/>
       <PendingMatch hasPendingMatch={hasPendingMatch} />
       {/* about */}
       <div className="col-12 d-flex flex-column justify-content-center align-items-center mb-3">
@@ -207,10 +214,22 @@ const EditProfile = () => {
           <input type="text" className="form-control greyBtn border-0 text-muted" value={secretCode} disabled={true} />
         </div>
       </div>
+      <div className="col-12 d-flex flex-column justify-content-center align-items-center mb-2">
+        <div className="col-12 d-flex flex-column justify-content-center align-items-center">
+          <span className="col-12 text-start w-5 text-muted">Points Earned</span>
+          <input type="text" className="form-control greyBtn border-0 text-muted" value={points} disabled={true} />
+        </div>
+      </div>
       <div className="col-12 d-flex flex-row justify-content-center align-items-center mt-3">
         <div
           className="col-8 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill p-2 me-2 midFont pointer"
-          onClick={() => changeViewState(1)}
+          onClick={() => {
+            if(!profileFull){
+              setToast({state:"warning",text:"Please fill your profile first."})
+              return
+            }
+            changeViewState(1)}}
+          disabled={profileFull}
         >
           CHOOSING A PARTNER
         </div>

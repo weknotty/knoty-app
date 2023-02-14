@@ -110,9 +110,13 @@ const ContactingPartner = () => {
     if (pendingMatchStatus == "pending") {
       findMatchByCode(secretCode, currentUser.userID, matchSignature, partnerID).then(async (res) => {
         console.log("res",res)
-        await ApproveMatch(currentUser.userID, res.partner.id).catch((err) => console.log(err));
+        if (!res) {
+          setSubmit(false);
+          return;
+        }
+        await ApproveMatch(res.partner.matchSignature).catch((err) => console.log(err));
         console.log(res);
-        // changeViewState(0);
+        changeViewState(0);
       });
       console.log("needs to approve here and send match");
       return;

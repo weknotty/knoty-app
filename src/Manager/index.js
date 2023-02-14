@@ -12,7 +12,9 @@ import {
   setInteractedCards,
   setHasActiveGame,
   setGameSignature,
+  setAcceptedManual,
 } from "../Redux/Utils";
+import { changeViewState } from "../Utils";
 
 const Manager = () => {
   const dispatch = useDispatch();
@@ -70,6 +72,7 @@ const Manager = () => {
       const matchSignature = docData.matchSignature;
       const hasActiveGame = docData.hasActiveGame;
       const gameSignature = docData.gameSignature;
+      const acceptedManual = docData?.acceptedManual || false;
       const cards = docData.cards;
       setHasPendingMatch(dispatch, hasPendingMatchUpdate);
       setActivePartner(dispatch, hasActivePartner);
@@ -77,6 +80,8 @@ const Manager = () => {
       setInteractedCards(dispatch, cards);
       setHasActiveGame(dispatch, hasActiveGame);
       setGameSignature(dispatch, gameSignature);
+      setAcceptedManual(dispatch, acceptedManual);
+
     });
     return () => {
       unsubscribe();
@@ -94,12 +99,12 @@ const Manager = () => {
       setPartnerImage(dispatch, res.profileImageUrl);
       setPendingMatchStatus(dispatch, res.matchStatus);
     };
-    if (userID || (userID && hasPendingMatch)) {
+    if (matchSignature) {
       console.log("hasPendingMatch", hasPendingMatch);
 
       fireAsync();
     }
-  }, [userID, hasPendingMatch]);
+  }, [matchSignature]);
 
   return null;
 };

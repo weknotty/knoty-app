@@ -20,6 +20,8 @@ export const userSlice = createSlice({
     interactedCards: [],
     hasActiveGame: false,
     gameSignature: "",
+    acceptedManual:false,
+    doneGame:false
   },
   reducers: {
     setUserActive: (state, action) => {
@@ -73,6 +75,12 @@ export const userSlice = createSlice({
     setGameSignature: (state, action) => {
       state.gameSignature = action.payload;
     },
+    setAcceptedManual: (state, action) => {
+      state.acceptedManual = action.payload;
+    },
+    setDoneGame: (state, action) => {
+      state.doneGame = action.payload;
+    },
   },
 });
 
@@ -94,7 +102,9 @@ export const {
   setCardsList,
   setInteractedCards,
   setHasActiveGame,
-  setGameSignature
+  setGameSignature,
+  setAcceptedManual,
+  setDoneGame
 } = userSlice.actions;
 
 // this is for configureStore

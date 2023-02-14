@@ -13,18 +13,18 @@
 }
 
 .profileContainer {
-  min-height: 500px;
+  min-height: 70vh
 }
 
 .pointer {
   cursor: pointer;
 }
 
-/* @media screen and (max-width: 600px) {
+@media screen and (max-width: 600px) {
   .profileContainer {
-    height: unset !important;
+    min-height: 50vh
   }
-} */
+}
 
 .animated {
   animation: animated 0.5s ease-in-out;

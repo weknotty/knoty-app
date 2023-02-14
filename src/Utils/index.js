@@ -97,5 +97,15 @@ export const handleUploadChange = async (e, id, dispatch, setIsUploading) => {
 
 export const generateCode = () => {
   const code = parseInt(Math.random() * 1000000000, 10);
-  return `${code}`
+  return `${code}`;
+};
+
+export const handleInvitePartner = (phone,secretCode) => {
+  if (phone.length < 9) {
+    setToast({ state: "warning", text: "Please add valid phone number." });
+    return;
+  }
+  const a = document.createElement("a");
+  a.href = `https://wa.me/+972${phone}/?text=Someone has invited you to knoty.your partner code is:${secretCode} Register here: ${window.location.origin}?code=${secretCode}`;
+  a.click();
 };

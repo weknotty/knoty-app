@@ -12,9 +12,7 @@ function App() {
 
   return (
     <div className="App position-relative">
-      <div className='col-12 d-flex flex-row justify-content-center align-items-center'>
-        <span onClick={()=>setHasPendingMatch(dispatch,!hasPendingMatch)}>pending match</span>
-      </div>
+
       <Toast />
       <Manager/>
       <AppRouter />

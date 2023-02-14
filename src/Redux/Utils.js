@@ -72,3 +72,12 @@ export const setHasActiveGame = (dispatch, value) => {
   dispatch(utils.setHasActiveGame(value));
   return;
 };
+
+export const setAcceptedManual = (dispatch, value) => {
+  dispatch(utils.setAcceptedManual(value));
+  return;
+};
+export const setDoneGame = (dispatch, value) => {
+  dispatch(utils.setDoneGame(value));
+  return;
+};

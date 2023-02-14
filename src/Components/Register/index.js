@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { redirect } from "react-router-dom";
 import { v4 } from "uuid";
 import { registerUserWithCred } from "../../firebase";
@@ -13,6 +14,7 @@ const Register = () => {
   const [matchingPassword, setMatchingPassword] = useState("");
   const [email, setEmail] = useState("");
   const [submit, setSubmit] = useState(false);
+  const dispatch = useDispatch()
 
   const handlePasswordDisplay = (e) => {
     try {
@@ -48,11 +50,14 @@ const Register = () => {
         setSubmit(false);
         return;
       }
+
+
       const fireAsync = async () => {
-        const res = await registerUserWithCred(password, email,userName);
+        const res = await registerUserWithCred(password, email,dispatch);
         if (!res) {
           setToast({ state: "failed", text: "Email is already used." });
           setSubmit(false);
+          return
         }
         if (res) {
           setToast({ state: "success", text: "Registered succesfuly" });

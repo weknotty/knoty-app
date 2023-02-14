@@ -4,6 +4,7 @@ import UserLogin from "./Components/UserLogin";
 import Welcome from "./Components/Welcome";
 import Register from "./Components/Register";
 import App from "./Components/App";
+import ForgotPass from "./Components/ForgotPass";
 
 const AppRouter = () => {
   return (
@@ -13,7 +14,9 @@ const AppRouter = () => {
         <Route exact path="/login" element={<UserLogin />} />
         <Route exact path="/register" element={<Register />} />
         <Route exact path="/app" element={<App />} />
+        <Route exact path="/forgotpass" element={<ForgotPass />} />
         <Route exact path="/" element={<Welcome />} />
+
       </Routes>
     </Router>
   );

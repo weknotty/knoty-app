@@ -4,4 +4,6 @@
 
 .bottomBarContainer {
   height: 50px;
+  position: sticky;
+  bottom: 0;
 }
