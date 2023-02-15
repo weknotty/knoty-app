@@ -62,33 +62,32 @@ const ProfileButton = ({ isLocal, isCurrentMatch, matchSignature, setchangeUser,
   );
 };
 const UserProfile = () => {
-  const secretCode = useSelector((state) => state.user.secretCode);
+  window.history.pushState({ appState: "5" }, "pushManageStore", "");
+
   const partnerID = useSelector((state) => state.user.partnerID);
   const userID = useSelector((state) => state.user.userID);
   const matchSignature = useSelector((state) => state.user.matchSignature);
-
   const [user, setUser] = useState({});
   const [changeUser, setchangeUser] = useState(false);
   const [isCurrentMatch, setIsCurrentMatch] = useState(false);
   const [isLocal, setisLocal] = useState(false);
 
   useEffect(() => {
-    const fireAsync = async () => {
+    getUserProfile(changeUser ? userID : partnerID).then((res) => {
       
-      const res = await getUserProfile(changeUser ? userID : partnerID);
       if (!res) {
-        setisLocal(true)
+        setisLocal(true);
         return;
       }
-
-
       if (res.matchSignature == matchSignature) {
         setIsCurrentMatch(true);
       }
+      if((res.matchSignature != matchSignature) || changeUser){
+        setIsCurrentMatch(false);
 
+      }
       setUser(res);
-    };
-    fireAsync();
+    });
   }, [changeUser]);
 
   if (!user.hasOwnProperty("profile")) {

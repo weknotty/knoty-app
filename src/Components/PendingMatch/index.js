@@ -1,9 +1,13 @@
+import { useSelector } from "react-redux";
 import { changeViewState } from "../../Utils";
 
 const PendingMatch = ({ hasPendingMatch }) => {
+  const partnerID = useSelector((state) => state.user.partnerID);
+
   if (!hasPendingMatch) {
     return null;
   }
+  console.log("partnerID",partnerID)
   return (
     <div
       className="pendingMatch d-flex flex-column justify-content-center align-items-center smFont text-center pinkBorder m-1 shadow-sm pointer rounded"

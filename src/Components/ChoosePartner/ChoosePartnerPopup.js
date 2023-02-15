@@ -74,7 +74,8 @@ const ChoosePartnerPopup = ({ setShowPopup }) => {
       )}
       {inviteMode && (
         <div className="col-12 d-flex flex-column justify-content-center align-items-center">
-          <div className="col d-flex flex-column justify-content-center align-items-center">
+          <div className="col-10 d-flex flex-column justify-content-center align-items-center">
+            <span className="smFont">You can always invite your friends:</span>
             <input
               value={whatsappNumber}
               type="text"

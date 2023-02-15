@@ -3,17 +3,20 @@ import { approveManual } from "../../firebase";
 import { changeViewState } from "../../Utils";
 import "./UserManual.css";
 const UserManual = () => {
+  window.history.pushState({ appState: "6" }, "pushManageStore", "");
+
   const userID = useSelector((state) => state.user.userID);
 
   const handleApprove = async () => {
      approveManual(userID).then(()=>{
-      changeViewState(7)
+      // changeViewState(7)
 
     })
   };
   return (
     <div className="col-xxl-5 col-xl-5 col-lg-6 col-md-6 col-sm-11 col-11 d-flex flex-column justify-content-start align-items-center profileContainer">
       <div className="col-12 d-flex flex-column justify-content-center align-items-center m-auto">
+        <img src="/assets/icons/logo.svg" style={{filter:"invert(100%)"}} height="150"width="150"/>
         <div className="col-12 d-flex flex-row  justify-content-start align-items-center align-self-end  position-relative align-self-start">
           <div className="col d-flex flex-column justify-content-center align-items-center border-end">
             <img src="/assets/icons/arrow.svg" height="25" width="25" />

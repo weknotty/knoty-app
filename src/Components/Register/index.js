@@ -45,7 +45,7 @@ const Register = () => {
         setSubmit(false);
         return;
       }
-      if (password.length < 6 || password != matchingPassword) {
+      if (password != matchingPassword) {
         setToast({ state: "failed", text: "Passwords should match." });
         setSubmit(false);
         return;

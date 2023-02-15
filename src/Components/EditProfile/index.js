@@ -11,7 +11,12 @@ import { setActivePartner, setProfileImageUrl } from "../../Redux/Utils";
 import * as utils from "../../Redux/Utils";
 import PendingMatch from "../PendingMatch";
 import MatchName from "../MatchName";
+import DeleteAccount from "../DeleteAccount";
 const EditProfile = () => {
+  // set location
+  window.history.pushState({ appState: "0" }, "pushManageStore", "");
+  const status = useSelector((state) => state.user);
+
   const [username, setUsername] = useState("");
   const [about, setAbout] = useState("");
   const [gender, setGender] = useState("");
@@ -23,29 +28,19 @@ const EditProfile = () => {
   const [submit, setSubmit] = useState(false);
   const [isReady, setisReady] = useState(false);
   const [points, setPoints] = useState("");
-
-  // const userSelector = useSelector((state) => state.user);
   const userID = useSelector((state) => state.user.userID);
-  const pendingMatchStatus = useSelector((state) => state.user.pendingMatchStatus);
   const hasPendingMatch = useSelector((state) => state.user.hasPendingMatch);
   const hasActivePartner = useSelector((state) => state.user.hasActivePartner);
   const profileFull = useSelector((state) => state.user.profileFull);
 
-  
   const dispatch = useDispatch();
 
   const handleProfileErrors = (value) => {
     setToast({ state: "warning", text: value });
     return;
   };
-
   useEffect(() => {
-    // fore back button
-    window.history.pushState({ appState: "0" }, "pushManageStore", "");
-
-    // load profile
-    const fireAsync = async () => {
-      const userProfile = await getUserProfile(userID);
+    getUserProfile(userID).then((userProfile) => {
       setProfileImageUrl(dispatch, userProfile?.profileImageUrl);
       setActivePartner(dispatch, userProfile?.hasActivePartner);
       setSecretCode(userProfile?.secretCode);
@@ -61,19 +56,21 @@ const EditProfile = () => {
         setAge(profile?.age);
         setCountry(profile?.country);
         setMySentence(profile?.mySentence);
-        setPoints(userProfile?.points || "0")
+        setPoints(userProfile?.points || "0");
+        utils.setUsername(dispatch, profile?.username);
       } else {
         setisReady(true);
       }
-    };
+    });
+
     if (userID) {
-      fireAsync();
+      const showFeeback = window.sessionStorage.getItem("showFeedback");
+      if (showFeeback) {
+        changeViewState(3);
+      }
     }
   }, [userID]);
 
-
-
-  // submit form
   useEffect(() => {
     if (submit) {
       if (!username || username.length < 3) {
@@ -111,6 +108,8 @@ const EditProfile = () => {
         mySentence,
       };
       updateProfileData(userID, payload).then(() => {
+        utils.setUsername(dispatch, username);
+
         utils.setProfileFull(dispatch, true);
         setSubmit(false);
         return;
@@ -125,7 +124,6 @@ const EditProfile = () => {
     <div className="animated col-xxl-3 col-xl-5 col-lg-6 col-md-6 col-sm-11 col-11 d-flex flex-column justify-content-xxl-between justify-content-xl-between justify-content-lg-between justify-content-md-end justify-content-sm-end justify-content-end align-items-center profileContainer">
       {/* profile image control */}
       <PreviewImage />
-      <MatchName hasActivePartner={hasActivePartner}/>
       <PendingMatch hasPendingMatch={hasPendingMatch} />
       {/* about */}
       <div className="col-12 d-flex flex-column justify-content-center align-items-center mb-3">
@@ -178,8 +176,9 @@ const EditProfile = () => {
           <input
             value={age}
             onChange={(e) => setAge(e.target.value.replace(/[^0-9.]/g, ""))}
-            pattern="[0-9]+"
-            type="text"
+            min="10"
+            max="100"
+            type="number"
             className="form-control  greyBtn border-0"
             placeholder="Your age"
           />
@@ -191,7 +190,11 @@ const EditProfile = () => {
             <option value="0">Choose</option>
             {countries.map((el) => {
               const lowered = el.name;
-              return <option value={lowered}>{lowered}</option>;
+              return (
+                <option key={lowered} value={lowered}>
+                  {lowered}
+                </option>
+              );
             })}
           </select>
         </div>
@@ -224,11 +227,12 @@ const EditProfile = () => {
         <div
           className="col-8 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill p-2 me-2 midFont pointer"
           onClick={() => {
-            if(!profileFull){
-              setToast({state:"warning",text:"Please fill your profile first."})
-              return
+            if (!profileFull) {
+              setToast({ state: "warning", text: "Please fill your profile first." });
+              return;
             }
-            changeViewState(1)}}
+            changeViewState(1);
+          }}
           disabled={profileFull}
         >
           CHOOSING A PARTNER
@@ -240,9 +244,10 @@ const EditProfile = () => {
           SAVE
         </div>
       </div>
-      <div className="col-12 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill p-2 mt-3 text-muted mb-3 midFont pointer">
+      {/* <div className="col-12 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill p-2 mt-3 text-muted mb-3 midFont pointer">
         DELETE ACCOUNT
-      </div>
+      </div> */}
+      <DeleteAccount />
     </div>
   );
 };

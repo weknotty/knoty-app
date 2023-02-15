@@ -14,12 +14,11 @@ import {
   FacebookAuthProvider,
   sendPasswordResetEmail,
 } from "firebase/auth";
-
+import { logEvent } from "firebase/analytics";
 import { getAnalytics } from "firebase/analytics";
 import { v4 } from "uuid";
-import { setDoneGame, setIsUserActive, setProfileImageUrl, setUserProfileData } from "./Redux/Utils";
+import { setDoneGame, setIsUserActive, setProfileImageUrl, setShowFeedbackPopup, setUserProfileData } from "./Redux/Utils";
 import { changeViewState, generateCode, setToast } from "./Utils";
-
 const firebaseConfig = {
   apiKey: "AIzaSyBQnnl1a0XyOI60fxD0ZxLh4ITt8OkrcO4",
   authDomain: "knoty-8cb40.firebaseapp.com",
@@ -37,23 +36,11 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 
 setPersistence(auth, browserSessionPersistence)
-  .then(() => {
-    // Existing and future Auth states are now persisted in the current
-    // session only. Closing the window would clear any existing state even
-    // if a user forgets to sign out.
-    // ...
-    // New sign-in will be persisted with session persistence.
-    // return signInWithEmailAndPassword(auth, email, password);
-  })
-  .catch((error) => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-  });
+  .then(() => {})
+  .catch((error) => {});
 
 const analytics = getAnalytics(app);
 const googleProvider = new GoogleAuthProvider();
-
 export const registerUserWithCred = async (password, email, dispatch) => {
   const basicRegister = await createUserWithEmailAndPassword(auth, email, password).catch((err) => {
     console.log(err);
@@ -64,15 +51,15 @@ export const registerUserWithCred = async (password, email, dispatch) => {
   await handleNewEntry(basicRegister.user.uid, dispatch);
   return true;
 };
-export const loginWithEmail = async (email, password) => {
+export const loginWithEmail = async (email, password, dispatch) => {
   const basicLogin = await signInWithEmailAndPassword(auth, email, password).catch((err) => {
     console.log(err);
   });
-  console.log(basicLogin)
   if (!basicLogin) {
     return false;
   }
-  
+  await updateUserStatus(basicLogin.user.uid, true, true, dispatch);
+
   return true;
 };
 export const loginWithGoogle = async () => {
@@ -84,38 +71,43 @@ export const loginWithFacebook = async () => {
 };
 export const createProfile = async (payload) => {
   const ref = doc(db, "users", v4());
-  const req = await setDoc(ref, payload);
+  await setDoc(ref, payload);
   return;
 };
 
-export const handleNewEntry = async (uid) => {
-  const ref = doc(db, "users", uid);
-  const res = await getDoc(ref);
-  if (!res.exists()) {
-    console.log("new user!!");
-    const newDocRef = doc(db, "users", uid);
-    const code = generateCode();
-    const basicSettings = {
-      profileFull: false,
-      secretCode: code,
-      hasActivePartner: false,
-      userActive: true,
-      hasPendingMatch: false,
-      cards: [],
-      hasActiveGame: false,
-      gameSignature: "",
-      points: "0",
-    };
-    await setDoc(newDocRef, basicSettings).catch((err) => console.log(err));
-    // const statusRef = doc(db, "statuses");
-    // await setDoc(statusRef, { userActive: true, userID: uid }).catch((err) => console.log(err));
+export const handleNewEntry = async (uid, dispatch) => {
+  try {
+    const ref = doc(db, "users", uid);
+    const res = await getDoc(ref);
+    if (!res.exists()) {
+      const newDocRef = doc(db, "users", uid);
+      const code = generateCode();
+      const basicSettings = {
+        profileFull: false,
+        secretCode: code,
+        hasActivePartner: false,
+        userActive: true,
+        hasPendingMatch: false,
+        cards: [],
+        hasActiveGame: false,
+        gameSignature: "",
+        points: "0",
+      };
+      const statusRef = collection(db, "statuses");
 
+      const all = [
+        setDoc(newDocRef, basicSettings).catch((err) => console.log(err)),
+        addDoc(statusRef, { userActive: true, userID: uid, loginCount: 1 }).catch((err) => console.log(err)),
+      ];
+      await Promise.all(all);
+      return;
+    }
+
+    await updateUserStatus(uid, true, true, dispatch);
     return;
+  } catch (err) {
+    console.log("err", err);
   }
-  console.log("existing user!!!");
-  const user = res.data();
-
-  return;
 };
 
 export const uploadProfileImage = async (file, id, dispatch) => {
@@ -140,7 +132,8 @@ export const updateProfileData = async (id, payload) => {
   return;
 };
 
-export const getUserProfile = async (id) => {
+export const getUserProfile = async () => {
+  const id = auth.currentUser.uid;
   const ref = doc(db, "users", id);
   const res = await getDoc(ref);
   if (!res.exists()) {
@@ -187,11 +180,6 @@ export const findMatchByCode = async (code, id, signature, partnerID) => {
 };
 
 export const createNewMatch = async (id, partnerID, userPayload, partnerPayload) => {
-  // console.log("id",id)
-  // console.log("partnerID",partnerID)
-  // console.log("userPayload",userPayload)
-  // console.log("partnerPayload",partnerPayload)
-
   const ref = collection(db, "matches");
   const signature = v4();
   const matchPayload = {
@@ -207,13 +195,13 @@ export const createNewMatch = async (id, partnerID, userPayload, partnerPayload)
     signature: signature,
     acceptedManual: false,
   };
-  await addDoc(ref, matchPayload);
+  const all = [addDoc(ref, matchPayload), setMatchSignature(id, partnerID, signature), turnOnPendingMatch(id, partnerID)];
+  await Promise.all(all);
   setToast({ state: "success", text: "Matched successfuly!" });
-  await setMatchSignature(id, partnerID, signature);
-  await turnOnPendingMatch(id, partnerID);
+
   return;
 };
-export const updateUserStatus = async (id, value) => {
+export const updateUserStatus = async (id, value, withCount, dispatch) => {
   const ref = collection(db, "statuses");
   const q = query(ref, where("userID", "==", id));
   const res = await getDocs(q);
@@ -221,12 +209,21 @@ export const updateUserStatus = async (id, value) => {
     return false;
   }
   const docRef = doc(db, "statuses", res.docs[0].id);
-  await updateDoc(docRef, { userActive: value }).catch((err) => console.log(err));
+  const data = res.docs[0].data();
+  const newLoginCount = parseInt(data.loginCount) + 1;
+  if (withCount) {
+    if (newLoginCount === 7) {
+      setShowFeedbackPopup(true);
+    }
+  }
+
+  const payload = withCount ? { userActive: value, loginCount: newLoginCount } : { userActive: value };
+  await updateDoc(docRef, payload).catch((err) => console.log(err));
   return;
 };
+
 export const getMatchBySignature = async (id, matchSignature) => {
   const matchesRef = collection(db, "matches");
-  console.log(id);
   const mq = query(matchesRef, where("signature", "==", matchSignature));
 
   const matchesData = await getDocs(mq);
@@ -241,7 +238,6 @@ export const getMatchBySignature = async (id, matchSignature) => {
 };
 export const checkPendingMatches = async (id, matchSignature) => {
   const matchesRef = collection(db, "matches");
-  console.log(id);
   const mq = query(matchesRef, where("signature", "==", matchSignature), where("partnerStatus", "==", "pending"));
 
   const matchesData = await getDocs(mq);
@@ -378,7 +374,6 @@ export const setCards = async (list) => {
 export const setCardRating = async (id, data, rating, cardID) => {
   const ref = doc(db, "users", id);
   const filtered = data.filter((el) => {
-    console.log(el);
     return el.card != cardID;
   });
 
@@ -388,11 +383,10 @@ export const setCardRating = async (id, data, rating, cardID) => {
     isLiked: false,
   };
   const total = [...filtered, payload];
-  console.log(total);
   await setDoc(ref, { cards: total }, { merge: true });
 };
 
-export const setCardLiked = async (id, data, cardSource) => {
+export const setCardLiked = async (id, data, cardSource, cardsCategory, isLike) => {
   const cardID = cardSource.id;
 
   const ref = doc(db, "users", id);
@@ -407,25 +401,25 @@ export const setCardLiked = async (id, data, cardSource) => {
     payload = {
       card: cardID,
       rating: 0,
-      isLiked: true,
+      category: cardsCategory,
+      isLiked: isLike,
     };
   }
   if (item != false) {
     payload = {
       ...item[0],
-      isLiked: true,
+      isLiked: isLike,
     };
   }
 
   const total = [...filtered, payload];
-  console.log("total", total);
   await updateDoc(ref, { cards: total }).catch((err) => console.log(err));
   return;
 };
 
 export const getGameData = async (signature) => {
   const ref = collection(db, "games");
-  const q = query(ref, where("signature", "==", signature));
+  const q = query(ref, where("signature", "==", signature), where("status", "==", "start"));
   const data = await getDocs(q);
   if (data.empty) {
     return false;
@@ -433,13 +427,14 @@ export const getGameData = async (signature) => {
   return data.docs[0].data();
 };
 
-export const cancelGame = async (signature, cardID) => {
+export const cancelGame = async (signature) => {
   const ref = collection(db, "games");
-  const q = query(ref, where("signature", "==", signature));
+  const q = query(ref, where("signature", "==", signature), where("status", "==", "start"));
   const data = await getDocs(q);
   if (data.empty) {
     return false;
   }
+  const cardID = data.docs[0].data().cardID;
   const gameRef = doc(db, "games", data.docs[0].id);
   await updateDoc(gameRef, { status: "canceled" });
   const usersRef = collection(db, "users");
@@ -448,11 +443,10 @@ export const cancelGame = async (signature, cardID) => {
   if (usersReq.empty) {
     return false;
   }
+
   const userA = usersReq.docs[0];
   const userB = usersReq.docs[1];
   const mappedCardsA = userA.data().cards.map((els) => {
-    // console.log(els);
-
     if (els.card == cardID) {
       // console.log(els);
       return { ...els, isLiked: false };
@@ -460,17 +454,13 @@ export const cancelGame = async (signature, cardID) => {
     return els;
   });
   const mappedCardsB = userB.data().cards.map((els) => {
-    // console.log(els);
-
     if (els.card == cardID) {
       // console.log(els);
       return { ...els, isLiked: false };
     }
     return els;
   });
-  console.log(mappedCardsA);
-  console.log(mappedCardsB);
-  console.log(cardID);
+
   await updateProfileCards(userA.id, mappedCardsA);
   await updateProfileCards(userB.id, mappedCardsB);
   await removeGameTrailes(usersReq.docs[0].id, usersReq.docs[1].id);
@@ -490,53 +480,52 @@ export const updateGameStatus = async (signature, status) => {
     return false;
   }
   const gameRef = doc(db, "games", data.docs[0].id);
-  await updateDoc(gameRef, { status: "status" });
+  await updateDoc(gameRef, { status: status });
 };
 
 export const finishGame = async (signature, cardID, dispatch) => {
   const ref = collection(db, "games");
-  const q = query(ref, where("signature", "==", signature));
+  const q = query(ref, where("signature", "==", signature), where("status", "==", "start"));
   const data = await getDocs(q);
-  // console.log(data.docs[0].data())
-
   if (data.empty) {
     return false;
   }
   const gameRef = doc(db, "games", data.docs[0].id);
-  await updateDoc(gameRef, { status: "done" });
   const usersRef = collection(db, "users");
   const usersQ = query(usersRef, where("gameSignature", "==", signature));
   const usersReq = await getDocs(usersQ);
-
   if (usersReq.empty) {
     return false;
   }
   const userA = usersReq.docs[0];
   const userB = usersReq.docs[1];
   const mappedCardsA = userA.data().cards.map((els) => {
-    // console.log(els);
-
     if (els.card == cardID) {
-      // console.log(els);
       return { ...els, isLiked: false };
     }
     return els;
   });
   const mappedCardsB = userB.data().cards.map((els) => {
-    // console.log(els);
-
     if (els.card == cardID) {
-      // console.log(els);
       return { ...els, isLiked: false };
     }
     return els;
   });
 
   const gameData = data.docs[0].data();
-  await addGamePoints(gameData.signature, gameData.points);
-  await updateProfileCards(userA.id, mappedCardsA);
-  await updateProfileCards(userB.id, mappedCardsB);
-  await removeGameTrailes(usersReq.docs[0].id, usersReq.docs[1].id);
+
+  const all = [
+    removeGameTrailes(usersReq.docs[0].id, usersReq.docs[1].id),
+    removeGameTrailes(usersReq.docs[0].id, usersReq.docs[1].id),
+    updateProfileCards(userB.id, mappedCardsB),
+    updateDoc(gameRef, { status: "done" }),
+    addGamePoints(gameData.signature, gameData.points),
+    updateProfileCards(userA.id, mappedCardsA),
+    updateProfileCards(userB.id, mappedCardsB),
+    updateProfileCards(userB.id, mappedCardsB),
+  ];
+
+  await Promise.all(all);
   setDoneGame(dispatch, true);
 };
 
@@ -572,7 +561,6 @@ export const addGamePoints = async (gameSignature, points) => {
 
   const userBPayload = parseInt(userB.data().points) + parseInt(points);
 
-  // console.log(userAPayload)
   await updateProfileProp(userA.id, "points", userAPayload);
   await updateProfileProp(userB.id, "points", userBPayload);
 };
@@ -584,7 +572,6 @@ export const getUsersStatus = async (partnerID) => {
   if (res.empty) {
     return false;
   }
-  console.log(res.docs[0].data());
   return res.docs[0].data();
 };
 
@@ -605,4 +592,76 @@ export const resetPassword = async (email) => {
   });
   setToast({ state: "success", text: "Email send succesfuly." });
   return;
+};
+
+export const setNewFeeback = async (value, userID) => {
+  const ref = collection(db, "feedbacks");
+  const payload = {
+    feebacks: value,
+    userID,
+  };
+  await addDoc(ref, payload);
+  window.sessionStorage.removeItem("showFeedback");
+  changeViewState(0);
+  return;
+};
+
+export const setPageView = async (data) => {
+  logEvent(analytics, "page_view", data);
+};
+
+export const setCategoryClick = async ({ userID, catgoryName, categoryID }) => {
+  const ref = collection(db, "categoriesClicks");
+  const payload = {
+    userID,
+    catgoryName,
+    categoryID,
+  };
+  await addDoc(ref, payload);
+};
+export const setSwipesEvent = ({ cardID, userID }) => {
+  logEvent(analytics, "swipedCard", { userID, cardID });
+};
+export const setNewCategoryClick = ({ category, categoryID, userID }) => {
+  logEvent(analytics, "categoryClick", { category, categoryID, userID });
+};
+
+export const setNewSwipe = async ({ userID, cardID }) => {
+  const dateObj = new Date();
+  const month = dateObj.getUTCMonth() + 1;
+  const day = dateObj.getUTCDate();
+  const year = dateObj.getUTCFullYear();
+  const swipeDate = year + "/" + month + "/" + day;
+  const ref = collection(db, "swipes");
+  const q = query(ref, where("userID", "==", userID), where("swipeDate", "==", swipeDate));
+
+  const res = await getDocs(q);
+  let payload = {};
+  if (res.empty) {
+    payload = {
+      userID,
+      cardID,
+      swipeDate,
+      swipes: 1,
+    };
+  }
+  if (!res.empty) {
+    const data = res.docs[0].data();
+    const currentSwipes = data.swipes;
+    payload = {
+      userID,
+      cardID,
+      swipeDate,
+      currentSwipes,
+    };
+  }
+
+  // await addDoc(ref, payload);
+};
+
+export const deleteAccountFromDB = async () => {
+  const ref = doc(db, "users", auth.currentUser.uid);
+  await deleteDoc(ref);
+  sessionStorage.clear();
+  window.location.href = "/";
 };

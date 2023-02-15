@@ -7,17 +7,16 @@ import MatchName from "../MatchName";
 const PreviewImage = () => {
   const dispatch = useDispatch();
   const userID = useSelector((state) => state.user.userID);
-  const profileImageUrl = useSelector((state) => state.user.profileImageUrl);
+  const profileImageUrl = useSelector((state) => state.user.profileImageUrl) || "/assets/images/logoUpload.png";
   const [isUploading, setsetIsUploading] = useState(false);
-  const hasActivePartner = useSelector((state) => state.user.hasActivePartner);
 
   return (
     <div className="col-auto d-flex flex-column justify-content-center align-items-center position-relative userProfileContainer">
-      <MatchName/>
+      <MatchName key={"sdklnosdfiosofno"}/>
       <div className="col-auto d-flex flex-column justify-content-center align-items-center position-relative mt-3">
         {isUploading ? <ButtonLoader state={true} className="thumbHolder"   /> : <img src={profileImageUrl} className="userProfileImage" />}
         <span className="editProfileImage pointer">
-          <label for="profile-input">
+          <label htmlFor="profile-input">
             <img src="/assets/icons/edit.svg" height="35" width="35" className="pointer" />
           </label>
           <input

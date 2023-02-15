@@ -10,20 +10,8 @@
   height: 100px;
   width: 120px;
 }
-.example-enter.example-enter-active {
-  opacity: 1;
-  transition: opacity 500ms ease-in;
-}
 .pinkBorder {
-  border: 1px solid pink;
-}
-.example-leave {
-  opacity: 1;
-}
-
-.example-leave.example-leave-active {
-  opacity: 0.01;
-  transition: opacity 300ms ease-in;
+  border: 1px solid salmon;
 }
 .indicatorLg {
   height: 30px;
@@ -58,3 +46,29 @@
     width: 10px;
   }
 } */
+
+.animatedSquare{
+  height:150px;
+  width:150px;
+  background-color: rgba(128, 128, 128, 0.267);
+  border-radius: 15px;
+  opacity: 1;
+  animation: blink 1.5s ease-in-out infinite;
+}
+
+@keyframes blink{
+  0%{
+    opacity: 0;
+  }
+  50%{
+    opacity: 1;
+  }
+  75%{
+    opacity: 0.5;
+
+  }
+  100%{
+    opacity: 0;
+
+  }
+}

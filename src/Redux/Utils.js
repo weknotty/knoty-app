@@ -81,3 +81,11 @@ export const setDoneGame = (dispatch, value) => {
   dispatch(utils.setDoneGame(value));
   return;
 };
+export const setShowFeedbackPopup = (value) => {
+  window.sessionStorage.setItem("showFeedback",value)
+};
+
+export const setUsername = (dispatch, value) => {
+  dispatch(utils.setUsername(value));
+  return;
+};

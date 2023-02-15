@@ -21,7 +21,9 @@ export const userSlice = createSlice({
     hasActiveGame: false,
     gameSignature: "",
     acceptedManual:false,
-    doneGame:false
+    doneGame:false,
+    showFeedbackPopup:false,
+    username:"",
   },
   reducers: {
     setUserActive: (state, action) => {
@@ -81,6 +83,12 @@ export const userSlice = createSlice({
     setDoneGame: (state, action) => {
       state.doneGame = action.payload;
     },
+    setShowFeedbackPopup: (state, action) => {
+      state.showFeedbackPopup = action.payload;
+    },
+    setUsername: (state, action) => {
+      state.username = action.payload;
+    },
   },
 });
 
@@ -104,7 +112,9 @@ export const {
   setHasActiveGame,
   setGameSignature,
   setAcceptedManual,
-  setDoneGame
+  setDoneGame,
+  setShowFeedbackPopup,
+  setUsername
 } = userSlice.actions;
 
 // this is for configureStore

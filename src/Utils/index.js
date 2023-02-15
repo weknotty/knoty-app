@@ -100,7 +100,7 @@ export const generateCode = () => {
   return `${code}`;
 };
 
-export const handleInvitePartner = (phone,secretCode) => {
+export const handleInvitePartner = (phone, secretCode) => {
   if (phone.length < 9) {
     setToast({ state: "warning", text: "Please add valid phone number." });
     return;
@@ -108,4 +108,18 @@ export const handleInvitePartner = (phone,secretCode) => {
   const a = document.createElement("a");
   a.href = `https://wa.me/+972${phone}/?text=Someone has invited you to knoty.your partner code is:${secretCode} Register here: ${window.location.origin}?code=${secretCode}`;
   a.click();
+};
+
+export const handleAgeInput = (value,setAge) => {
+  let newVal = value.replace(/[^0-9.]/g, "");
+  if(newVal > 90){
+    setToast({state:"warning",text:"Maxmimum age is 90."})
+    return
+  }
+  if(newVal <=10){
+    newVal = value.replace(value, "");
+    return
+  }
+  setAge(newVal)
+  return newVal;
 };

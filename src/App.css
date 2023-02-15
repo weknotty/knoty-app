@@ -21,9 +21,9 @@
 }
 
 @media screen and (max-width: 600px) {
-  .profileContainer {
-    min-height: 50vh
-  }
+  /* .profileContainer {
+    min-height: 65vh
+  } */
 }
 
 .animated {

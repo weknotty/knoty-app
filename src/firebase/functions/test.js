@@ -9,6 +9,7 @@ let db = admin.firestore();
 const auth = admin.auth();
 
 const createNewGame = async ({ gameSignature, duration, imageUrl, cardID, cardName, db, points }) => {
+  const now = new Date().getTime() / 1000;
   const payload = {
     duration: duration,
     status: "start",
@@ -17,6 +18,7 @@ const createNewGame = async ({ gameSignature, duration, imageUrl, cardID, cardNa
     cardID: cardID,
     cardName: cardName,
     points: points,
+    startedIn: now,
   };
   await db.collection("games").add(payload);
 };
@@ -34,7 +36,7 @@ const FindMatchingGame = () => {
           const batch = db.batch();
           const userA = match.docs[0].data();
           const userB = match.docs[1].data();
-          if (userA.hasActiveGame) {
+          if (userA.gameSignature) {
             return;
           }
           for (let cardA of userA.cards) {
@@ -102,7 +104,6 @@ const getOnlineUsers = () => {
     const statuses = await db.collection("statuses").get();
     res.users.forEach((user) => {
       const loggedInLast = new Date(user.metadata.lastSignInTime);
-      console.log(user.metadata.lastRefreshTime);
       const seconds = Math.round(loggedInLast.getTime() / 1000);
       const maximumAlive = parseInt(seconds) + 300;
 
@@ -114,13 +115,15 @@ const getOnlineUsers = () => {
       }
       if (now > maximumAlive) {
         const item = statuses.docs.filter((el) => {
+          
           const data = el.data();
+
+
           if (data.userID == user.uid) {
             return el;
           }
         });
         if (item == false) {
-          console.log("none");
           return;
         }
 
@@ -132,5 +135,6 @@ const getOnlineUsers = () => {
 };
 getOnlineUsers();
 // FindMatchingGame();
+// functions.firestore.document("")
 // // handleGameStatus();
 // return "alright";

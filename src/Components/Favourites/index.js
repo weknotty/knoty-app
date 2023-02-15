@@ -4,6 +4,8 @@ import { getFavouritesCards } from "../../firebase";
 import GalleryCard from "../GalleryCard";
 
 const Favourites = () => {
+  window.history.pushState({ appState: "4" }, "pushManageStore", "");
+
   const [localCards, setCards] = useState([]);
   const dispatch = useDispatch();
   const cards = useSelector((state) => state.user.interactedCards);

@@ -4,33 +4,40 @@ import "./CardsSelect.css";
 import { useEffect, useState } from "react";
 import { setCardsCategory, setCardsList } from "../../Redux/Utils";
 import { useDispatch, useSelector } from "react-redux";
-import { getCategories, getCategoriesByType, setCards, setSomething } from "../../firebase";
+import { getCategories, getCategoriesByType, setCards, setCategoryClick, setNewCategoryClick, setSomething } from "../../firebase";
 import GalleryCard from "../GalleryCard";
 import UserManual from "../UserManual";
 
 const CardsSelect = () => {
+  window.history.pushState({ appState: "0" }, "pushManageStore", "");
   const [categories, setCategories] = useState([]);
   const [approvedManual, setapprovedManual] = useState(true);
   const acceptedManual = useSelector((state) => state.user.acceptedManual);
+  const userID = useSelector((state) => state.user.userID);
+
   const dispatch = useDispatch();
+
+
   useEffect(() => {
     setapprovedManual(acceptedManual);
   }, [acceptedManual]);
+
   useEffect(() => {
     getCategories().then((res) => {
-      console.log(res);
       setCategories(res);
     });
   }, []);
 
-  const handleCardClick = async (category) => {
-    console.log(category);
+  const handleCardClick = async (category,id) => {
     const cards = await getCategoriesByType(category);
+    setNewCategoryClick({userID,category,categoryID:id})
     setCardsList(dispatch, cards);
     setCardsCategory(dispatch, category);
     changeViewState(7);
     return;
   };
+
+  
   if (!approvedManual) {
     return <UserManual />;
   }
@@ -43,7 +50,7 @@ const CardsSelect = () => {
         </div>
 
         {categories.map((el) => {
-          return <GalleryCard imageUrl={el.imageUrl} category={el.category} handleCardClick={handleCardClick} />;
+          return <GalleryCard imageUrl={el.imageUrl} category={el.category} handleCardClick={handleCardClick} id={el.id} />;
         })}
       </div>
     </div>

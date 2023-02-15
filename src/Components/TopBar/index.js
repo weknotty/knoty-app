@@ -3,7 +3,8 @@ import { useSelector } from "react-redux";
 import { changeViewState } from "../../Utils";
 
 const TopBar = () => {
-  const profileImageUrl = useSelector((state) => state.user.profileImageUrl);
+  const profileImageUrl = useSelector((state) => state.user.profileImageUrl) || "/assets/images/cardbg.png";
+  const username = useSelector((state) => state.user.username) || "";
 
   return (
     <div className="col-12 d-flex flex-column justify-content-center align-items-center imgBg">
@@ -13,7 +14,7 @@ const TopBar = () => {
             {profileImageUrl ? <img src={profileImageUrl} className="profileSm" /> : <span className="bg-light rounded rounded-circle profileSm"></span>}
             <span className="indicator position-absolute"></span>
           </div>
-          <span className="smFont w-3 text-white">AMIT</span>
+          <span className="smFont w-3 text-white">{username}</span>
         </div>
         <div className="col-6 d-flex flex-column justify-content-center align-items-center" onClick={() => changeViewState(4)}>
           <img src="/assets/icons/logo.svg" height="75" width="100" />
