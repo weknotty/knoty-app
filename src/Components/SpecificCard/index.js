@@ -99,10 +99,8 @@ const SpecificCard = () => {
       return;
     }
     if (swipedLeft) {
-      console.log(ref.current);
 
       if (ref.current) {
-        console.log(ref.current);
         ref.current.animate(newspaperLeft, newspaperTiming);
       }
       setCardLiked(userID, interactedCards, currentCard, cardsCategory, false)

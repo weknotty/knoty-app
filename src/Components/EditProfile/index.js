@@ -40,28 +40,31 @@ const EditProfile = () => {
     return;
   };
   useEffect(() => {
-    getUserProfile(userID).then((userProfile) => {
-      setProfileImageUrl(dispatch, userProfile?.profileImageUrl);
-      setActivePartner(dispatch, userProfile?.hasActivePartner);
-      setSecretCode(userProfile?.secretCode);
-      setisReady(true);
-      utils.setProfileFull(dispatch, userProfile.profileFull);
-      utils.setHasPendingMatch(dispatch, userProfile.hasPendingMatch);
-      if (userProfile.hasOwnProperty("profile")) {
-        const profile = userProfile?.profile;
-        setUsername(profile?.username);
-        setAbout(profile?.about);
-        setGender(profile?.gender);
-        setInterestedIn(profile?.interestedIn);
-        setAge(profile?.age);
-        setCountry(profile?.country);
-        setMySentence(profile?.mySentence);
-        setPoints(userProfile?.points || "0");
-        utils.setUsername(dispatch, profile?.username);
-      } else {
+    if(userID){
+      getUserProfile(userID).then((userProfile) => {
+        setProfileImageUrl(dispatch, userProfile?.profileImageUrl);
+        setActivePartner(dispatch, userProfile?.hasActivePartner);
+        setSecretCode(userProfile?.secretCode);
         setisReady(true);
-      }
-    });
+        utils.setProfileFull(dispatch, userProfile.profileFull);
+        utils.setHasPendingMatch(dispatch, userProfile.hasPendingMatch);
+        if (userProfile.hasOwnProperty("profile")) {
+          const profile = userProfile?.profile;
+          setUsername(profile?.username);
+          setAbout(profile?.about);
+          setGender(profile?.gender);
+          setInterestedIn(profile?.interestedIn);
+          setAge(profile?.age);
+          setCountry(profile?.country);
+          setMySentence(profile?.mySentence);
+          setPoints(userProfile?.points || "0");
+          utils.setUsername(dispatch, profile?.username);
+        } else {
+          setisReady(true);
+        }
+      });
+    }
+
 
     if (userID) {
       const showFeeback = window.sessionStorage.getItem("showFeedback");
@@ -78,22 +81,22 @@ const EditProfile = () => {
         setSubmit(false);
         return;
       }
-      if (!gender) {
+      if (!gender || gender == 0) {
         handleProfileErrors("Please select your gender.");
         setSubmit(false);
         return;
       }
-      if (!interestedIn) {
+      if (!interestedIn || interestedIn == 0) {
         handleProfileErrors("Please select your intersted type.");
         setSubmit(false);
         return;
       }
-      if (!age) {
+      if (!age || age == 0 || age <0) {
         handleProfileErrors("Please define your age.");
         setSubmit(false);
         return;
       }
-      if (!country) {
+      if (!country || country == 0) {
         handleProfileErrors("Please define your country.");
         setSubmit(false);
         return;
@@ -109,7 +112,6 @@ const EditProfile = () => {
       };
       updateProfileData(userID, payload).then(() => {
         utils.setUsername(dispatch, username);
-
         utils.setProfileFull(dispatch, true);
         setSubmit(false);
         return;
@@ -152,7 +154,7 @@ const EditProfile = () => {
         <div className="col d-flex flex-column justify-content-center align-items-center">
           <span className="col-12 text-start w-5">Gender</span>
           <select value={gender} onChange={(e) => setGender(e.target.value)} className="form-select border-0  greyBtn">
-            <option value="">Choose</option>
+            <option value="0">Choose</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
             <option value="non">Not-identified</option>
@@ -241,7 +243,7 @@ const EditProfile = () => {
           className="col d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill p-2 midFont pointer"
           onClick={() => setSubmit(true)}
         >
-          SAVE
+          <ButtonLoader state={submit} text="SAVE"/>
         </div>
       </div>
       {/* <div className="col-12 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill p-2 mt-3 text-muted mb-3 midFont pointer">

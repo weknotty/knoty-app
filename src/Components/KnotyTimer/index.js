@@ -9,6 +9,8 @@ import { changeViewState } from "../../Utils";
 import { setDoneGame } from "../../Redux/Utils";
 import ButtonLoader from "../ButtonLoader";
 const AcceptedStarted = ({ isAcceped, gameData, gameSignature }) => {
+  const gameID = useSelector((state) => state.user.gameID);
+
   const [timer, setTimer] = useState("");
   const dispatch = useDispatch();
   const toHHMMSS = function (value) {
@@ -56,12 +58,12 @@ const AcceptedStarted = ({ isAcceped, gameData, gameSignature }) => {
   }, [gameData]);
   useEffect(() => {
     if (submitDone) {
-      finishGame(gameSignature, gameData.cardID, dispatch).then(() => {
+      finishGame(gameID, dispatch).then(() => {
         setSubmitDone(false);
       });
     }
     if (submitCancel) {
-      cancelGame(gameSignature, gameData.cardID).then(() => {
+      cancelGame(gameID).then(() => {
         setSubmitCancel(false);
         changeViewState(1);
       });

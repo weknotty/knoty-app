@@ -1,30 +1,9 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { checkPendingMatches, getMatchBySignature, getUserProfile } from "../../firebase";
-import { setPartnerID } from "../../Redux/Utils";
+import {useSelector } from "react-redux";
 import { changeViewState } from "../../Utils";
-import './MatchName.css';
+import "./MatchName.css";
 const MatchName = () => {
-    const dispatch = useDispatch()
-  const matchSignature = useSelector((state) => state.user.matchSignature);
+  const partnerImage = useSelector((state) => state.user.partnerImage);
   const hasActivePartner = useSelector((state) => state.user.hasActivePartner);
-
-  const userID = useSelector((state) => state.user.userID);
-  const [partnerImage, setpartnerImage] = useState("");
-
-  const [user, setUser] = useState({});
-  useEffect(() => {
-    if(hasActivePartner){
-      getMatchBySignature(userID, matchSignature).then((res) => {  
-        if (res) {
-          setpartnerImage(res.profileImageUrl)
-          setUser(res);
-          setPartnerID(dispatch,res.id)
-        }
-      });
-    }
-
-  }, [hasActivePartner, matchSignature,userID]);
 
   if (!hasActivePartner) {
     return null;

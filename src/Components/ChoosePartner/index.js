@@ -59,6 +59,7 @@ const ChoosePartner = () => {
       >
         CANCEL
       </div>
+      
     </div>
   );
 };

@@ -89,3 +89,8 @@ export const setUsername = (dispatch, value) => {
   dispatch(utils.setUsername(value));
   return;
 };
+
+export const setGameID = (dispatch, value) => {
+  dispatch(utils.setGameID(value));
+  return;
+};
