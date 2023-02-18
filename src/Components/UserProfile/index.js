@@ -5,6 +5,7 @@ import { changeViewState } from "../../Utils";
 import ButtonLoader from "../ButtonLoader";
 import "./UserProfile.css";
 const ProfileButton = ({ isLocal, isCurrentMatch, matchSignature, setchangeUser, userID, partnerID }) => {
+  const hasActiveGame = useSelector((state) => state.user.hasActiveGame);
   if (isLocal) {
     return (
       <div className="col-12 d-flex flex-column justify-content-center align-items-center">
@@ -35,7 +36,7 @@ const ProfileButton = ({ isLocal, isCurrentMatch, matchSignature, setchangeUser,
           <img src="/assets/icons/switch.svg" height="18" width="18" />
         </div>
         <div
-          onClick={() => cancelMatch(userID, "approved", "done", matchSignature, userID, partnerID)}
+          onClick={() => cancelMatch(userID, "approved", "done", matchSignature, userID, partnerID,hasActiveGame)}
           className="col-10 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill  mt-3 p-2 mb-3 midFont pointer"
         >
           END CONNECTION

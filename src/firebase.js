@@ -247,18 +247,20 @@ export const checkPendingMatches = async (id, matchSignature) => {
   }
   return { ...data.user, matchStatus: "pending" };
 };
-export const cancelMatch = async (id, matchType, status, matchSignature, partnerID) => {
+export const cancelMatch = async (id, matchType, status, matchSignature, partnerID, hasActiveGame) => {
+  if (hasActiveGame) {
+    setToast({ state: "warning", text: "Before unmatching please end your current game." });
+    return;
+  }
   const matchesRef = collection(db, "matches");
   const mq = query(matchesRef, where("signature", "==", matchSignature), where("matchStatus", "==", matchType));
   const res = await getDocs(mq);
   const data = res.docs[0].data();
   const matchDocRef = doc(db, "matches", res.docs[0].id);
-
   await updateDoc(matchDocRef, { ...data, matchStatus: status });
   await removeMatchSignature(id, partnerID);
   setToast({ state: "success", text: "Done." });
   changeViewState(1);
-
   return;
 };
 
