@@ -46,3 +46,7 @@
   opacity: 0.5;
   position: absolute;
 }
+
+.invert{
+  filter: invert(100%);
+}

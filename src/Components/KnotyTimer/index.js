@@ -8,6 +8,7 @@ import StarsRating from "../StarsRating";
 import { changeViewState } from "../../Utils";
 import { setDoneGame } from "../../Redux/Utils";
 import ButtonLoader from "../ButtonLoader";
+import GamePoints from "../../GamePoints";
 const AcceptedStarted = ({ isAcceped, gameData, gameSignature }) => {
   const gameID = useSelector((state) => state.user.gameID);
 
@@ -103,55 +104,11 @@ const AcceptedStarted = ({ isAcceped, gameData, gameSignature }) => {
     </div>
   );
 };
-const GamePoints = ({ gameData, userID }) => {
-  const dispatch = useDispatch();
-  const [done, setDone] = useState(false);
-  const doneGame = useSelector((state) => state.user.doneGame);
 
-  useEffect(() => {
-    if (done) {
-      setDoneGame(dispatch, false);
-      changeViewState(4);
-    }
-  }, [done]);
-
-  if (!doneGame) {
-    return null;
-  }
-  return (
-    <div className="col-10 d-flex flex-column justify-content-start align-items-center startedGameOverlay m-auto shadow rounded rounded-3 animated">
-      <div className="bg-white" />
-      <div className="col-12 d-flex flex-column justify-content-between align-items-center timerContent bg-white h-100 rounded rounded-3">
-        <div className="col-12 d-flex flex-row justify-content-start align-items-center position-absolute">
-          <img src="/assets/icons/close.svg" height="18" width="18" className="m-2 pointer" onClick={() => setDone(true)} />
-        </div>
-        <div className="col-12 d-flex flex-column justify-content-center align-items-center mt-5 rounded">
-          <span className="fs-1 mt-3">You Received</span>
-          <div className="col-12 d-flex flex-row justify-content-center align-items-center">
-            <img src="/assets/icons/fullStar.svg" className="me-2" />
-            <span className="pointsEarned">{gameData.points}</span>
-            <img src="/assets/icons/fullStar.svg" className="ms-2" />
-          </div>
-          <span className="fs-1">Points</span>
-
-          <Button
-            sizeClass={"col-xxl-3 col-xl-3 col-lg-5 col-md-5 col-sm-6 col-6 pointer"}
-            handleClick={() => setDone(true)}
-            text="O.K"
-            key={"sdfnsdfdfuiif"}
-          />
-        </div>
-        <div className="col-12 d-flex flex-column justify-content-center align-items-center m-auto">
-          <span className="">My Card Rating</span>
-          <StarsRating currentCard={{ id: gameData.cardID }} userID={userID} key="sdfnsdjfnndfudf" />
-        </div>
-      </div>
-    </div>
-  );
-};
 const KnotyTimer = () => {
   window.history.pushState({ appState: "0" }, "pushManageStore", "");
   const hasActiveGame = useSelector((state) => state.user.hasActiveGame);
+  const doneGame = useSelector((state) => state.user.doneGame);
   const dispatch = useDispatch();
 
   const [isAcceped, setisAcceped] = useState(true);
@@ -170,9 +127,7 @@ const KnotyTimer = () => {
       });
     }
   }, [gameSignature, hasActiveGame]);
-  if (!hasActiveGame) {
-    changeViewState(0);
-  }
+  
   return (
     <div className="animated col-xxl-5 col-xl-5 col-lg-6 col-md-6 col-sm-11 col-11 d-flex flex-column flex-wrap m-auto justify-content-center align-items-center align-self-end profileContainer position-relative align-self-start">
       <span className="fs-3 mb-4">{gameData?.cardName}</span>

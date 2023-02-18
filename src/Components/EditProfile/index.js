@@ -48,6 +48,7 @@ const EditProfile = () => {
         setisReady(true);
         utils.setProfileFull(dispatch, userProfile.profileFull);
         utils.setHasPendingMatch(dispatch, userProfile.hasPendingMatch);
+        window.sessionStorage.setItem("sc",userProfile.secretCode)
         if (userProfile.hasOwnProperty("profile")) {
           const profile = userProfile?.profile;
           setUsername(profile?.username);

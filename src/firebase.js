@@ -622,21 +622,24 @@ const createNewGame = ({ gameSignature, duration, imageUrl, cardID, cardName, po
   };
   return payload;
 };
-export const checkCardsMatch = async (myCard, partnerCards, signature, userID, partnerID) => {
-  for (let cardA of myCard) {
+const returnSignale = async (signature, userID, myCards, partnerCards) => {
+  const userRef = doc(db, "users", userID);
+  const gamesRef = collection(db, "games");
+  const gameQuery = query(gamesRef, where("signature", "==", signature), where("status", "==", "start"));
+  const res = await getDocs(gameQuery);
+  if (!res.empty) {
+    console.log("have game already great!!!!");
+    return false;
+  }
+
+  for (let cardA of myCards) {
     for (let cardB of partnerCards) {
       if (cardA.isLiked && cardB.isLiked) {
         const cardID = cardA.card;
-        console.log("match fOUND")
-        const userRef = doc(db, "users", userID);
-        const partnerRef = doc(db, "users", partnerID);
-        const gamesRef = collection(db, "games");
         const cardsRef = query(collection(db, "cards"), where("id", "==", cardID));
         const gameSignature = signature;
-        const usersPayload = { hasActiveGame: true, gameSignature: gameSignature };
         const card = await getDocs(cardsRef);
         const cardData = card.docs[0].data();
-        console.log(cardData);
         const gamePayload = createNewGame({
           gameSignature: gameSignature,
           cardID: cardData.id,
@@ -645,9 +648,25 @@ export const checkCardsMatch = async (myCard, partnerCards, signature, userID, p
           cardName: cardData.name,
           points: cardData.points,
         });
-        const all = [updateDoc(userRef, usersPayload), updateDoc(partnerRef, usersPayload), addDoc(gamesRef, gamePayload)];
-        await Promise.all(all);
+        console.log(gamePayload);
+        return gamePayload;
       }
     }
   }
+};
+export const checkCardsMatch = async (myCard, partnerCards, signature, userID, partnerID) => {
+  const userRef = doc(db, "users", userID);
+  const gamesRef = collection(db, "games");
+  const usersPayload = { hasActiveGame: true, gameSignature: signature };
+  const partnerRef = doc(db, "users", partnerID);
+
+  // console.log(gamePayload);
+  returnSignale(signature, userID, myCard, partnerCards).then(async (res) => {
+    if (res) {
+      const all = [updateDoc(userRef, usersPayload), updateDoc(partnerRef, usersPayload), addDoc(gamesRef, res)];
+      await Promise.all(all);
+    }
+  });
+
+  return;
 };

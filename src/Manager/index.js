@@ -27,6 +27,7 @@ import {
   setAcceptedManual,
   setPartnerID,
   setGameID,
+  setDoneGame,
 } from "../Redux/Utils";
 import { changeViewState } from "../Utils";
 
@@ -63,19 +64,26 @@ const Manager = () => {
         const id = doc.id;
         const cardID = game.cardID;
         const points = game.points;
-
+        console.log("game", game);
         setGameID(dispatch, id);
+        if (status === "start") {
+          return;
+        }
         if (status === "canceled") {
           handleCanceledGame(cardID, interactedCards, partnerCards, userID, partnerID).then((res) => {
+            setGameID(dispatch, "");
+            setDoneGame(dispatch, false);
+            changeViewState(0);
           });
           return;
         }
         if (status === "done") {
-          handleFinishGame(interactedCards,partnerCards,cardID,userID,partnerID,points,userPoints,partnerPoints).then((res) => {
+          handleFinishGame(interactedCards, partnerCards, cardID, userID, partnerID, points, userPoints, partnerPoints).then((res) => {
+            setDoneGame(dispatch, true);
+            setGameID(dispatch, "");
           });
           return;
         }
-
       });
     };
     asyncFire();
@@ -86,22 +94,21 @@ const Manager = () => {
     };
   }, [hasActiveGame, gameSignature]);
   useEffect(() => {
-    console.log("gameSignature",gameSignature)
-    console.log("hasActiveGame",hasActiveGame)
-
-
+    let timeouter;
     if (hasActiveGame || gameSignature) {
-      console.log("check now")
-
       return;
     }
-    if (hasActivePartner && matchSignature && partnerID) {
-      console.log("check now")
-      checkCardsMatch(interactedCards, partnerCards, matchSignature, userID, partnerID);
-
+    if (hasActivePartner && matchSignature && partnerID && !gameSignature) {
+      timeouter = setTimeout(() => {
+        checkCardsMatch(interactedCards, partnerCards, matchSignature, userID, partnerID);
+      }, 2000);
       return;
     }
-  }, [interactedCards, partnerCards,gameSignature]);
+
+    return () => {
+      clearTimeout(timeouter);
+    };
+  }, [partnerCards]);
 
   useEffect(() => {
     let unsubscribe;
@@ -166,7 +173,6 @@ const Manager = () => {
       const acceptedManual = docData?.acceptedManual || false;
       const cards = docData.cards;
       const points = docData.points;
-      console.log(cards)
       setHasPendingMatch(dispatch, hasPendingMatchUpdate);
       setActivePartner(dispatch, hasActivePartner);
       setMatchSiganture(dispatch, matchSignature);

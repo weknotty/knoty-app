@@ -8,12 +8,21 @@ const DeleteAccount = () => {
   const [isReady, setisReady] = useState(false);
   const [deleteAccount, setdeleteAccount] = useState(false);
   const hasActiveGame = useSelector((state) => state.user.hasActiveGame);
+  useEffect(() => {
+    if (isReady) {
+      if (hasActiveGame) {
+        setToast({ state: "warning", text: "Before closing your account please, end your current game." });
+        setisReady(false);
+        return;
+      }
+    }
+  }, [isReady]);
 
   useEffect(() => {
     if (deleteAccount) {
       if (hasActiveGame) {
         setToast({ state: "warning", text: "Before closing your account please, end your current game." });
-        setdeleteAccount(false)
+        setdeleteAccount(false);
         return;
       }
       deleteAccountFromDB();
