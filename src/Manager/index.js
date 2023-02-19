@@ -64,7 +64,7 @@ const Manager = () => {
         const id = doc.id;
         const cardID = game.cardID;
         const points = game.points;
-        console.log("game", game);
+        // console.log("game", game);
         setGameID(dispatch, id);
         if (status === "start") {
           return;
@@ -93,16 +93,17 @@ const Manager = () => {
       }
     };
   }, [hasActiveGame, gameSignature]);
+
+
   useEffect(() => {
     let timeouter;
-    if (hasActiveGame || gameSignature) {
+    if (hasActiveGame || gameSignature || gameID) {
       return;
     }
     if (hasActivePartner && matchSignature && partnerID && !gameSignature) {
-      timeouter = setTimeout(() => {
-        checkCardsMatch(interactedCards, partnerCards, matchSignature, userID, partnerID);
-      }, 2000);
-      return;
+        checkCardsMatch(interactedCards, partnerCards, matchSignature, userID, partnerID).then((res)=>{
+          return;
+        })
     }
 
     return () => {
@@ -139,7 +140,6 @@ const Manager = () => {
     if ((!hasPendingMatch && !hasActivePartner) || !matchSignature) {
       return;
     }
-
     const unsubscribe = onSnapshot(FindMatch(matchSignature), async (doc) => {
       try {
         const docData = doc.docs[0].data();

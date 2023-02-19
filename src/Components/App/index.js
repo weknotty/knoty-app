@@ -85,6 +85,7 @@ const App = () => {
       window.removeEventListener("popstate", function (event) {}, false);
     };
   }, []);
+
   useEffect(() => {
     if (hasActiveGame) {
       changeViewState(8);
@@ -149,18 +150,8 @@ const App = () => {
 
   return (
     <div className="col-12 d-flex flex-column justify-content-between align-items-center  fullHeight">
-      {/* <div onClick={()=>updateUserStatus(userID, false).then(()=>null)} >CLICK</div> */}
       <TopBar />
       <View state={appState} />
-      {/* <EditProfile/>
-      <ChoosePartner/>
-      <ContactingPartner/>
-      <Feedback/>
-      <UserProfile/>
-      <CardsSelect/>
-      <UserManual/>
-             
-      <KnotyTimer/> */}
       <BottomBar />
     </div>
   );

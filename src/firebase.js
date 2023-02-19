@@ -249,7 +249,7 @@ export const checkPendingMatches = async (id, matchSignature) => {
 };
 export const cancelMatch = async (id, matchType, status, matchSignature, partnerID, hasActiveGame) => {
   if (hasActiveGame) {
-    console.log("hasActiveGame",hasActiveGame)
+    console.log("hasActiveGame", hasActiveGame);
     setToast({ state: "warning", text: "Before unmatching please end your current game." });
     return;
   }
@@ -428,15 +428,17 @@ export const setCardLiked = async (id, data, cardSource, cardsCategory, isLike) 
       rating: 0,
       category: cardsCategory,
       isLiked: isLike,
+      cardOwner: id,
     };
   }
   if (item != false) {
     payload = {
       ...item[0],
       isLiked: isLike,
+      cardOwner: id,
     };
   }
-
+  console.log("payload", payload);
   const total = [...filtered, payload];
   await updateDoc(ref, { cards: total }).catch((err) => console.log(err));
   return;
@@ -636,9 +638,14 @@ const returnSignale = async (signature, userID, myCards, partnerCards) => {
   }
 
   for (let cardA of myCards) {
+    if (!cardA.hasOwnProperty("cardOwner")) {
+      return;
+    }
+
     for (let cardB of partnerCards) {
       if (cardA.isLiked && cardB.isLiked) {
         const cardID = cardA.card;
+        console.log("Card owner", cardA.cardOwner);
         const cardsRef = query(collection(db, "cards"), where("id", "==", cardID));
         const gameSignature = signature;
         const card = await getDocs(cardsRef);
@@ -652,7 +659,7 @@ const returnSignale = async (signature, userID, myCards, partnerCards) => {
           points: cardData.points,
         });
         console.log(gamePayload);
-        return gamePayload;
+        return { gamePayload, owner: cardA.cardOwner };
       }
     }
   }
@@ -666,8 +673,13 @@ export const checkCardsMatch = async (myCard, partnerCards, signature, userID, p
   // console.log(gamePayload);
   returnSignale(signature, userID, myCard, partnerCards).then(async (res) => {
     if (res) {
-      const all = [updateDoc(userRef, usersPayload), updateDoc(partnerRef, usersPayload), addDoc(gamesRef, res)];
-      await Promise.all(all);
+
+      const target = res.owner;
+      if (userID === target) {
+        const all = [updateDoc(userRef, usersPayload), updateDoc(partnerRef, usersPayload), addDoc(gamesRef, res.gamePayload)];
+        await Promise.all(all);
+        return;
+      }
     }
   });
 
