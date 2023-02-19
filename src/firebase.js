@@ -249,6 +249,7 @@ export const checkPendingMatches = async (id, matchSignature) => {
 };
 export const cancelMatch = async (id, matchType, status, matchSignature, partnerID, hasActiveGame) => {
   if (hasActiveGame) {
+    console.log("hasActiveGame",hasActiveGame)
     setToast({ state: "warning", text: "Before unmatching please end your current game." });
     return;
   }

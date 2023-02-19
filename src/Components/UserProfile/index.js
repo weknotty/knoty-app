@@ -6,6 +6,7 @@ import ButtonLoader from "../ButtonLoader";
 import "./UserProfile.css";
 const ProfileButton = ({ isLocal, isCurrentMatch, matchSignature, setchangeUser, userID, partnerID }) => {
   const hasActiveGame = useSelector((state) => state.user.hasActiveGame);
+  console.log(hasActiveGame);
   if (isLocal) {
     return (
       <div className="col-12 d-flex flex-column justify-content-center align-items-center">
@@ -36,7 +37,7 @@ const ProfileButton = ({ isLocal, isCurrentMatch, matchSignature, setchangeUser,
           <img src="/assets/icons/switch.svg" height="18" width="18" />
         </div>
         <div
-          onClick={() => cancelMatch(userID, "approved", "done", matchSignature, userID, partnerID,hasActiveGame)}
+          onClick={() => cancelMatch(userID, "approved", "done", matchSignature, partnerID, hasActiveGame)}
           className="col-10 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill  mt-3 p-2 mb-3 midFont pointer"
         >
           END CONNECTION
@@ -68,6 +69,7 @@ const UserProfile = () => {
   const partnerID = useSelector((state) => state.user.partnerID);
   const userID = useSelector((state) => state.user.userID);
   const matchSignature = useSelector((state) => state.user.matchSignature);
+
   const [user, setUser] = useState({});
   const [changeUser, setchangeUser] = useState(false);
   const [isCurrentMatch, setIsCurrentMatch] = useState(false);
@@ -75,7 +77,6 @@ const UserProfile = () => {
 
   useEffect(() => {
     getUserProfile(changeUser ? userID : partnerID).then((res) => {
-      
       if (!res) {
         setisLocal(true);
         return;
@@ -83,9 +84,9 @@ const UserProfile = () => {
       if (res.matchSignature == matchSignature) {
         setIsCurrentMatch(true);
       }
-      if((res.matchSignature != matchSignature) || changeUser){
+      if (res.matchSignature != matchSignature || changeUser) {
         setIsCurrentMatch(false);
-
+        setisLocal(true)
       }
       setUser(res);
     });

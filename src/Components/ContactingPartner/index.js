@@ -16,6 +16,7 @@ const ContactingPartner = () => {
   const partnerImage = useSelector((state) => state.user.partnerImage);
   const secretCode = useSelector((state) => state.user.secretCode);
   const pendingMatchStatus = useSelector((state) => state.user.pendingMatchStatus);
+  const hasActiveGame = useSelector((state) => state.user.hasActiveGame);
   const [submit, setSubmit] = useState(false);
 
   const onApproveMatch = () => {
@@ -58,6 +59,7 @@ const ContactingPartner = () => {
         matchSignature={matchSignature}
         partnerID={partnerID}
         userID={userID}
+        hasActiveGame={hasActiveGame}
       />
 
       <span onClick={() => changeViewState(0)} className="smFont mt-2 w-5 text-decoration-underline">

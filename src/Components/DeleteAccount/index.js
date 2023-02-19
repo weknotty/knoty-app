@@ -8,10 +8,17 @@ const DeleteAccount = () => {
   const [isReady, setisReady] = useState(false);
   const [deleteAccount, setdeleteAccount] = useState(false);
   const hasActiveGame = useSelector((state) => state.user.hasActiveGame);
+  const hasActivePartner = useSelector((state) => state.user.hasActivePartner);
+
   useEffect(() => {
     if (isReady) {
       if (hasActiveGame) {
-        setToast({ state: "warning", text: "Before closing your account please, end your current game." });
+        setToast({ state: "warning", text: "Before closing your account please end your current game." });
+        setisReady(false);
+        return;
+      }
+      if (hasActivePartner) {
+        setToast({ state: "warning", text: "Before closing your account please unmatch from your friend." });
         setisReady(false);
         return;
       }

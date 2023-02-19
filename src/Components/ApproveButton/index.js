@@ -2,7 +2,7 @@ import { cancelMatch } from "../../firebase";
 import { changeViewState } from "../../Utils";
 import ButtonLoader from "../ButtonLoader";
 
- const ApproveButton = ({ status, onApproveMatch, submit, userID, matchSignature, partnerID }) => {
+ const ApproveButton = ({ status, onApproveMatch, submit, userID, matchSignature, partnerID,hasActiveGame }) => {
     if (submit) {
       return <ButtonLoader state={true} />;
     }
@@ -48,7 +48,7 @@ import ButtonLoader from "../ButtonLoader";
           </div>
   
           <div
-            onClick={() => cancelMatch(userID, "pending", "rejected", matchSignature, partnerID)}
+            onClick={() => cancelMatch(userID, "pending", "rejected", matchSignature, partnerID,hasActiveGame)}
             className="col-10 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill  mt-3 p-2 mb-1 midFont pointer"
           >
             CANCEL REQUEST
