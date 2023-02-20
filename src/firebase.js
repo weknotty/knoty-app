@@ -629,7 +629,6 @@ const createNewGame = ({ gameSignature, duration, imageUrl, cardID, cardName, po
   return payload;
 };
 const returnSignale = async (signature, userID, myCards, partnerCards) => {
-  const userRef = doc(db, "users", userID);
   const gamesRef = collection(db, "games");
   const gameQuery = query(gamesRef, where("signature", "==", signature), where("status", "==", "start"));
   const res = await getDocs(gameQuery);
