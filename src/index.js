@@ -5,7 +5,7 @@ import "./colors.css";
 import "./text.css";
 
 import App from "./App";
-import { Provider, useDispatch } from "react-redux";
+import { Provider} from "react-redux";
 import store from "./Redux/Store";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
