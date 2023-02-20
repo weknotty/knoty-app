@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { collection, query, where, getFirestore, getDocs, doc, getDoc, setDoc, addDoc, deleteDoc, updateDoc, onSnapshot, writeBatch } from "firebase/firestore";
+
+import { collection, query, where, getFirestore, getDocs, doc, getDoc, setDoc, addDoc, deleteDoc, updateDoc} from "firebase/firestore";
 import { getStorage, ref, uploadBytes } from "firebase/storage";
 
 import {
@@ -17,16 +18,16 @@ import {
 import { logEvent } from "firebase/analytics";
 import { getAnalytics } from "firebase/analytics";
 import { v4 } from "uuid";
-import { setDoneGame, setIsUserActive, setProfileImageUrl, setShowFeedbackPopup, setUserProfileData } from "./Redux/Utils";
+import {setProfileImageUrl, setShowFeedbackPopup} from "./Redux/Utils";
 import { changeViewState, generateCode, setToast } from "./Utils";
 const firebaseConfig = {
-  apiKey: "AIzaSyBQnnl1a0XyOI60fxD0ZxLh4ITt8OkrcO4",
-  authDomain: "knoty-8cb40.firebaseapp.com",
-  projectId: "knoty-8cb40",
-  storageBucket: "knoty-8cb40.appspot.com",
-  messagingSenderId: "650572781542",
-  appId: "1:650572781542:web:558f4aa7c74afabc712827",
-  measurementId: "G-Y51TQDE2XH",
+  apiKey: process.env.REACT_APP_apiKey,
+  authDomain:process.env.REACT_APP_authDomain,
+  projectId:process.env.REACT_APP_projectId,
+  storageBucket:process.env.REACT_APP_storageBucket,
+  messagingSenderId:process.env.REACT_APP_messagingSenderId,
+  appId:process.env.REACT_APP_appId,
+  measurementId: process.env.REACT_APP_measurementId,
 };
 
 // Initialize Firebase

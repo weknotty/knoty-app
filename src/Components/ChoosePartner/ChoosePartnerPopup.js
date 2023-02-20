@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createNewMatch, findMatchByCode } from "../../firebase";
+import {findMatchByCode } from "../../firebase";
 import { setPartnerImage, setPendingMatchStatus, setSecretCode } from "../../Redux/Utils";
-import { changeViewState, handleInvitePartner, setToast } from "../../Utils";
+import { changeViewState, setToast } from "../../Utils";
 import "./ChoosePartner.css";
 
 const ChoosePartnerPopup = ({ setShowPopup }) => {
@@ -14,14 +14,17 @@ const ChoosePartnerPopup = ({ setShowPopup }) => {
 
   const dispatch = useDispatch();
 
+
+  // invitation code
   useEffect(()=>{
-      
       const item = window.sessionStorage.getItem("codeTemp");
       if(item){
         setSecretCodeLocal(item);
         window.sessionStorage.removeItem("codeTemp");
       }
   },[])
+
+  // code handler
   useEffect(() => {
     if (submit) {
       if (secretCode.length < 6) {

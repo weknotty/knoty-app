@@ -15,8 +15,6 @@ import DeleteAccount from "../DeleteAccount";
 const EditProfile = () => {
   // set location
   window.history.pushState({ appState: "0" }, "pushManageStore", "");
-  const status = useSelector((state) => state.user);
-
   const [username, setUsername] = useState("");
   const [about, setAbout] = useState("");
   const [gender, setGender] = useState("");
@@ -30,7 +28,6 @@ const EditProfile = () => {
   const [points, setPoints] = useState("");
   const userID = useSelector((state) => state.user.userID);
   const hasPendingMatch = useSelector((state) => state.user.hasPendingMatch);
-  const hasActivePartner = useSelector((state) => state.user.hasActivePartner);
   const profileFull = useSelector((state) => state.user.profileFull);
 
   const dispatch = useDispatch();
@@ -39,6 +36,7 @@ const EditProfile = () => {
     setToast({ state: "warning", text: value });
     return;
   };
+  
   useEffect(() => {
     if(userID){
       getUserProfile(userID).then((userProfile) => {

@@ -1,4 +1,4 @@
-import { uploadProfileImage } from "../firebase";
+import { setPageView, uploadProfileImage } from "../firebase";
 import { setProfileImageUrl } from "../Redux/Utils";
 
 export const changeViewState = (value) => {
@@ -110,16 +110,66 @@ export const handleInvitePartner = (phone, secretCode) => {
   a.click();
 };
 
-export const handleAgeInput = (value,setAge) => {
+export const handleAgeInput = (value, setAge) => {
   let newVal = value.replace(/[^0-9.]/g, "");
-  if(newVal > 90){
-    setToast({state:"warning",text:"Maxmimum age is 90."})
-    return
+  if (newVal > 90) {
+    setToast({ state: "warning", text: "Maxmimum age is 90." });
+    return;
   }
-  if(newVal <=10){
+  if (newVal <= 10) {
     newVal = value.replace(value, "");
-    return
+    return;
   }
-  setAge(newVal)
+  setAge(newVal);
   return newVal;
+};
+
+export const pathObject = {
+  myProfile: {
+    page_path: "/myProfile",
+    page_title: "myProfile",
+    page_location: "",
+  },
+  choosePartner: { page_location: "", page_path: "/partners", page_title: "partners" },
+  contactingPartner: { page_location: "", page_path: "/contactPartner", page_title: "contactPartner" },
+  feedback: { page_location: "", page_path: "/feedback", page_title: "feedback" },
+  cardCategories: { page_location: "", page_path: "/cardCategories", page_title: "cardCategories" },
+  partnerProfile: { page_location: "", page_path: "/partnerProfile", page_title: "partnerProfile" },
+  userManual: { page_location: "", page_path: "/userManual", page_title: "userManual" },
+  specificCard: { page_location: "", page_path: "/card", page_title: "card" },
+  gameTimer: { page_location: "", page_path: "/getKnoty", page_title: "getKnoty" },
+  favorites: { page_location: "", page_path: "/favorites", page_title: "favorites" },
+};
+
+export const handleAnalyticsPath = (target) => {
+  if (target === 0) {
+    setPageView(pathObject.myProfile);
+  }
+  if (target === 1) {
+    setPageView(pathObject.choosePartner);
+  }
+  if (target === 2) {
+    setPageView(pathObject.contactingPartner);
+  }
+  if (target === 3) {
+    setPageView(pathObject.feedback);
+  }
+  if (target === 4) {
+    setPageView(pathObject.cardCategories);
+  }
+  if (target === 5) {
+    setPageView(pathObject.partnerProfile);
+  }
+  if (target === 6) {
+    setPageView(pathObject.userManual);
+  }
+  if (target === 7) {
+    setPageView(pathObject.specificCard);
+  }
+  if (target === 8) {
+    setPageView(pathObject.gameTimer);
+  }
+  if (target === 9) {
+    setPageView(pathObject.favorites);
+  }
 };

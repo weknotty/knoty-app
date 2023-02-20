@@ -1,5 +1,4 @@
 import { changeViewState } from "../../Utils";
-import { v4 } from "uuid";
 import "./CardsSelect.css";
 import { useEffect, useState } from "react";
 import { setCardsCategory, setCardsList } from "../../Redux/Utils";

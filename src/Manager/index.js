@@ -47,6 +47,7 @@ const Manager = () => {
   const [userPoints, setuserPoints] = useState(0);
   const [partnerPoints, setPartnersPoints] = useState(0);
 
+  // listen to changes on game object on DB
   useEffect(() => {
     let unsubscribe;
 
@@ -94,16 +95,16 @@ const Manager = () => {
     };
   }, [hasActiveGame, gameSignature]);
 
-
+  // check card matches
   useEffect(() => {
     let timeouter;
     if (hasActiveGame || gameSignature || gameID) {
       return;
     }
     if (hasActivePartner && matchSignature && partnerID && !gameSignature) {
-        checkCardsMatch(interactedCards, partnerCards, matchSignature, userID, partnerID).then((res)=>{
-          return;
-        })
+      checkCardsMatch(interactedCards, partnerCards, matchSignature, userID, partnerID).then((res) => {
+        return;
+      });
     }
 
     return () => {
@@ -111,6 +112,7 @@ const Manager = () => {
     };
   }, [partnerCards]);
 
+  // listen to changes on parnter object on DB
   useEffect(() => {
     let unsubscribe;
     if (hasActivePartner && matchSignature) {
@@ -136,6 +138,7 @@ const Manager = () => {
     };
   }, [hasActivePartner, matchSignature]);
 
+  // listen to changes on match object on DB
   useEffect(() => {
     if ((!hasPendingMatch && !hasActivePartner) || !matchSignature) {
       return;
@@ -159,6 +162,7 @@ const Manager = () => {
     };
   }, [hasPendingMatch, hasActivePartner, matchSignature]);
 
+  // listen to changes on user object on DB
   useEffect(() => {
     if (!profileFull) {
       return;
@@ -187,6 +191,7 @@ const Manager = () => {
     };
   }, [profileFull]);
 
+  // check pending matches while there is no ongoing connection
   useEffect(() => {
     if (matchSignature && !hasActivePartner) {
       checkPendingMatches(userID, matchSignature).then((res) => {
