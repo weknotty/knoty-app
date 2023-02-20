@@ -12,6 +12,7 @@ const InvitePopup = () => {
         setsecretCode(item);
       }
     }, []);
+
     if (!inviteMode) {
       return (
         <div className="col-12 d-flex flex-column justify-content-center align-items-center m-2 ">
