@@ -14,7 +14,7 @@ const Card = ({ userID, currentCard, setNextCard }) => {
   }
   return (
     <div className="col-12 d-flex flex-column justify-content-center align-items-center m-auto specificCard">
-      <span className="fs-3 mb-4">{currentCard.name}</span>
+      <span className="fs-3">{currentCard.name}</span>
 
       <div className=" col-auto m-auto d-flex flex-column justify-content-between align-items-center cardBorder m-2  rounded-3 specificCardContainer animated">
         <img src={currentCard.imageUrl} className="cardImg m-1 col-11 mt-3 rounded" onClick={() => setNextCard(true)} />
@@ -116,7 +116,7 @@ const SpecificCard = () => {
   }, [swipedLeft, swipedRight]);
 
   return (
-    <div className="animated col-xxl-5 col-xl-5 col-lg-6 col-md-6 col-sm-11 col-11 d-flex flex-column justify-content-center align-items-center profileContainer position-relative">
+    <div className="animated col-xxl-5 col-xl-5 col-lg-6 col-md-6 col-sm-11 col-11 d-flex flex-column justify-content-start align-items-center profileContainer position-relative">
       <div className="col-12 d-flex flex-row justify-content-center align-items-center" id="containerus" {...swipeHanlder}>
         <Card userID={userID} currentCard={currentCard} setNextCard={setNextCard} />
       </div>

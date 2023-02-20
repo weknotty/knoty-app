@@ -117,7 +117,7 @@ const UserProfile = () => {
         </div>
         <div className="col d-flex flex-column justify-content-center align-items-center">
           <span className="col-12 text-start w-5">interested in:</span>
-          <span className="col-12 text-start midFont">{user.profile.interstedIn}</span>
+          <span className="col-12 text-start midFont">{user.profile.interestedIn}</span>
         </div>
       </div>
       <div className="col-12 d-flex flex-column justify-content-start align-items-center mt-3">

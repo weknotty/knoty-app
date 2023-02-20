@@ -51,6 +51,7 @@ export const handleFieldValidation = (value, validator, toastMessage, setValue) 
 export const setToast = ({ state, text }) => {
   const ev = new CustomEvent("setToast", { detail: { state, text } });
   document.dispatchEvent(ev);
+  window.scrollTo(0, 0);
   return;
 };
 

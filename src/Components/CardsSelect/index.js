@@ -45,7 +45,7 @@ const CardsSelect = () => {
       <div className="h-100 col-xxl-5 col-xl-5 col-lg-6 col-md-6 col-sm-11 col-11 d-flex flex-row flex-wrap justify-content-center align-items-center   position-relative">
         <div className="col-12 d-flex flex-row justify-content-center align-items-center position-relative">
           <img src="/assets/icons/question.svg" height="25" width="25" className="position-absolute start-0 ms-2" />
-          <span className="fs-3 mt-5 mb-5 align-self-end">Category selection</span>
+          <span className="fs-3  align-self-end">Category selection</span>
         </div>
 
         {categories.map((el) => {
