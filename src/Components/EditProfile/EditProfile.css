@@ -2,6 +2,7 @@
   height: 150px;
   width: 150px;
   border-radius: 50%;
+  object-fit: cover;
 }
 .example-enter {
   opacity: 0.01;
@@ -47,28 +48,26 @@
   }
 } */
 
-.animatedSquare{
-  height:150px;
-  width:150px;
+.animatedSquare {
+  height: 150px;
+  width: 150px;
   background-color: rgba(128, 128, 128, 0.267);
   border-radius: 15px;
   opacity: 1;
   animation: blink 1.5s ease-in-out infinite;
 }
 
-@keyframes blink{
-  0%{
+@keyframes blink {
+  0% {
     opacity: 0;
   }
-  50%{
+  50% {
     opacity: 1;
   }
-  75%{
+  75% {
     opacity: 0.5;
-
   }
-  100%{
+  100% {
     opacity: 0;
-
   }
 }
