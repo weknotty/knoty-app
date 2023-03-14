@@ -8,12 +8,11 @@ const PreviewImage = () => {
   const dispatch = useDispatch();
   const userID = useSelector((state) => state.user.userID);
   const profileImageUrl = useSelector((state) => state.user.profileImageUrl) || "/assets/images/logoUpload.png";
-
+  const hasActivePartner = useSelector((state) => state.user.hasActivePartner);
   const [isUploading, setsetIsUploading] = useState(false);
-
   return (
     <div className="col-auto d-flex flex-column justify-content-center align-items-center position-relative userProfileContainer">
-      <MatchName key={"sdklnosasddfiosofno"} loading={false} />
+      {hasActivePartner ? <MatchName key={"sdklnosasddfiosofno"} loading={false} /> : null}
       {isUploading ? (
         <ButtonLoader state={true} className="thumbHolder m-3" />
       ) : (

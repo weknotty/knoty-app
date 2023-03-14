@@ -12,7 +12,7 @@ const TopBar = () => {
       <div className="col-xxl-3 col-xl-5 col-lg-6 col-md-6 col-sm-11 col-11 d-flex flex-row justify-content-center align-items-center ">
         <div className="col d-flex flex-column justify-content-between align-items-center">
           <div className="position-relative col d-flex flex-column justify-content-center align-items-center pointer" onClick={() => changeViewState(0)}>
-            {partnerImage ? <img src={partnerImage} className="profileSm" /> : <span className="bg-light rounded rounded-circle profileSm"></span>}
+            {partnerImage && hasActivePartner ? <img src={partnerImage} className="profileSm" /> : <span className="bg-light rounded rounded-circle profileSm"></span>}
             <span className="indicator position-absolute"></span>
           </div>
           

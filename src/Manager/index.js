@@ -121,19 +121,24 @@ const Manager = () => {
         const partnerRef = await FindMatchPartner(matchSignature);
         unsubscribe = onSnapshot(partnerRef, async (doc) => {
           const partner = doc.data();
+          console.log("hereeeeeee")
           // console.log("partner",partner)
           const partnercards = partner.cards;
+          const idLocal = doc.id
+          console.log("idLocal", idLocal);
 
+          console.log("partner", partner);
           if (hasActivePartner) {
             setPartnerImage(dispatch, partner.profileImageUrl);
-            setPartnersCards(partnercards);
-            setPartnersPoints(partner.points);
           }
-
-          setPartnerID(dispatch, doc.id);
+          setPartnerID(dispatch, idLocal);
+          setPartnersCards(partnercards);
+          setPartnersPoints(partner.points);
         });
       };
       asyncFire();
+    } else {
+      setPartnerImage(dispatch, "");
     }
 
     return () => {
@@ -142,7 +147,7 @@ const Manager = () => {
       }
     };
   }, [hasActivePartner, matchSignature]);
-
+  
   // listen to changes on match object on DB
   useEffect(() => {
     if ((!hasPendingMatch && !hasActivePartner) || !matchSignature) {
@@ -154,6 +159,7 @@ const Manager = () => {
         if (docData.matchStatus == "rejected" || docData.matchStatus == "done") {
           await turnOffPendingMatch(userID, docData.partner.id);
           await turnOffActivePartner(userID, docData.partner.id);
+          setPartnerImage(dispatch, "");
         }
         if (docData.matchStatus == "approved") {
           await turnOnActivePartner(userID, docData.partner.id);
@@ -212,6 +218,8 @@ const Manager = () => {
         setPendingMatchStatus(dispatch, res.matchStatus);
       });
     }
+
+
   }, [matchSignature]);
 
   return null;

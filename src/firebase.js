@@ -331,6 +331,7 @@ export const FindMatchPartner = async (matchSignature) => {
       return el;
     }
   });
+  console.log("item",item,)
   if (item == false) {
     return false;
   }
@@ -379,7 +380,7 @@ export const getMatchesList = async (userID) => {
   const result = await Promise.all(all);
   const parsed = result.map((el) => {
     console.log(el.data());
-    return { ...el.data() };
+    return { ...el.data(),id:el.id };
   });
   return parsed;
 };
