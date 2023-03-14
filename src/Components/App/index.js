@@ -87,10 +87,17 @@ const App = () => {
   }, []);
 
   useEffect(() => {
+    let timeout;
     if (hasActiveGame) {
-      changeViewState(8);
-      return;
+      timeout = setTimeout(() => {
+        changeViewState(8);
+        clearTimeout(timeout);
+        return;
+      }, 1500);
     }
+    return () => {
+      clearTimeout(timeout);
+    };
   }, [hasActiveGame]);
 
   //

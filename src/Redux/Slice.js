@@ -26,6 +26,7 @@ export const userSlice = createSlice({
     username:"",
     showInviteButton:false,
     gameID:"",
+    points:""
 
   },
   reducers: {
@@ -98,6 +99,9 @@ export const userSlice = createSlice({
     setGameID: (state, action) => {
       state.gameID = action.payload;
     },
+    setPoints: (state, action) => {
+      state.points = action.payload;
+    },
   },
 });
 
@@ -124,7 +128,8 @@ export const {
   setDoneGame,
   setShowFeedbackPopup,
   setUsername,
-  setGameID
+  setGameID,
+  setPoints
 } = userSlice.actions;
 
 // this is for configureStore

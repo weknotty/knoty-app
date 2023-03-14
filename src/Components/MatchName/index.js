@@ -1,11 +1,11 @@
-import {useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { changeViewState } from "../../Utils";
+import ButtonLoader from "../ButtonLoader";
 import "./MatchName.css";
-const MatchName = () => {
-  const partnerImage = useSelector((state) => state.user.partnerImage);
+const MatchName = ({ loading }) => {
   const hasActivePartner = useSelector((state) => state.user.hasActivePartner);
-
-  if (!hasActivePartner) {
+  const partnerImage = useSelector((state) => state.user.partnerImage);
+  if (!partnerImage) {
     return null;
   }
   return (
@@ -13,7 +13,7 @@ const MatchName = () => {
       className="d-flex flex-column justify-content-center  align-items-center smFont text-center  m-1 pointer  matchNameContainer"
       onClick={() => changeViewState(5)}
     >
-      <img src={partnerImage} height="50" width="50" className="mt-1 " />
+      {loading ? <ButtonLoader state={true} className="" /> : <img src={partnerImage} height="50" width="50" className="mt-1 " />}
     </div>
   );
 };

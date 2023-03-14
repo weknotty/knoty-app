@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { createRef, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { handleNewEntry, loginWithEmail, loginWithGoogle } from "../../firebase";
 import { setToast, validateEmail, validatePassword } from "../../Utils";
@@ -9,20 +9,26 @@ const UserLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submit, setSubmit] = useState(false);
-  const dispatch = useDispatch();
+  const passwordRef = createRef();
+  const userRef = createRef();
 
   useEffect(() => {
     if (submit) {
       const isEmailOK = validateEmail(email);
       const isPasswordOK = validatePassword(password);
-      console.log(email);
       if (!email || !isEmailOK) {
         setToast({ state: "failed", text: "Please enter correct email." });
         setSubmit(false);
+        userRef.current.classList.add("border-danger","border-5");
+        userRef.current.classList.remove("border-0");
         return;
       }
       if (!password || !isPasswordOK) {
         setToast({ state: "failed", text: "Password is required." });
+        passwordRef.current.classList.add("border-danger","border-5");
+        passwordRef.current.classList.remove("border-0");
+
+        console.log(passwordRef)
         setSubmit(false);
         return;
       }
@@ -48,13 +54,14 @@ const UserLogin = () => {
         <img src="/assets/icons/logo.svg" height="200" width="200" />
         <span className="col-10 mb-4 fs-3">User Login</span>
         <div className="col-10 d-flex flex-column justify-content-center align-items-center">
-          <input type="text" onChange={(e) => setEmail(e.target.value)} value={email} className="form-control rounded-1 greyBtn" placeholder="EMAIL *" />
+          <input type="text" onChange={(e) => setEmail(e.target.value)} value={email} className="form-control rounded-1 greyBtn" placeholder="EMAIL *" ref={userRef} />
           <Password
             customValidation={validatePassword}
             message="Password should have minimum 6 characters."
             placeholder="PASSWORD *"
             setvalue={setPassword}
             value={password}
+            currentRef={passwordRef}
           />
           <a href="/forgotpass" className="text-white align-self-start mt-3">
             Forgot Password

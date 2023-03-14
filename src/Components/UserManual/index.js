@@ -24,7 +24,7 @@ const UserManual = () => {
           </div>
           <div className="col d-flex flex-column justify-content-center align-items-center">
             <img src="/assets/icons/arrow.svg" height="25" width="25" style={{ transform: "rotate(180deg)" }} />
-            <span className="text-center">Swipe left to skip to the next card</span>
+            <span className="text-center">Swipe right to skip to the next card</span>
           </div>
         </div>
         <span className="text-center mt-5">Additional text for explanation. Additional text for explanation. Additional text for explanation.</span>

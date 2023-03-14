@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 
-import { collection, query, where, getFirestore, getDocs, doc, getDoc, setDoc, addDoc, deleteDoc, updateDoc} from "firebase/firestore";
+import { collection, query, where, getFirestore, getDocs, doc, getDoc, setDoc, addDoc, deleteDoc, updateDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes } from "firebase/storage";
 
 import {
@@ -18,15 +18,15 @@ import {
 import { logEvent } from "firebase/analytics";
 import { getAnalytics } from "firebase/analytics";
 import { v4 } from "uuid";
-import {setProfileImageUrl, setShowFeedbackPopup} from "./Redux/Utils";
+import { setProfileImageUrl, setShowFeedbackPopup } from "./Redux/Utils";
 import { changeViewState, generateCode, setToast } from "./Utils";
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_apiKey,
-  authDomain:process.env.REACT_APP_authDomain,
-  projectId:process.env.REACT_APP_projectId,
-  storageBucket:process.env.REACT_APP_storageBucket,
-  messagingSenderId:process.env.REACT_APP_messagingSenderId,
-  appId:process.env.REACT_APP_appId,
+  authDomain: process.env.REACT_APP_authDomain,
+  projectId: process.env.REACT_APP_projectId,
+  storageBucket: process.env.REACT_APP_storageBucket,
+  messagingSenderId: process.env.REACT_APP_messagingSenderId,
+  appId: process.env.REACT_APP_appId,
   measurementId: process.env.REACT_APP_measurementId,
 };
 
@@ -249,21 +249,26 @@ export const checkPendingMatches = async (id, matchSignature) => {
   return { ...data.user, matchStatus: "pending" };
 };
 export const cancelMatch = async (id, matchType, status, matchSignature, partnerID, hasActiveGame) => {
-  if (hasActiveGame) {
-    console.log("hasActiveGame", hasActiveGame);
-    setToast({ state: "warning", text: "Before unmatching please end your current game." });
+  try {
+    if (hasActiveGame) {
+      console.log("hasActiveGame", hasActiveGame);
+      setToast({ state: "warning", text: "Before unmatching please end your current game." });
+      return;
+    }
+    const matchesRef = collection(db, "matches");
+    const mq = query(matchesRef, where("signature", "==", matchSignature), where("matchStatus", "==", matchType));
+    const res = await getDocs(mq);
+    const data = res.docs[0].data();
+    const matchDocRef = doc(db, "matches", res.docs[0].id);
+    await updateDoc(matchDocRef, { ...data, matchStatus: status });
+    await removeMatchSignature(id, partnerID);
+    setToast({ state: "success", text: "Done." });
+    changeViewState(1);
+    return;
+  } catch (err) {
+    changeViewState(0);
     return;
   }
-  const matchesRef = collection(db, "matches");
-  const mq = query(matchesRef, where("signature", "==", matchSignature), where("matchStatus", "==", matchType));
-  const res = await getDocs(mq);
-  const data = res.docs[0].data();
-  const matchDocRef = doc(db, "matches", res.docs[0].id);
-  await updateDoc(matchDocRef, { ...data, matchStatus: status });
-  await removeMatchSignature(id, partnerID);
-  setToast({ state: "success", text: "Done." });
-  changeViewState(1);
-  return;
 };
 
 export const turnOffPendingMatch = async (id, partnerID) => {
@@ -366,7 +371,17 @@ export const getMatchesList = async (userID) => {
     return { ...elem.user, userID: el.id, partnerID: elem.userID };
   });
   const maybe = mapped.filter((v, i, a) => a.findIndex((v2) => v2.partnerID === v.partnerID) === i);
-  return maybe;
+
+  const all = maybe.map((el) => {
+    const ref = doc(db, "users", el.partnerID);
+    return getDoc(ref);
+  });
+  const result = await Promise.all(all);
+  const parsed = result.map((el) => {
+    console.log(el.data());
+    return { ...el.data() };
+  });
+  return parsed;
 };
 
 export const getCategories = async () => {
@@ -455,25 +470,35 @@ export const getGameData = async (signature) => {
   return data.docs[0].data();
 };
 export const handleCanceledGame = async (cardID, userCards, partnerCards, userID, partnerID) => {
-  const mappedCardsA = userCards.map((els) => {
-    if (els.card == cardID) {
-      // console.log(els);
-      return { ...els, isLiked: false };
-    }
-    return els;
-  });
-  const mappedCardsB = partnerCards.map((els) => {
-    if (els.card == cardID) {
-      return { ...els, isLiked: false };
-    }
-    return els;
-  });
-  const all = [updateProfileCards(userID, mappedCardsA), updateProfileCards(partnerID, mappedCardsB), removeGameTrailes(userID, partnerID)];
-  await Promise.all(all);
+  try {
+    const mappedCardsA = userCards.map((els) => {
+      if (els.card == cardID) {
+        // console.log(els);
+        return { ...els, isLiked: false };
+      }
+      return els;
+    });
+    const mappedCardsB = partnerCards.map((els) => {
+      if (els.card == cardID) {
+        return { ...els, isLiked: false };
+      }
+      return els;
+    });
+    const all = [updateProfileCards(userID, mappedCardsA), updateProfileCards(partnerID, mappedCardsB), removeGameTrailes(userID, partnerID)];
+    await Promise.all(all);
+  } catch (err) {
+    changeViewState(0);
+    return;
+  }
 };
 export const cancelGame = async (gameID) => {
-  const gameRef = doc(db, "games", gameID);
-  await updateDoc(gameRef, { status: "canceled" });
+  try {
+    const gameRef = doc(db, "games", gameID);
+    await updateDoc(gameRef, { status: "canceled" });
+  } catch (err) {
+    changeViewState(0);
+    return;
+  }
 };
 
 export const removeGameTrailes = async (id, partnerID) => {
@@ -608,8 +633,10 @@ export const setNewCategoryClick = ({ category, categoryID, userID }) => {
   logEvent(analytics, "categoryClick", { category, categoryID, userID });
 };
 
-export const deleteAccountFromDB = async () => {
+export const deleteAccountFromDB = async (matchSignature, partnerID, hasActiveGame) => {
   const ref = doc(db, "users", auth.currentUser.uid);
+  await cancelMatch(auth.currentUser.uid, "approved", "done", matchSignature, partnerID, hasActiveGame);
+
   await deleteDoc(ref);
   sessionStorage.clear();
   window.location.href = "/";
@@ -673,7 +700,7 @@ export const checkCardsMatch = async (myCard, partnerCards, signature, userID, p
   // console.log(gamePayload);
   returnSignale(signature, userID, myCard, partnerCards).then(async (res) => {
     if (res) {
-
+      console.log(res);
       const target = res.owner;
       if (userID === target) {
         const all = [updateDoc(userRef, usersPayload), updateDoc(partnerRef, usersPayload), addDoc(gamesRef, res.gamePayload)];

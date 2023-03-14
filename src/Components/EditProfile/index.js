@@ -12,6 +12,65 @@ import * as utils from "../../Redux/Utils";
 import PendingMatch from "../PendingMatch";
 import MatchName from "../MatchName";
 import DeleteAccount from "../DeleteAccount";
+import { createRef } from "react";
+
+const genderList = [
+  { name: "AgenderAndrogyne" },
+  { name: "Androgynous" },
+  { name: "Bigender" },
+  { name: "Cis" },
+  { name: "Cisgender" },
+  { name: "Cis Female" },
+  { name: "Cis Male" },
+  { name: "Cis Man" },
+  { name: "Cis Woman" },
+  { name: "Cisgender Female" },
+  { name: "Cisgender Male" },
+  { name: "Cisgender Man" },
+  { name: "Cisgender Woman" },
+  { name: "Female to Male" },
+  { name: "FTM" },
+  { name: "Gender Fluid" },
+  { name: "Gender Nonconforming" },
+  { name: "Gender Questioning" },
+  { name: "Gender Variant" },
+  { name: "Genderqueer" },
+  { name: "Intersex" },
+  { name: "Male to Female" },
+  { name: "MTF" },
+  { name: "Neither" },
+  { name: "Neutrois" },
+  { name: "Non-binary" },
+  { name: "Other" },
+  { name: "Pangender" },
+  { name: "Trans" },
+  { name: "Trans*" },
+  { name: "Trans Female" },
+  { name: "Trans* Female" },
+  { name: "Trans Male" },
+  { name: "Trans* Male" },
+  { name: "Trans Man" },
+  { name: "Trans* Man" },
+  { name: "Trans Person" },
+  { name: "Trans* Person" },
+  { name: "Trans Woman" },
+  { name: "Trans* Woman" },
+  { name: "Transfeminine" },
+  { name: "Transgender" },
+  { name: "Transgender Female" },
+  { name: "Transgender Male" },
+  { name: "Transgender Man" },
+  { name: "Transgender Person" },
+  { name: "Transgender Woman" },
+  { name: "Transmasculine" },
+  { name: "Transsexual" },
+  { name: "Transsexual Female" },
+  { name: "Transsexual Male" },
+  { name: "Transsexual Man" },
+  { name: "Transsexual Person" },
+  { name: "Transsexual Woman" },
+  { name: "Two-Spirit" },
+];
 const EditProfile = () => {
   // set location
   window.history.pushState({ appState: "0" }, "pushManageStore", "");
@@ -29,6 +88,9 @@ const EditProfile = () => {
   const userID = useSelector((state) => state.user.userID);
   const hasPendingMatch = useSelector((state) => state.user.hasPendingMatch);
   const profileFull = useSelector((state) => state.user.profileFull);
+  const [countriesFound, setcountriesFound] = useState([]);
+  const [countryFound, setcountryFound] = useState("");
+  const [isLoadedCountry, setisLoadedCountry] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -36,9 +98,9 @@ const EditProfile = () => {
     setToast({ state: "warning", text: value });
     return;
   };
-  
+
   useEffect(() => {
-    if(userID){
+    if (userID) {
       getUserProfile(userID).then((userProfile) => {
         setProfileImageUrl(dispatch, userProfile?.profileImageUrl);
         setActivePartner(dispatch, userProfile?.hasActivePartner);
@@ -46,7 +108,7 @@ const EditProfile = () => {
         setisReady(true);
         utils.setProfileFull(dispatch, userProfile.profileFull);
         utils.setHasPendingMatch(dispatch, userProfile.hasPendingMatch);
-        window.sessionStorage.setItem("sc",userProfile.secretCode)
+        window.sessionStorage.setItem("sc", userProfile.secretCode);
         if (userProfile.hasOwnProperty("profile")) {
           const profile = userProfile?.profile;
           setUsername(profile?.username);
@@ -58,12 +120,12 @@ const EditProfile = () => {
           setMySentence(profile?.mySentence);
           setPoints(userProfile?.points || "0");
           utils.setUsername(dispatch, profile?.username);
+          setcountryFound(true)
         } else {
           setisReady(true);
         }
       });
     }
-
 
     if (userID) {
       const showFeeback = window.sessionStorage.getItem("showFeedback");
@@ -78,28 +140,48 @@ const EditProfile = () => {
       if (!username || username.length < 3) {
         handleProfileErrors("Username should have minimum 3 characters.");
         setSubmit(false);
+        userRef.current.classList.add("border-danger", "border-2");
+        userRef.current.classList.remove("border-0");
         return;
       }
+      userRef.current.classList.remove("border-danger", "border-2");
+
       if (!gender || gender == 0) {
+        genderRef.current.classList.add("border-danger", "border-2");
+        genderRef.current.classList.remove("border-0");
         handleProfileErrors("Please select your gender.");
         setSubmit(false);
         return;
       }
+      genderRef.current.classList.remove("border-danger", "border-2");
+
       if (!interestedIn || interestedIn == 0) {
+        interstedRef.current.classList.add("border-danger", "border-2");
+        interstedRef.current.classList.remove("border-0");
         handleProfileErrors("Please select your intersted type.");
         setSubmit(false);
         return;
       }
-      if (!age || age == 0 || age <0) {
-        handleProfileErrors("Please define your age.");
+      interstedRef.current.classList.remove("border-danger", "border-2");
+
+      if (!age || age == 0 || age < 0 || age < 18) {
+        ageRef.current.classList.add("border-danger", "border-2");
+        ageRef.current.classList.remove("border-0");
+        handleProfileErrors("Minimum age is 18.");
         setSubmit(false);
         return;
       }
-      if (!country || country == 0) {
+      ageRef.current.classList.remove("border-danger", "border-2");
+
+      if (!countryFound || countryFound == 0) {
+        countryRef.current.classList.add("border-danger", "border-2");
+        countryRef.current.classList.remove("border-0");
         handleProfileErrors("Please define your country.");
         setSubmit(false);
         return;
       }
+      countryRef.current.classList.remove("border-danger", "border-2");
+
       const payload = {
         username,
         about,
@@ -117,13 +199,42 @@ const EditProfile = () => {
       });
     }
   }, [submit]);
+  const userRef = createRef();
+  const aboutRef = createRef();
+  const genderRef = createRef();
+  const interstedRef = createRef();
+  const ageRef = createRef();
+  const countryRef = createRef();
+  useEffect(() => {
+    if (country) {
+      const res = countries.filter((el) => el.name.toLowerCase().includes(country.toLowerCase()));
+      console.log(res);
+      setcountriesFound(res);
+    }
+  }, [country]);
+  useEffect(() => {
+    if (countryFound) {
+      setcountriesFound([]);
+    }
+  }, [countryFound]);
 
   if (!isReady) {
     return <ButtonLoader state={true} text="Loading..." />;
   }
+  <div className="col-12 d-flex flex-column justify-content-center align-items-center position-relative">
+    <input
+      type="text"
+      value={username}
+      onChange={(e) => setUsername(e.target.value)}
+      className="form-control greyBtn border-0"
+      placeholder="Write something..."
+      ref={userRef}
+    />
+  </div>;
   return (
     <div className="animated col-xxl-3 col-xl-5 col-lg-6 col-md-6 col-sm-11 col-11 d-flex flex-column justify-content-xxl-between justify-content-xl-between justify-content-lg-between justify-content-md-end justify-content-sm-end justify-content-end align-items-center profileContainer">
       {/* profile image control */}
+
       <PreviewImage />
       <PendingMatch hasPendingMatch={hasPendingMatch} />
       {/* about */}
@@ -135,6 +246,7 @@ const EditProfile = () => {
           onChange={(e) => setUsername(e.target.value)}
           className="form-control greyBtn border-0"
           placeholder="Write something..."
+          ref={userRef}
         />
       </div>
       <div className="col-12 d-flex flex-column justify-content-center align-items-center mb-3">
@@ -145,6 +257,7 @@ const EditProfile = () => {
           value={about}
           onChange={(e) => setAbout(e.target.value)}
           placeholder="Write something..."
+          ref={aboutRef}
         />
       </div>
       <div className="col-12 d-flex flex-row justify-content-center align-items-center mb-2">
@@ -152,21 +265,22 @@ const EditProfile = () => {
 
         <div className="col d-flex flex-column justify-content-center align-items-center">
           <span className="col-12 text-start w-5">Gender</span>
-          <select value={gender} onChange={(e) => setGender(e.target.value)} className="form-select border-0  greyBtn">
+          <select value={gender} onChange={(e) => setGender(e.target.value)} className="form-select border-0  greyBtn" ref={genderRef}>
             <option value="0">Choose</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="non">Not-identified</option>
+            {genderList.map((el) => {
+              return <option value={el.name}>{el.name}</option>;
+            })}
           </select>
         </div>
         {/* interests */}
+
         <div className="col d-flex flex-column justify-content-center align-items-center ms-2 ">
           <span className="col-12 text-start w-5">Interested-In:</span>
-          <select value={interestedIn} onChange={(e) => setInterestedIn(e.target.value)} className="form-select border-0  greyBtn">
+          <select value={interestedIn} onChange={(e) => setInterestedIn(e.target.value)} className="form-select border-0  greyBtn" ref={interstedRef}>
             <option value="0">Choose</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="both">Both</option>
+            {genderList.map((el) => {
+              return <option value={el.name}>{el.name}</option>;
+            })}
           </select>
         </div>
       </div>
@@ -177,17 +291,52 @@ const EditProfile = () => {
           <input
             value={age}
             onChange={(e) => setAge(e.target.value.replace(/[^0-9.]/g, ""))}
-            min="10"
+            min="18"
             max="100"
             type="number"
             className="form-control  greyBtn border-0"
             placeholder="Your age"
+            ref={ageRef}
           />
         </div>
         {/* country */}
         <div className="col d-flex flex-column justify-content-center align-items-center ms-2">
           <span className="col-12 text-start w-5">Country</span>
-          <select value={country} onChange={(e) => setCountry(e.target.value)} className="form-select border-0  greyBtn">
+          <div className="col-12 d-flex flex-column justify-content-center align-items-center position-relative">
+            <input
+              value={country}
+              onChange={(e) => {
+                setCountry(e.target.value)
+                setcountryFound(false)
+              }}
+              type="text"
+              className="form-control greyBtn border-0"
+              placeholder="Search for country"
+              ref={countryRef}
+            />
+            {countriesFound != false && !countryFound && (
+              <div
+                className="col-12 d-flex flex-column justify-content-center align-items-center  position-absolute greyBtn border-bottom border-top shadow-sm  p-2"
+                style={{ top: "100%", borderBottomLeftRadius: "5px", borderBottomRightRadius: "5px" }}
+              >
+                {countriesFound.map((el) => {
+                  return (
+                    <span
+                      className="border-bottom bg-white col-12 text-center rounded w-3 pointer"
+                      onClick={() => {
+                        setcountryFound(el.name.toLowerCase());
+                        setCountry(el.name.toLowerCase());
+                        return;
+                      }}
+                    >
+                      {el.name}
+                    </span>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+          {/* <select value={country} onChange={(e) => setCountry(e.target.value)} className="form-select border-0  greyBtn" ref={countryRef}>
             <option value="0">Choose</option>
             {countries.map((el) => {
               const lowered = el.name;
@@ -197,7 +346,7 @@ const EditProfile = () => {
                 </option>
               );
             })}
-          </select>
+          </select> */}
         </div>
       </div>
       <div className="col-12 d-flex flex-column justify-content-center align-items-center mb-2">
@@ -242,12 +391,10 @@ const EditProfile = () => {
           className="col d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill p-2 midFont pointer"
           onClick={() => setSubmit(true)}
         >
-          <ButtonLoader state={submit} text="SAVE"/>
+          <ButtonLoader state={submit} text="SAVE" />
         </div>
       </div>
-      {/* <div className="col-12 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill p-2 mt-3 text-muted mb-3 midFont pointer">
-        DELETE ACCOUNT
-      </div> */}
+
       <DeleteAccount />
     </div>
   );

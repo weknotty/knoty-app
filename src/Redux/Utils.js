@@ -94,3 +94,7 @@ export const setGameID = (dispatch, value) => {
   dispatch(utils.setGameID(value));
   return;
 };
+export const setPoints = (dispatch, value) => {
+  dispatch(utils.setPoints(value));
+  return;
+};

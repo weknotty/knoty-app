@@ -28,6 +28,7 @@ import {
   setPartnerID,
   setGameID,
   setDoneGame,
+  setPoints,
 } from "../Redux/Utils";
 import { changeViewState } from "../Utils";
 
@@ -122,10 +123,14 @@ const Manager = () => {
           const partner = doc.data();
           // console.log("partner",partner)
           const partnercards = partner.cards;
-          setPartnerImage(dispatch, partner.profileImageUrl);
+
+          if (hasActivePartner) {
+            setPartnerImage(dispatch, partner.profileImageUrl);
+            setPartnersCards(partnercards);
+            setPartnersPoints(partner.points);
+          }
+
           setPartnerID(dispatch, doc.id);
-          setPartnersCards(partnercards);
-          setPartnersPoints(partner.points);
         });
       };
       asyncFire();
@@ -169,6 +174,7 @@ const Manager = () => {
     }
     const unsubscribe = onSnapshot(profileRef(userID), (doc) => {
       const docData = doc.data();
+      console.log("docData", docData);
       const hasPendingMatchUpdate = docData.hasPendingMatch;
       const hasActivePartner = docData.hasActivePartner;
       const matchSignature = docData.matchSignature;
@@ -177,6 +183,7 @@ const Manager = () => {
       const acceptedManual = docData?.acceptedManual || false;
       const cards = docData.cards;
       const points = docData.points;
+      console.log(doc.id);
       setHasPendingMatch(dispatch, hasPendingMatchUpdate);
       setActivePartner(dispatch, hasActivePartner);
       setMatchSiganture(dispatch, matchSignature);
@@ -185,6 +192,8 @@ const Manager = () => {
       setGameSignature(dispatch, gameSignature);
       setAcceptedManual(dispatch, acceptedManual);
       setuserPoints(points);
+      setPoints(dispatch, points);
+      window.sessionStorage.setItem("myscs", docData.secretCode);
     });
     return () => {
       unsubscribe();

@@ -4,9 +4,7 @@ import animation from "../../viki3.json";
 const Welcome = () => {
   return (
     <div className="col-12 d-flex flex-column justify-content-center align-items-center imgBg fullHeight animated">
-      <Lottie animationData={animation} loop={true}>
-        <img src="/assets/icons/logo.svg" height="300" width="300" />
-      </Lottie>
+      <Lottie animationData={animation} loop={true} style={{ maxWidth: "200px" }} />
     </div>
   );
 };

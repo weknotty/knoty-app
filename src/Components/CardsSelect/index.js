@@ -23,7 +23,12 @@ const CardsSelect = () => {
 
   useEffect(() => {
     getCategories().then((res) => {
-      setCategories(res);
+
+      const mapped = res.map((el,idx)=>{
+        return {...el,idx}
+      })
+      const sorted = mapped.sort((a,b) => a.idx - b.idx);
+      setCategories(sorted);
     });
   }, []);
 
@@ -44,7 +49,6 @@ const CardsSelect = () => {
     <div className="animated col-12 d-flex flex-column justify-content-start align-items-center profileContainer animated">
       <div className="h-100 col-xxl-5 col-xl-5 col-lg-6 col-md-6 col-sm-11 col-11 d-flex flex-row flex-wrap justify-content-center align-items-center   position-relative">
         <div className="col-12 d-flex flex-row justify-content-center align-items-center position-relative">
-          <img src="/assets/icons/question.svg" height="25" width="25" className="position-absolute start-0 ms-2" />
           <span className="fs-3  align-self-end">Category selection</span>
         </div>
 

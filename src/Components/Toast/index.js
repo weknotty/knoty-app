@@ -20,20 +20,29 @@ const Toast = () => {
       e.stopImmediatePropagation();
       setLocalState(e.detail.state);
       setLocaltext(e.detail.text);
-        setTimeout(() => {
-          setLocalState("");
-        }, 5000);
+      setTimeout(() => {
+        setLocalState("");
+      }, 5000);
     });
 
     return () => {
       document.removeEventListener("setToast", (e) => {});
     };
   }, []);
+
+  useEffect(() => {
+    if (localState) {
+      window.$(document).one("click", function (e) {
+        setLocalState("");
+      });
+    }
+  }, [localState]);
+
   if (!localState) {
     return null;
   }
   return (
-    <div className="col-12 d-flex flex-row justify-content-center align-items-center position-absolute top-0" style={{zIndex:"9999"}}>
+    <div className="col-12 d-flex flex-row justify-content-center align-items-center position-absolute top-0" style={{ zIndex: "9999" }}>
       <div
         className={`toastContainer d-flex flex-column justify-content-center align-items-center rounded-2 mt-1 btnShadow slide-bottom border-bottom border-${handleBorderState(
           localState

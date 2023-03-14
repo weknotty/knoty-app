@@ -76,6 +76,9 @@ const UserProfile = () => {
   const [isLocal, setisLocal] = useState(false);
 
   useEffect(() => {
+    console.log("userID",userID)
+    console.log("partnerID",partnerID)
+
     getUserProfile(changeUser ? userID : partnerID).then((res) => {
       if (!res) {
         setisLocal(true);
@@ -86,7 +89,7 @@ const UserProfile = () => {
       }
       if (res.matchSignature != matchSignature || changeUser) {
         setIsCurrentMatch(false);
-        setisLocal(true)
+        // setisLocal(true)
       }
       setUser(res);
     });
@@ -125,7 +128,7 @@ const UserProfile = () => {
         <span className="col-12 text-start">{user.profile.country}</span>
       </div>
       <div className="col-12 d-flex flex-column justify-content-start align-items-center mt-3">
-        <span className="col-12 text-start w-5">His sentence</span>
+        <span className="col-12 text-start w-5">Your {isCurrentMatch ? "Partner" :""} sentence</span>
         <span className="col-12 text-start">{user.profile.mySentence}</span>
       </div>
       <ProfileButton

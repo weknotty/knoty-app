@@ -35,12 +35,13 @@ const Rating = ({ userID, currentCard, setisAcceped, likeCard }) => {
       <div className="col-auto d-flex flex-row justify-content-center align-items-center">
         <img
           src={likeCard ? "/assets/icons/doneCard.svg" : "/assets/icons/openCard.svg"}
-          className="pointer"
-          onClick={() => setisAcceped((prev) => !prev)}
+          className=""
           height="25"
           width="25"
         />
+        
       </div>
+      
     </div>
   );
 };

@@ -18,6 +18,7 @@ const ChoosePartnerPopup = ({ setShowPopup }) => {
   // invitation code
   useEffect(()=>{
       const item = window.sessionStorage.getItem("codeTemp");
+      console.log("temp")
       if(item){
         setSecretCodeLocal(item);
         window.sessionStorage.removeItem("codeTemp");
@@ -38,7 +39,7 @@ const ChoosePartnerPopup = ({ setShowPopup }) => {
           setSubmit(false);
           return;
         }
-        setToast({ state: "success", text: "Match found!" });
+        setToast({ state: "success", text: "Partner found!" });
         setPartnerImage(dispatch, res.partner?.profileImageUrl);
         setSecretCode(dispatch, secretCode);
         changeViewState(2);

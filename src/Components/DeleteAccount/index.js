@@ -9,6 +9,8 @@ const DeleteAccount = () => {
   const [deleteAccount, setdeleteAccount] = useState(false);
   const hasActiveGame = useSelector((state) => state.user.hasActiveGame);
   const hasActivePartner = useSelector((state) => state.user.hasActivePartner);
+  const matchSignature = useSelector((state) => state.user.matchSignature);
+  const partnerID = useSelector((state) => state.user.partnerID);
 
   useEffect(() => {
     if (isReady) {
@@ -17,11 +19,11 @@ const DeleteAccount = () => {
         setisReady(false);
         return;
       }
-      if (hasActivePartner) {
-        setToast({ state: "warning", text: "Before closing your account please unmatch from your friend." });
-        setisReady(false);
-        return;
-      }
+      // if (hasActivePartner) {
+      //   setToast({ state: "warning", text: "Before closing your account please unmatch from your friend." });
+      //   setisReady(false);
+      //   return;
+      // }
     }
   }, [isReady]);
 
@@ -32,7 +34,7 @@ const DeleteAccount = () => {
         setdeleteAccount(false);
         return;
       }
-      deleteAccountFromDB();
+      deleteAccountFromDB(matchSignature,partnerID,hasActiveGame);
     }
   }, [deleteAccount]);
   return (
@@ -61,7 +63,7 @@ const DeleteAccount = () => {
         </div>
       ) : (
         <div
-          className="col-12 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill p-2 mt-3 text-muted mb-3 midFont pointer"
+          className="col-12 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill p-2 mt-3 mb-3 midFont pointer"
           onClick={() => setisReady((prev) => !prev)}
         >
           DELETE ACCOUNT

@@ -36,11 +36,11 @@ const Login = () => {
         <FacebookButton text="LOGIN WITH FACEBOOK" />
         <a
           href="/login"
-          className="col-10 d-flex flex-row justify-content-evenly align-items-center greyBtn text-dark rounded-pill p-2 btnShadow mt-3"
+          className="col-10 d-flex flex-row justify-content-evenly align-items-center greyBtn text-dark rounded-pill p-2 btnShadow mt-3 pointer"
           style={{ textDecoration: "unset" }}
         >
           <span className="col-8 text-start w-4">USER LOGIN</span>
-          <img src="/assets/icons/login.svg" height="25" width="25" />
+          <img src="/assets/icons/login.svg" height="30" width="30" />
         </a>
 
         <a href="/register" className="text-white mt-5">

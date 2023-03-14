@@ -9,7 +9,7 @@ const UserStatus = ({ userID }) => {
   useEffect(() => {
     if (userID) {
       getUsersStatus(userID).then((res) => {
-        setIsOnline(res.userActive)
+        setIsOnline(res.userActive);
       });
     }
   }, [userID]);
@@ -19,18 +19,18 @@ const UserStatus = ({ userID }) => {
 
 const OnlinePartners = ({ partnersList }) => {
   const dispatch = useDispatch();
-  const handleUserClick = (id)=>{
-    setPartnerID(dispatch,id)
-    changeViewState(5)
-  }
+  const handleUserClick = (id) => {
+    setPartnerID(dispatch, id);
+    changeViewState(5);
+  };
   return (
     <div className="col-12 d-flex flex-column justify-content-start align-items-center greyBtn friendsList">
       {/* added users list */}
       {partnersList.map((el, idx) => {
         return (
           <div
-          key={el.parnterID}
-            onClick={() =>handleUserClick(el.partnerID) }
+            key={idx}
+            onClick={() => handleUserClick(el.partnerID)}
             className="col-11 d-flex flex-row justify-content-center align-items-center mt-2 border-bottom mb-1 pointer"
           >
             <span className="col">{el?.profile?.username}</span>
