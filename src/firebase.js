@@ -318,7 +318,7 @@ export const ApproveMatch = async (matchSignature) => {
 
 export const FindMatch = (matchSignature) => {
   const ref = collection(db, "matches");
-  const q = query(ref, where("signature", "==", matchSignature),where("matchStatus","==","approved"));
+  const q = query(ref, where("signature", "==", matchSignature));
   return q;
 };
 export const FindMatchPartner = async (matchSignature) => {

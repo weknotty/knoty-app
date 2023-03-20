@@ -13,6 +13,7 @@ const ProfileButton = ({ isLocal, isCurrentMatch, matchSignature, setchangeUser,
     if (reinvite) {
       console.log("here")
       setPendingMatchStatus(dispatch, "");
+      console.log(secretCode)
       findMatchByCode(secretCode, userID, matchSignature, partnerID).then(async (res) => {
         
         if (!res) {
@@ -125,7 +126,7 @@ const UserProfile = () => {
         // setisLocal(true)
       }
       setUser(res);
-      console.log(res);
+      console.log("res",res);
     });
   }, [changeUser]);
 

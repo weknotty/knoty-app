@@ -23,6 +23,10 @@ const ContactingPartner = () => {
     if (!pendingMatchStatus) {
       setSubmit(true);
       findMatchByCode(secretCode, currentUser.userID, matchSignature, partnerID).then(async (res) => {
+        console.log(res)
+        if(!res){
+          return
+        }
         await createNewMatch(currentUser.userID, res.partner.id, res.user, res.partner).catch((err) => console.log(err));
         changeViewState(0);
       });
