@@ -13,7 +13,6 @@ import PendingMatch from "../PendingMatch";
 import MatchName from "../MatchName";
 import DeleteAccount from "../DeleteAccount";
 import { createRef } from "react";
-
 const genderList = [
   { name: "AgenderAndrogyne" },
   { name: "Androgynous" },

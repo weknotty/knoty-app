@@ -193,6 +193,7 @@ export const createNewMatch = async (id, partnerID, userPayload, partnerPayload)
     matchStatus: "pending",
     signature: signature,
     acceptedManual: false,
+    cards: [],
   };
   const all = [addDoc(ref, matchPayload), setMatchSignature(id, partnerID, signature), turnOnPendingMatch(id, partnerID)];
   await Promise.all(all);
@@ -317,7 +318,7 @@ export const ApproveMatch = async (matchSignature) => {
 
 export const FindMatch = (matchSignature) => {
   const ref = collection(db, "matches");
-  const q = query(ref, where("signature", "==", matchSignature));
+  const q = query(ref, where("signature", "==", matchSignature),where("matchStatus","==","approved"));
   return q;
 };
 export const FindMatchPartner = async (matchSignature) => {
@@ -331,7 +332,7 @@ export const FindMatchPartner = async (matchSignature) => {
       return el;
     }
   });
-  console.log("item",item,)
+  console.log("item", item);
   if (item == false) {
     return false;
   }
@@ -380,7 +381,7 @@ export const getMatchesList = async (userID) => {
   const result = await Promise.all(all);
   const parsed = result.map((el) => {
     console.log(el.data());
-    return { ...el.data(),id:el.id };
+    return { ...el.data(), id: el.id };
   });
   return parsed;
 };
@@ -414,29 +415,41 @@ export const setCards = async (list) => {
 };
 
 export const setCardRating = async (id, data, rating, cardID) => {
-  const ref = doc(db, "users", id);
-  const filtered = data.filter((el) => {
-    return el.card != cardID;
-  });
+  const ref = doc(db, "matches", id);
+  const res = await getDoc(ref);
 
+  const filtered = res.data().cards.filter((el) => {
+    return el.card != cardID && el.cardOwner == auth.currentUser.uid;
+  });
+  const filteredPartner = res.data().cards.filter((el) => {
+    return el.cardOwner != auth.currentUser.uid;
+  });
+  console.log("filtered", filtered);
   const payload = {
     card: cardID,
     rating,
     isLiked: false,
+    cardOwner: auth.currentUser.uid,
   };
-  const total = [...filtered, payload];
+  const total = [...filtered, payload, ...filteredPartner];
+  console.log(total);
   await setDoc(ref, { cards: total }, { merge: true });
 };
 
-export const setCardLiked = async (id, data, cardSource, cardsCategory, isLike) => {
+export const setCardLiked = async (id, data, cardSource, cardsCategory, isLike, userID) => {
   const cardID = cardSource.id;
 
-  const ref = doc(db, "users", id);
-  const filtered = data.filter((el) => {
-    return el.card != cardID;
+  const ref = doc(db, "matches", id);
+  const res = await getDoc(ref);
+
+  const filtered = res.data().cards.filter((el) => {
+    return el.card != cardID && el.cardOwner == auth.currentUser.uid;
+  });
+  const filteredPartner = res.data().cards.filter((el) => {
+    return el.cardOwner != auth.currentUser.uid;
   });
   const item = data.filter((el) => {
-    return el.card == cardID;
+    return el.card == cardID && el.cardOwner == auth.currentUser.uid;
   });
   let payload = {};
   if (item == false) {
@@ -445,18 +458,18 @@ export const setCardLiked = async (id, data, cardSource, cardsCategory, isLike) 
       rating: 0,
       category: cardsCategory,
       isLiked: isLike,
-      cardOwner: id,
+      cardOwner: userID,
     };
   }
   if (item != false) {
     payload = {
       ...item[0],
       isLiked: isLike,
-      cardOwner: id,
+      cardOwner: userID,
     };
   }
   console.log("payload", payload);
-  const total = [...filtered, payload];
+  const total = [...filtered, payload, ...filteredPartner];
   await updateDoc(ref, { cards: total }).catch((err) => console.log(err));
   return;
 };
@@ -558,6 +571,7 @@ export const getFavouritesCards = async (dataSource) => {
   for (let source of data.docs) {
     const localData = source.data();
     for (let item of dataSource) {
+      console.log(item);
       if (localData.id == item.card && item.isLiked) {
         temp.push({ ...localData });
       }
@@ -637,8 +651,20 @@ export const setNewCategoryClick = ({ category, categoryID, userID }) => {
 export const deleteAccountFromDB = async (matchSignature, partnerID, hasActiveGame) => {
   const ref = doc(db, "users", auth.currentUser.uid);
   await cancelMatch(auth.currentUser.uid, "approved", "done", matchSignature, partnerID, hasActiveGame);
-
+  const matchRef = collection(db, "matches");
+  const matchQuery = query(matchRef, where("participants", "array-contains", auth.currentUser.uid));
+  const matchForDelte = await getDocs(matchQuery);
   await deleteDoc(ref);
+  if (matchForDelte.empty) {
+    sessionStorage.clear();
+    window.location.href = "/";
+    return;
+  }
+  const mapped = matchForDelte.docs.map((el) => {
+    const current = doc(db, "matches", el.id);
+    return deleteDoc(current);
+  });
+  await Promise.all(mapped);
   sessionStorage.clear();
   window.location.href = "/";
 };
@@ -656,7 +682,15 @@ const createNewGame = ({ gameSignature, duration, imageUrl, cardID, cardName, po
   };
   return payload;
 };
-const returnSignale = async (signature, userID, myCards, partnerCards) => {
+
+const returnSignale = async (signature, myCards, partnerCards) => {
+  console.log("signature", signature);
+  console.log("myCards", myCards);
+  console.log("partnerCards", partnerCards);
+  const matchRef = collection(db, "matches");
+  const q = query(matchRef, where("matchStatus", "==", "approved"), where("signature", "==", signature));
+  const qres = await getDocs(q);
+  const whoShouldOpen = qres.docs[0].data().partner.id;
   const gamesRef = collection(db, "games");
   const gameQuery = query(gamesRef, where("signature", "==", signature), where("status", "==", "start"));
   const res = await getDocs(gameQuery);
@@ -674,6 +708,8 @@ const returnSignale = async (signature, userID, myCards, partnerCards) => {
       if (cardA.isLiked && cardB.isLiked) {
         const cardID = cardA.card;
         console.log("Card owner", cardA.cardOwner);
+        console.log("Card owner2", cardB.cardOwner);
+
         const cardsRef = query(collection(db, "cards"), where("id", "==", cardID));
         const gameSignature = signature;
         const card = await getDocs(cardsRef);
@@ -686,8 +722,7 @@ const returnSignale = async (signature, userID, myCards, partnerCards) => {
           cardName: cardData.name,
           points: cardData.points,
         });
-        console.log(gamePayload);
-        return { gamePayload, owner: cardA.cardOwner };
+        return { gamePayload, owner: whoShouldOpen };
       }
     }
   }
@@ -699,11 +734,10 @@ export const checkCardsMatch = async (myCard, partnerCards, signature, userID, p
   const partnerRef = doc(db, "users", partnerID);
 
   // console.log(gamePayload);
-  returnSignale(signature, userID, myCard, partnerCards).then(async (res) => {
+  returnSignale(signature, myCard, partnerCards).then(async (res) => {
     if (res) {
-      console.log(res);
       const target = res.owner;
-      if (userID === target) {
+      if (partnerID === target) {
         const all = [updateDoc(userRef, usersPayload), updateDoc(partnerRef, usersPayload), addDoc(gamesRef, res.gamePayload)];
         await Promise.all(all);
         return;

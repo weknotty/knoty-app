@@ -27,7 +27,6 @@ const OnlinePartners = ({ partnersList }) => {
     <div className="col-12 d-flex flex-column justify-content-start align-items-center greyBtn friendsList">
       {/* added users list */}
       {partnersList.map((el, idx) => {
-        console.log(el)
         return (
           <div
             key={idx}

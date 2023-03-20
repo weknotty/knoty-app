@@ -4,6 +4,8 @@ import { setCardRating } from "../../firebase";
 
 const StarsRating = ({ userID, currentCard}) => {
   const interactedCards = useSelector((state) => state.user.interactedCards);
+  const matchID = useSelector((state) => state.user.matchID);
+
   const cardID = currentCard.id;
   const [stars, setStars] = useState([
     { id: 1, like: false },
@@ -15,7 +17,10 @@ const StarsRating = ({ userID, currentCard}) => {
 
   useEffect(() => {
     const item = interactedCards.filter((el) => el.card == cardID);
+
+
     if (item == false) {
+
       return;
     }
     const rating = item[0].rating;
@@ -37,7 +42,7 @@ const StarsRating = ({ userID, currentCard}) => {
               height="25"
               width="25"
               className="pointer"
-              onClick={() => setCardRating(userID, interactedCards, el.id, cardID)}
+              onClick={() => setCardRating(matchID, interactedCards, el.id, cardID)}
             />
           );
         })}

@@ -16,6 +16,7 @@ const Rating = ({ userID, currentCard, setisAcceped, likeCard }) => {
 
   useEffect(() => {
     const item = interactedCards.filter((el) => el.card == cardID);
+    console.log(item)
     if (item == false) {
       return;
     }

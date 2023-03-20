@@ -98,3 +98,7 @@ export const setPoints = (dispatch, value) => {
   dispatch(utils.setPoints(value));
   return;
 };
+export const setMatchID = (dispatch, value) => {
+  dispatch(utils.setMatchID(value));
+  return;
+};

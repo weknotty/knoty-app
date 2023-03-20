@@ -12,6 +12,7 @@ import {
   turnOffActivePartner,
   turnOffPendingMatch,
   turnOnActivePartner,
+  updateProfileProp,
 } from "../firebase";
 import { onSnapshot } from "firebase/firestore";
 import {
@@ -29,6 +30,7 @@ import {
   setGameID,
   setDoneGame,
   setPoints,
+  setMatchID,
 } from "../Redux/Utils";
 import { changeViewState } from "../Utils";
 
@@ -47,6 +49,7 @@ const Manager = () => {
   const [partnerCards, setPartnersCards] = useState([]);
   const [userPoints, setuserPoints] = useState(0);
   const [partnerPoints, setPartnersPoints] = useState(0);
+  const [firstLoad, setfirstLoad] = useState(true);
 
   // listen to changes on game object on DB
   useEffect(() => {
@@ -60,22 +63,34 @@ const Manager = () => {
       if (!partnerRef) {
         return;
       }
+
       unsubscribe = onSnapshot(partnerRef, async (doc) => {
         const game = doc.data();
         const status = game.status;
         const id = doc.id;
         const cardID = game.cardID;
         const points = game.points;
-        // console.log("game", game);
         setGameID(dispatch, id);
         if (status === "start") {
+          setDoneGame(dispatch, false);
+
           return;
         }
         if (status === "canceled") {
-          handleCanceledGame(cardID, interactedCards, partnerCards, userID, partnerID).then((res) => {
+          handleCanceledGame(cardID, interactedCards, partnerCards, userID, partnerID).then(async (res) => {
             setGameID(dispatch, "");
             setDoneGame(dispatch, false);
             changeViewState(0);
+            setHasActiveGame(dispatch, false);
+            console.log(partnerID);
+            console.log(userID);
+            const all = [
+              updateProfileProp(userID, "gameSignature", ""),
+              updateProfileProp(partnerID, "gameSignature", ""),
+              updateProfileProp(partnerID, "hasActiveGame", false),
+              updateProfileProp(userID, "hasActiveGame", false),
+            ];
+            await Promise.all(all);
           });
           return;
         }
@@ -102,7 +117,9 @@ const Manager = () => {
     if (hasActiveGame || gameSignature || gameID) {
       return;
     }
-    if (hasActivePartner && matchSignature && partnerID && !gameSignature) {
+    setfirstLoad(false);
+
+    if (hasActivePartner && matchSignature && partnerID && !gameSignature && !firstLoad) {
       checkCardsMatch(interactedCards, partnerCards, matchSignature, userID, partnerID).then((res) => {
         return;
       });
@@ -121,19 +138,12 @@ const Manager = () => {
         const partnerRef = await FindMatchPartner(matchSignature);
         unsubscribe = onSnapshot(partnerRef, async (doc) => {
           const partner = doc.data();
-          console.log("hereeeeeee")
-          // console.log("partner",partner)
-          const partnercards = partner.cards;
-          const idLocal = doc.id
-          console.log("idLocal", idLocal);
-
-          console.log("partner", partner);
+          const idLocal = doc.id;
+          setPartnerID(dispatch, idLocal);
+          setPartnersPoints(partner.points);
           if (hasActivePartner) {
             setPartnerImage(dispatch, partner.profileImageUrl);
           }
-          setPartnerID(dispatch, idLocal);
-          setPartnersCards(partnercards);
-          setPartnersPoints(partner.points);
         });
       };
       asyncFire();
@@ -147,7 +157,7 @@ const Manager = () => {
       }
     };
   }, [hasActivePartner, matchSignature]);
-  
+
   // listen to changes on match object on DB
   useEffect(() => {
     if ((!hasPendingMatch && !hasActivePartner) || !matchSignature) {
@@ -156,12 +166,21 @@ const Manager = () => {
     const unsubscribe = onSnapshot(FindMatch(matchSignature), async (doc) => {
       try {
         const docData = doc.docs[0].data();
+        console.log("docData", docData);
         if (docData.matchStatus == "rejected" || docData.matchStatus == "done") {
           await turnOffPendingMatch(userID, docData.partner.id);
           await turnOffActivePartner(userID, docData.partner.id);
           setPartnerImage(dispatch, "");
         }
         if (docData.matchStatus == "approved") {
+          setMatchID(dispatch, doc.docs[0].id);
+          const userCards = docData.cards.filter((el) => el.cardOwner === userID);
+          const partnerCards = docData.cards.filter((el) => el.cardOwner !== userID);
+          console.log("partnerCards21212", partnerCards);
+
+          setPartnersCards(partnerCards);
+          setInteractedCards(dispatch, userCards);
+
           await turnOnActivePartner(userID, docData.partner.id);
         }
       } catch (err) {
@@ -187,13 +206,11 @@ const Manager = () => {
       const hasActiveGame = docData.hasActiveGame;
       const gameSignature = docData.gameSignature;
       const acceptedManual = docData?.acceptedManual || false;
-      const cards = docData.cards;
       const points = docData.points;
       console.log(doc.id);
       setHasPendingMatch(dispatch, hasPendingMatchUpdate);
       setActivePartner(dispatch, hasActivePartner);
       setMatchSiganture(dispatch, matchSignature);
-      setInteractedCards(dispatch, cards);
       setHasActiveGame(dispatch, hasActiveGame);
       setGameSignature(dispatch, gameSignature);
       setAcceptedManual(dispatch, acceptedManual);
@@ -218,8 +235,6 @@ const Manager = () => {
         setPendingMatchStatus(dispatch, res.matchStatus);
       });
     }
-
-
   }, [matchSignature]);
 
   return null;

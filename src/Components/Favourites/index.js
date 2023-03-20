@@ -9,9 +9,12 @@ const Favourites = () => {
   const [localCards, setCards] = useState([]);
   const dispatch = useDispatch();
   const cards = useSelector((state) => state.user.interactedCards);
-
+  console.log(cards)
   useEffect(() => {
-    getFavouritesCards(cards).then((res) => setCards(res));
+    getFavouritesCards(cards).then((res) => {
+      setCards(res)
+      console.log(res)
+    });
   }, []);
 
   // const handleCardClick = async (category) => {

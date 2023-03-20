@@ -57,8 +57,11 @@ const AcceptedStarted = ({ isAcceped, gameData, gameSignature }) => {
       clearInterval(interval);
     };
   }, [gameData]);
+
+
   useEffect(() => {
     if (submitDone) {
+      console.log(gameID)
       finishGame(gameID, dispatch).then(() => {
         setSubmitDone(false);
       });

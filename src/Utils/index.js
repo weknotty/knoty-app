@@ -107,7 +107,7 @@ export const handleInvitePartner = (phone, secretCode) => {
     return;
   }
   const a = document.createElement("a");
-  a.href = `https://wa.me/+972${phone}/?text=Someone has invited you to knoty.your partner code is:${secretCode} Register here: ${window.location.origin}?code=${secretCode}`;
+  a.href = `https://wa.me/${phone}/?text=Someone has invited you to knoty.your partner code is:${secretCode} Register here: ${window.location.origin}?code=${secretCode}`;
   a.click();
 };
 

@@ -1,12 +1,34 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { cancelMatch, getUserProfile, getUserProfileByCode } from "../../firebase";
-import { changeViewState } from "../../Utils";
+import { useDispatch, useSelector } from "react-redux";
+import { cancelMatch, findMatchByCode, getUserProfile, getUserProfileByCode } from "../../firebase";
+import { setPartnerImage, setPendingMatchStatus, setSecretCode } from "../../Redux/Utils";
+import { changeViewState, setToast } from "../../Utils";
 import ButtonLoader from "../ButtonLoader";
 import "./UserProfile.css";
-const ProfileButton = ({ isLocal, isCurrentMatch, matchSignature, setchangeUser, userID, partnerID }) => {
+const ProfileButton = ({ isLocal, isCurrentMatch, matchSignature, setchangeUser, userID, partnerID, secretCode }) => {
   const hasActiveGame = useSelector((state) => state.user.hasActiveGame);
-  console.log(hasActiveGame);
+  const dispatch = useDispatch();
+  const [reinvite, setReinvite] = useState(false);
+  useEffect(() => {
+    if (reinvite) {
+      console.log("here")
+      setPendingMatchStatus(dispatch, "");
+      findMatchByCode(secretCode, userID, matchSignature, partnerID).then(async (res) => {
+        
+        if (!res) {
+          setReinvite(false);
+          return;
+        }
+        setToast({ state: "success", text: "Partner found!" });
+        setPartnerImage(dispatch, res.partner?.profileImageUrl);
+        setSecretCode(dispatch, secretCode);
+        changeViewState(2);
+        setReinvite(false);
+
+      });
+    }
+  }, [reinvite]);
+
   if (isLocal) {
     return (
       <div className="col-12 d-flex flex-column justify-content-center align-items-center">
@@ -47,6 +69,10 @@ const ProfileButton = ({ isLocal, isCurrentMatch, matchSignature, setchangeUser,
   }
   return (
     <div className="col-12 d-flex flex-column justify-content-center align-items-center">
+      <div className="pinkBorder rounded shadow-sm pe-2 ps-2 pointer col-5 text-center" onClick={() => setReinvite(true)}>
+        <ButtonLoader state={reinvite} text="Invite Again"/>
+      </div>
+
       <div
         className="col-10 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill   p-2 midFont pointer mt-2"
         onClick={() => setchangeUser((prev) => !prev)}
@@ -76,22 +102,30 @@ const UserProfile = () => {
   const [isLocal, setisLocal] = useState(false);
 
   useEffect(() => {
-    console.log("userID",userID)
-    console.log("partnerID",partnerID)
+    console.log("userID", userID);
+    console.log("partnerID", partnerID);
+    console.log("matchSignature", matchSignature);
 
     getUserProfile(changeUser ? userID : partnerID).then((res) => {
       if (!res) {
         setisLocal(true);
         return;
       }
-      if (res.matchSignature == matchSignature) {
+      console.log(res);
+      console.log("res.matchSignature", res.matchSignature);
+
+      if (res.matchSignature === matchSignature) {
         setIsCurrentMatch(true);
+      }
+      if (!matchSignature) {
+        setIsCurrentMatch(false);
       }
       if (res.matchSignature != matchSignature || changeUser) {
         setIsCurrentMatch(false);
         // setisLocal(true)
       }
       setUser(res);
+      console.log(res);
     });
   }, [changeUser]);
 
@@ -128,7 +162,7 @@ const UserProfile = () => {
         <span className="col-12 text-start">{user.profile.country}</span>
       </div>
       <div className="col-12 d-flex flex-column justify-content-start align-items-center mt-3">
-        <span className="col-12 text-start w-5">Your {isCurrentMatch ? "Partner" :""} sentence</span>
+        <span className="col-12 text-start w-5">Your {isCurrentMatch ? "Partner" : ""} sentence</span>
         <span className="col-12 text-start">{user.profile.mySentence}</span>
       </div>
       <ProfileButton
@@ -138,6 +172,7 @@ const UserProfile = () => {
         setchangeUser={setchangeUser}
         userID={userID}
         partnerID={partnerID}
+        secretCode={user.secretCode}
       />
     </div>
   );

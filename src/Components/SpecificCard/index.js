@@ -34,6 +34,7 @@ const SpecificCard = () => {
   const cardsList = useSelector((state) => state.user.cardsList);
   const cardsCategory = useSelector((state) => state.user.cardsCategory);
   const hasActiveGame = useSelector((state) => state.user.hasActiveGame);
+  const matchID = useSelector((state) => state.user.matchID);
 
   const [currentCard, setCurrentCard] = useState({});
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -91,7 +92,7 @@ const SpecificCard = () => {
       if (ref.current) {
         ref.current.animate(newspaperRight, newspaperTiming);
       }
-      setCardLiked(userID, interactedCards, currentCard, cardsCategory, true)
+      setCardLiked(matchID, interactedCards, currentCard, cardsCategory, true,userID)
         .catch((err) => console.log(err))
         .then(() => {
           setNextCard(true);
@@ -105,7 +106,7 @@ const SpecificCard = () => {
       if (ref.current) {
         ref.current.animate(newspaperLeft, newspaperTiming);
       }
-      setCardLiked(userID, interactedCards, currentCard, cardsCategory, false)
+      setCardLiked(matchID, interactedCards, currentCard, cardsCategory, false,userID)
         .catch((err) => console.log(err))
         .then(() => {
           setNextCard(true);
