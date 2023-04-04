@@ -1,7 +1,9 @@
 .App {
   min-height: 100vh;
 }
-
+body {
+  padding-bottom: env(safe-area-inset-bottom);
+}
 .fullHeight {
   min-height:100vh;;
 }
@@ -21,14 +23,14 @@
 }
 
 @media screen and (max-width: 600px) {
-  /* .App {
-    min-height: calc(100vh - 60px);
+  .App {
+    min-height: calc(100vh - 50px);
   }
   
   .fullHeight {
-    min-height: calc(100vh - 60px);
+    min-height: calc(100vh - 50px);
   }
-   */
+  
 }
 
 .animated {
