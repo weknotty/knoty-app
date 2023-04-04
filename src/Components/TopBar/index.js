@@ -15,7 +15,7 @@ const TopBar = () => {
         <div className="col d-flex flex-column justify-content-between align-items-center">
           <div className="position-relative col d-flex flex-column justify-content-center align-items-center pointer" onClick={() => changeViewState(5)}>
             {partnerImage && hasActivePartner ? <img src={partnerImage} className="profileSm" /> : <span className="bg-light rounded rounded-circle profileSm"></span>}
-            <span className="indicator position-absolute"></span>
+            <span className="position-absolute"></span>
           </div>
           
           <span className="smFont w-3 text-white">{partnerName}</span>
