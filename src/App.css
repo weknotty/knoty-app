@@ -15,7 +15,7 @@ body {
 }
 
 .profileContainer {
-  min-height: 70vh
+  min-height: 100%;
 }
 
 .pointer {
