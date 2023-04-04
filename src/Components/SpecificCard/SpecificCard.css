@@ -29,7 +29,7 @@ user-select: none; /* Standard */
     width: 325px;
   }
   .CardContainer{
-    height:calc(80vh - 100px) ;
+    height:60vh ;
   }
   .specificCardContainer {
     width:80vw;
