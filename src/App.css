@@ -23,13 +23,13 @@ body {
 }
 
 @media screen and (max-width: 600px) {
-  .App {
+  /* .App {
     min-height: calc(100vh - 50px);
   }
   
   .fullHeight {
     min-height: calc(100vh - 50px);
-  }
+  } */
   
 }
 
