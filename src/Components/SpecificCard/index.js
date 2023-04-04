@@ -119,7 +119,7 @@ const SpecificCard = () => {
   }, [swipedLeft, swipedRight]);
 
   return (
-    <div className="animated col-xxl-5 col-xl-5 col-lg-6 col-md-6 col-sm-11 col-11 d-flex flex-column justify-content-start align-items-center profileContainer position-relative">
+    <div className="animated col-xxl-5 col-xl-5 col-lg-6 col-md-6 col-sm-11 col-11 d-flex flex-column justify-content-start align-items-center CardContainer position-relative">
       <div className="col-12 d-flex flex-row justify-content-center align-items-center" id="containerus" {...swipeHanlder}>
         <Card userID={userID} currentCard={currentCard} setNextCard={setNextCard} hasActiveGame={hasActiveGame} />
       </div>
