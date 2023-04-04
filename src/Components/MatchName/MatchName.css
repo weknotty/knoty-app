@@ -1,0 +1,14 @@
+.matchNameContainer {
+  position: absolute;
+  z-index: 888;
+  bottom: 0;
+  right: -10px;
+  height: 60px;
+  width:60px;
+}
+
+.matchNameContainer img{
+  border-radius: 50%;
+  border: 2px solid pink;
+
+}

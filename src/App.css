@@ -1,0 +1,58 @@
+.App {
+  min-height: 100vh;
+}
+
+.fullHeight {
+  min-height:100vh;;
+}
+
+.imgBg {
+  background: url("./backgrond.png");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.profileContainer {
+  min-height: 70vh
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+@media screen and (max-width: 600px) {
+  /* .App {
+    min-height: calc(100vh - 60px);
+  }
+  
+  .fullHeight {
+    min-height: calc(100vh - 60px);
+  }
+   */
+}
+
+.animated {
+  animation: animated 0.5s ease-in-out;
+  transition: all 1s ease-in-out;
+  overflow: hidden !important;
+}
+
+@keyframes animated {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.centerAbs {
+  right: 15px;
+  top: 25px;
+  opacity: 0.5;
+  position: absolute;
+}
+
+.invert{
+  filter: invert(100%);
+}

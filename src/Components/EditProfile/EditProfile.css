@@ -1,0 +1,73 @@
+.userProfileImage {
+  height: 150px;
+  width: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.example-enter {
+  opacity: 0.01;
+}
+.pendingMatch {
+  height: 100px;
+  width: 120px;
+}
+.pinkBorder {
+  border: 1px solid salmon;
+}
+.indicatorLg {
+  height: 30px;
+  width: 30px;
+  background-color: #45eca6;
+  border-radius: 50%;
+  bottom: 15px;
+  right: 10px;
+}
+.editProfileImage {
+  position: absolute;
+  background-color: #45eca6;
+  border-radius: 50%;
+  top: 15px;
+  left: 0;
+}
+.aboutMeText {
+  height: 75px;
+  position: relative;
+}
+
+.thumbHolder {
+  height: 150px;
+  width: 150px;
+  border: 1px solid grey;
+  border-radius: 50%;
+}
+/* @media screen and (max-width: 600px) {
+
+  .indicatorLg{
+    height: 10px;
+    width: 10px;
+  }
+} */
+
+.animatedSquare {
+  height: 150px;
+  width: 150px;
+  background-color: rgba(128, 128, 128, 0.267);
+  border-radius: 15px;
+  opacity: 1;
+  animation: blink 1.5s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+  }
+}

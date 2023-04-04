@@ -1,0 +1,33 @@
+.w-1 {
+  font-weight: 100;
+}
+.w-2 {
+  font-weight: 200;
+}
+.w-3 {
+  font-weight: 300;
+}
+.w-4 {
+  font-weight: 400;
+}
+.w-5 {
+  font-weight: 500;
+}
+.w-6 {
+  font-weight: 600;
+}
+.w-7 {
+  font-weight: 700;
+}
+
+.w-8 {
+  font-weight: 800;
+}
+
+.smFont{
+  font-size: 12px;
+}
+.midFont{
+  font-size: 14px;
+
+}

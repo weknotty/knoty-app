@@ -1,0 +1,57 @@
+.cardImg {
+  height: 50%;
+  max-width: 325px;
+  object-fit: cover;
+}
+.cardTextFont {
+  font-size: 16px;
+  font-weight: 500;
+  width: 325px;
+}
+
+.specificCardContainer {
+  height: 450px;
+  -webkit-user-select: none; /* Safari */        
+-moz-user-select: none; /* Firefox */
+-ms-user-select: none; /* IE10+/Edge */
+user-select: none; /* Standard */
+}
+@media screen and (max-width: 768px) {
+  .cardImg {
+    height: 70%;
+    max-width: 325px;
+    object-fit: cover;
+    border-radius: 9px;
+  }
+  .cardTextFont {
+    font-size: 16px;
+    font-weight: 500;
+    width: 325px;
+  }
+  
+  .specificCardContainer {
+    width:80vw;
+    height: 60vh;
+    -webkit-user-select: none; /* Safari */        
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+  user-select: none; /* Standard */
+  }
+}
+
+.accepedMissionOverlay {
+  background: rgba(0, 0, 0, 0.7);
+  position: absolute;
+  height: 65%;
+}
+.grow{
+  animation: grow 1s alternate-reverse;
+}
+@keyframes grow {
+  from {
+      transform: scale(1);
+  }
+  to {
+      transform: scale(5);
+  }
+}
