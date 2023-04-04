@@ -31,6 +31,7 @@ import {
   setDoneGame,
   setPoints,
   setMatchID,
+  setPartnerName,
 } from "../Redux/Utils";
 import { changeViewState } from "../Utils";
 
@@ -50,7 +51,9 @@ const Manager = () => {
   const [userPoints, setuserPoints] = useState(0);
   const [partnerPoints, setPartnersPoints] = useState(0);
   const [firstLoad, setfirstLoad] = useState(true);
+  const matchID = useSelector((state) => state.user.matchID);
 
+  
   // listen to changes on game object on DB
   useEffect(() => {
     let unsubscribe;
@@ -77,7 +80,7 @@ const Manager = () => {
           return;
         }
         if (status === "canceled") {
-          handleCanceledGame(cardID, interactedCards, partnerCards, userID, partnerID).then(async (res) => {
+          handleCanceledGame(cardID, interactedCards, partnerCards, userID, partnerID,matchID).then(async (res) => {
             setGameID(dispatch, "");
             setDoneGame(dispatch, false);
             changeViewState(0);
@@ -95,7 +98,7 @@ const Manager = () => {
           return;
         }
         if (status === "done") {
-          handleFinishGame(interactedCards, partnerCards, cardID, userID, partnerID, points, userPoints, partnerPoints).then((res) => {
+          handleFinishGame(interactedCards, partnerCards, cardID, userID, partnerID, points, userPoints, partnerPoints,matchID).then((res) => {
             setDoneGame(dispatch, true);
             setGameID(dispatch, "");
           });
@@ -143,6 +146,8 @@ const Manager = () => {
           setPartnersPoints(partner.points);
           if (hasActivePartner) {
             setPartnerImage(dispatch, partner.profileImageUrl);
+          setPartnerName(dispatch,partner.profile.username)
+
           }
         });
       };
@@ -178,7 +183,6 @@ const Manager = () => {
           const partnerCards = docData.cards.filter((el) => el.cardOwner !== userID);          
           setPartnersCards(partnerCards);
           setInteractedCards(dispatch, userCards);
-
           await turnOnActivePartner(userID, docData.partner.id);
         }
       } catch (err) {

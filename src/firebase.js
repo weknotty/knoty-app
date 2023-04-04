@@ -122,7 +122,7 @@ export const updateProfileProp = async (id, prop, value) => {
   await updateDoc(ref, { [prop]: value });
 };
 export const updateProfileCards = async (id, value) => {
-  const ref = doc(db, "users", id);
+  const ref = doc(db, "matches", id);
   await updateDoc(ref, { cards: value });
 };
 export const updateProfileData = async (id, payload) => {
@@ -483,7 +483,7 @@ export const getGameData = async (signature) => {
   }
   return data.docs[0].data();
 };
-export const handleCanceledGame = async (cardID, userCards, partnerCards, userID, partnerID) => {
+export const handleCanceledGame = async (cardID, userCards, partnerCards, userID, partnerID, matchID) => {
   try {
     const mappedCardsA = userCards.map((els) => {
       if (els.card == cardID) {
@@ -498,7 +498,7 @@ export const handleCanceledGame = async (cardID, userCards, partnerCards, userID
       }
       return els;
     });
-    const all = [updateProfileCards(userID, mappedCardsA), updateProfileCards(partnerID, mappedCardsB), removeGameTrailes(userID, partnerID)];
+    const all = [updateProfileCards(matchID, mappedCardsA), updateProfileCards(matchID, mappedCardsB), removeGameTrailes(userID, partnerID)];
     await Promise.all(all);
   } catch (err) {
     changeViewState(0);
@@ -531,7 +531,7 @@ export const updateGameStatus = async (signature, status) => {
   const gameRef = doc(db, "games", data.docs[0].id);
   await updateDoc(gameRef, { status: status });
 };
-export const handleFinishGame = async (userCards, partnerCards, cardID, userID, partnerID, gamePoints, userPoints, partnerPoints) => {
+export const handleFinishGame = async (userCards, partnerCards, cardID, userID, partnerID, gamePoints, userPoints, partnerPoints, matchID) => {
   const mappedCardsA = userCards.map((els) => {
     if (els.card == cardID) {
       return { ...els, isLiked: false };
@@ -548,8 +548,8 @@ export const handleFinishGame = async (userCards, partnerCards, cardID, userID, 
   const userBPayload = parseInt(gamePoints) + parseInt(partnerPoints);
   const all = [
     removeGameTrailes(userID, partnerID),
-    updateProfileCards(userID, mappedCardsA),
-    updateProfileCards(partnerID, mappedCardsB),
+    updateProfileCards(matchID, mappedCardsA),
+    updateProfileCards(matchID, mappedCardsB),
     updateProfileProp(userID, "points", userAPayload),
     updateProfileProp(partnerID, "points", userBPayload),
   ];
@@ -664,6 +664,12 @@ export const deleteAccountFromDB = async (matchSignature, partnerID, hasActiveGa
     const current = doc(db, "matches", el.id);
     return deleteDoc(current);
   });
+  const statusRef = collection(db, "matches");
+  const qu = query(statusRef, where("userID", "==", auth.currentUser.uid));
+  const qudata = await getDocs(qu);
+  if (!qudata.empty) {
+    await deleteDoc(qudata.docs[0].id);
+  }
   await Promise.all(mapped);
   sessionStorage.clear();
   window.location.href = "/";

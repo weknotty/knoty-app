@@ -102,3 +102,7 @@ export const setMatchID = (dispatch, value) => {
   dispatch(utils.setMatchID(value));
   return;
 };
+export const setPartnerName = (dispatch, value) => {
+  dispatch(utils.setPartnerName(value));
+  return;
+};

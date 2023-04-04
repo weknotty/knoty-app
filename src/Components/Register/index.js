@@ -180,9 +180,14 @@ const Register = () => {
         >
           <ButtonLoader state={submit} text="SUBMIT" />
         </div>
-        <a href="/" className="text-white mt-5 pointer">
-          User-Login
-        </a>
+        <div className="col-12 d-flex flex-column justify-content-center align-items-center">
+          <a href="/" className="text-white mt-5 pointer">
+            User-Login
+          </a>
+          <a href="/forgotpass" className="text-white align-self-center mt-3">
+            Forgot Password
+          </a>
+        </div>
       </div>
     </div>
   );

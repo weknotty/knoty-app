@@ -27,7 +27,9 @@ export const userSlice = createSlice({
     showInviteButton:false,
     gameID:"",
     points:"",
-    matchID:""
+    matchID:"",
+    partnerName:"",
+
 
   },
   reducers: {
@@ -106,6 +108,9 @@ export const userSlice = createSlice({
     setMatchID: (state, action) => {
       state.matchID = action.payload;
     },
+    setPartnerName: (state, action) => {
+      state.partnerName = action.payload;
+    },
   },
 });
 
@@ -134,7 +139,8 @@ export const {
   setUsername,
   setGameID,
   setPoints,
-  setMatchID
+  setMatchID,
+  setPartnerName
 } = userSlice.actions;
 
 // this is for configureStore

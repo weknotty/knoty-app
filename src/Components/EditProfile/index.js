@@ -154,15 +154,14 @@ const EditProfile = () => {
       }
       genderRef.current.classList.remove("border-danger", "border-2");
 
-      if (!interestedIn || interestedIn == 0) {
-        interstedRef.current.classList.add("border-danger", "border-2");
-        interstedRef.current.classList.remove("border-0");
-        handleProfileErrors("Please select your intersted type.");
-        setSubmit(false);
-        return;
-      }
+      // if (!interestedIn || interestedIn == 0) {
+      //   interstedRef.current.classList.add("border-danger", "border-2");
+      //   interstedRef.current.classList.remove("border-0");
+      //   handleProfileErrors("Please select your intersted type.");
+      //   setSubmit(false);
+      //   return;
+      // }
       interstedRef.current.classList.remove("border-danger", "border-2");
-
       if (!age || age == 0 || age < 0 || age < 18) {
         ageRef.current.classList.add("border-danger", "border-2");
         ageRef.current.classList.remove("border-0");
@@ -273,7 +272,7 @@ const EditProfile = () => {
         </div>
         {/* interests */}
 
-        <div className="col d-flex flex-column justify-content-center align-items-center ms-2 ">
+        <div className="col d-none flex-column justify-content-center align-items-center ms-2 ">
           <span className="col-12 text-start w-5">Interested-In:</span>
           <select value={interestedIn} onChange={(e) => setInterestedIn(e.target.value)} className="form-select border-0  greyBtn" ref={interstedRef}>
             <option value="0">Choose</option>
@@ -323,8 +322,8 @@ const EditProfile = () => {
                     <span
                       className="border-bottom bg-white col-12 text-center rounded w-3 pointer"
                       onClick={() => {
-                        setcountryFound(el.name.toLowerCase());
-                        setCountry(el.name.toLowerCase());
+                        setcountryFound(el.name);
+                        setCountry(el.name);
                         return;
                       }}
                     >

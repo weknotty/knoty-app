@@ -42,7 +42,7 @@ const ChoosePartner = () => {
       {/* add user connection popup */}
 
       {showPopup && <ChoosePartnerPopup setShowPopup={setShowPopup} />}
-      <span className="mb-5 mt-5 fs-3">Choosing My Partner</span>
+      <span className="mb-3 mt-3 fs-3">Choosing My Partner</span>
 
       <InvitePopup />
       <div className="col-auto d-flex flex-row justify-content-center align-items-center pinkBorder p-1 mb-1 rounded pointer smFont" onClick={handleCopy}>
