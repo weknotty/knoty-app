@@ -487,11 +487,15 @@ export const handleCanceledGame = async (cardID, userCards, partnerCards, userID
   try {
     const mappedCardsA = userCards.map((els) => {
       // console.log(els);
-      return { ...els, isLiked: false };
+      if (els.card == cardID) {
+        return { ...els, isLiked: false };
+      }
       return els;
     });
     const mappedCardsB = partnerCards.map((els) => {
-      return { ...els, isLiked: false };
+      if (els.card == cardID) {
+        return { ...els, isLiked: false };
+      }
       return els;
     });
     const allCard = [...mappedCardsA, ...mappedCardsB];
@@ -531,11 +535,15 @@ export const updateGameStatus = async (signature, status) => {
 };
 export const handleFinishGame = async (userCards, partnerCards, cardID, userID, partnerID, gamePoints, userPoints, partnerPoints, matchID) => {
   const mappedCardsA = userCards.map((els) => {
-    return { ...els, isLiked: false };
+    if (els.card == cardID) {
+      return { ...els, isLiked: false };
+    }
     return els;
   });
   const mappedCardsB = partnerCards.map((els) => {
-    return { ...els, isLiked: false };
+    if (els.card == cardID) {
+      return { ...els, isLiked: false };
+    }
     return els;
   });
   const allCard = [...mappedCardsA, ...mappedCardsB];
