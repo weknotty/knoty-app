@@ -291,7 +291,7 @@ export const setMatchSignature = async (id, partnerID, signature) => {
 export const removeMatchSignature = async (id, partnerID) => {
   const userRef = doc(db, "users", id);
   const partnerRef = doc(db, "users", partnerID);
-  await Promise.all[(updateDoc(userRef, { matchSignature: "" }), updateDoc(partnerRef, { matchSignature: "" }))];
+  await Promise.all[(updateDoc(userRef, { matchSignature: "", points: 0 }), updateDoc(partnerRef, { matchSignature: "", points: 0  }))];
 };
 export const turnOnActivePartner = async (id, partnerID) => {
   const userRef = doc(db, "users", id);
@@ -486,19 +486,17 @@ export const getGameData = async (signature) => {
 export const handleCanceledGame = async (cardID, userCards, partnerCards, userID, partnerID, matchID) => {
   try {
     const mappedCardsA = userCards.map((els) => {
-      if (els.card == cardID) {
-        // console.log(els);
-        return { ...els, isLiked: false };
-      }
+      // console.log(els);
+      return { ...els, isLiked: false };
       return els;
     });
     const mappedCardsB = partnerCards.map((els) => {
-      if (els.card == cardID) {
-        return { ...els, isLiked: false };
-      }
+      return { ...els, isLiked: false };
       return els;
     });
-    const all = [updateProfileCards(matchID, mappedCardsA), updateProfileCards(matchID, mappedCardsB), removeGameTrailes(userID, partnerID)];
+    const allCard = [...mappedCardsA, ...mappedCardsB];
+    console.log("allCard", allCard);
+    const all = [updateProfileCards(matchID, allCard), removeGameTrailes(userID, partnerID)];
     await Promise.all(all);
   } catch (err) {
     changeViewState(0);
@@ -533,23 +531,20 @@ export const updateGameStatus = async (signature, status) => {
 };
 export const handleFinishGame = async (userCards, partnerCards, cardID, userID, partnerID, gamePoints, userPoints, partnerPoints, matchID) => {
   const mappedCardsA = userCards.map((els) => {
-    if (els.card == cardID) {
-      return { ...els, isLiked: false };
-    }
+    return { ...els, isLiked: false };
     return els;
   });
   const mappedCardsB = partnerCards.map((els) => {
-    if (els.card == cardID) {
-      return { ...els, isLiked: false };
-    }
+    return { ...els, isLiked: false };
     return els;
   });
+  const allCard = [...mappedCardsA, ...mappedCardsB];
+
   const userAPayload = parseInt(gamePoints) + parseInt(userPoints);
   const userBPayload = parseInt(gamePoints) + parseInt(partnerPoints);
   const all = [
     removeGameTrailes(userID, partnerID),
-    updateProfileCards(matchID, mappedCardsA),
-    updateProfileCards(matchID, mappedCardsB),
+    updateProfileCards(matchID, allCard),
     updateProfileProp(userID, "points", userAPayload),
     updateProfileProp(partnerID, "points", userBPayload),
   ];
