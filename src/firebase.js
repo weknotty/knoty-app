@@ -394,6 +394,7 @@ export const getCategories = async () => {
   });
   return mapped;
 };
+
 export const getCategoriesByType = async (category) => {
   const ref = collection(db, "cards");
   const q = query(ref, where("category", "==", category));
@@ -546,8 +547,8 @@ export const handleFinishGame = async (userCards, partnerCards, cardID, userID, 
     }
     return els;
   });
-  const allCard = [...mappedCardsA, ...mappedCardsB];
 
+  const allCard = [...mappedCardsA, ...mappedCardsB];
   const userAPayload = parseInt(gamePoints) + parseInt(userPoints);
   const userBPayload = parseInt(gamePoints) + parseInt(partnerPoints);
   const all = [
