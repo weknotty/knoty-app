@@ -49,7 +49,11 @@ const SpecificCard = () => {
     duration: 250,
     iterations: 1,
   };
+  useEffect(()=>{
+    const bottomBarContainer = document.querySelector("body");
+    bottomBarContainer.style.overflowY = "hidden"
 
+  },[])
   const swipeHanlder = useSwipeable({
     onSwiped: (e) => {
       const direction = e.dir;
@@ -119,8 +123,8 @@ const SpecificCard = () => {
   }, [swipedLeft, swipedRight]);
 
   return (
-    <div className="animated col-xxl-5 col-xl-5 col-lg-6 col-md-6 col-sm-12 col-11 d-flex flex-column justify-content-start align-items-center CardContainer position-relative">
-      <div className="col-12 d-flex flex-row justify-content-center align-items-center" id="containerus" {...swipeHanlder}>
+    <div className="animated col-xxl-5 col-xl-5 col-lg-6 col-md-6 col-sm-12 col-11 d-flex flex-column justify-content-start align-items-center  CardContainer position-relative">
+      <div className="col-12 d-flex flex-row justify-content-center align-items-center " id="containerus" {...swipeHanlder}>
         <Card userID={userID} currentCard={currentCard} setNextCard={setNextCard} hasActiveGame={hasActiveGame} />
       </div>
     </div>
