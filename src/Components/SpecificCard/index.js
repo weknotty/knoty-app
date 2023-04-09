@@ -7,7 +7,7 @@ import Rating from "../Rating";
 import AccepedMission from "../AcceptMission";
 import { useSwipeable } from "react-swipeable";
 
-const Card = ({ userID, currentCard, setNextCard,hasActiveGame }) => {
+const Card = ({ userID, currentCard, setNextCard, hasActiveGame }) => {
   const [isAcceped, setisAcceped] = useState(false);
   if (!currentCard || !currentCard.hasOwnProperty("imageUrl")) {
     return <ButtonLoader state={true} />;
@@ -16,7 +16,7 @@ const Card = ({ userID, currentCard, setNextCard,hasActiveGame }) => {
     <div className="col-12 d-flex flex-column justify-content-center align-items-center m-auto specificCard position-relative">
       <span className="fs-3">{currentCard.name}</span>
       <div className="col-auto m-auto d-flex flex-column justify-content-between align-items-center cardBorder m-2  rounded-3 specificCardContainer animated position-relative">
-      <AccepedMission isAcceped={hasActiveGame} />
+        <AccepedMission isAcceped={hasActiveGame} />
 
         <img src={currentCard.imageUrl} className="cardImg m-1 col-11 mt-3 rounded" onClick={() => setNextCard(true)} />
         <span className=" text-center mb-2 cardTextFont align-self-center">{currentCard.innerText}</span>
@@ -25,7 +25,6 @@ const Card = ({ userID, currentCard, setNextCard,hasActiveGame }) => {
     </div>
   );
 };
-
 
 const SpecificCard = () => {
   window.history.pushState({ appState: "4" }, "pushManageStore", "");
@@ -41,7 +40,7 @@ const SpecificCard = () => {
   const [nextCard, setNextCard] = useState(false);
   const [swipedRight, setSwipedRight] = useState(false);
   const [swipedLeft, setSwipedLeft] = useState(false);
-  
+
   const newspaperLeft = [{ transform: "translate(-300px,-20px)" }];
   const newspaperRight = [{ transform: "translate(300px,-20px)" }];
 
@@ -49,11 +48,13 @@ const SpecificCard = () => {
     duration: 250,
     iterations: 1,
   };
-  useEffect(()=>{
-    const bottomBarContainer = document.querySelector("body");
-    bottomBarContainer.style.overflowY = "hidden"
-
-  },[])
+  useEffect(() => {
+    const body = document.querySelector("body");
+    body.style.overflowY = "hidden";
+    return () => {
+      body.style.overflowY = "auto";
+    };
+  }, []);
   const swipeHanlder = useSwipeable({
     onSwiped: (e) => {
       const direction = e.dir;
@@ -96,7 +97,7 @@ const SpecificCard = () => {
       if (ref.current) {
         ref.current.animate(newspaperRight, newspaperTiming);
       }
-      setCardLiked(matchID, interactedCards, currentCard, cardsCategory, true,userID)
+      setCardLiked(matchID, interactedCards, currentCard, cardsCategory, true, userID)
         .catch((err) => console.log(err))
         .then(() => {
           setNextCard(true);
@@ -106,11 +107,10 @@ const SpecificCard = () => {
       return;
     }
     if (swipedLeft) {
-
       if (ref.current) {
         ref.current.animate(newspaperLeft, newspaperTiming);
       }
-      setCardLiked(matchID, interactedCards, currentCard, cardsCategory, false,userID)
+      setCardLiked(matchID, interactedCards, currentCard, cardsCategory, false, userID)
         .catch((err) => console.log(err))
         .then(() => {
           setNextCard(true);

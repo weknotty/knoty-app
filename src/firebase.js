@@ -291,7 +291,7 @@ export const setMatchSignature = async (id, partnerID, signature) => {
 export const removeMatchSignature = async (id, partnerID) => {
   const userRef = doc(db, "users", id);
   const partnerRef = doc(db, "users", partnerID);
-  await Promise.all[(updateDoc(userRef, { matchSignature: "", points: 0 }), updateDoc(partnerRef, { matchSignature: "", points: 0  }))];
+  await Promise.all[(updateDoc(userRef, { matchSignature: "", points: 0 }), updateDoc(partnerRef, { matchSignature: "", points: 0 }))];
 };
 export const turnOnActivePartner = async (id, partnerID) => {
   const userRef = doc(db, "users", id);
@@ -704,26 +704,30 @@ const returnSignale = async (signature, myCards, partnerCards) => {
     if (!cardA.hasOwnProperty("cardOwner")) {
       return;
     }
-
     for (let cardB of partnerCards) {
       if (cardA.isLiked && cardB.isLiked) {
-        const cardID = cardA.card;
-        console.log("Card owner", cardA.cardOwner);
-        console.log("Card owner2", cardB.cardOwner);
+        if (cardA.card == cardB.card) {
+          // console.log("cardA",cardA)
+          // console.log("cardB",cardB)
 
-        const cardsRef = query(collection(db, "cards"), where("id", "==", cardID));
-        const gameSignature = signature;
-        const card = await getDocs(cardsRef);
-        const cardData = card.docs[0].data();
-        const gamePayload = createNewGame({
-          gameSignature: gameSignature,
-          cardID: cardData.id,
-          duration: cardData.duration,
-          imageUrl: cardData.imageUrl,
-          cardName: cardData.name,
-          points: cardData.points,
-        });
-        return { gamePayload, owner: whoShouldOpen };
+          const cardID = cardA.card;
+          // console.log("Card owner", cardA.cardOwner);
+          // console.log("Card owner2", cardB.cardOwner);
+
+          const cardsRef = query(collection(db, "cards"), where("id", "==", cardID));
+          const gameSignature = signature;
+          const card = await getDocs(cardsRef);
+          const cardData = card.docs[0].data();
+          const gamePayload = createNewGame({
+            gameSignature: gameSignature,
+            cardID: cardData.id,
+            duration: cardData.duration,
+            imageUrl: cardData.imageUrl,
+            cardName: cardData.name,
+            points: cardData.points,
+          });
+          return { gamePayload, owner: whoShouldOpen };
+        }
       }
     }
   }

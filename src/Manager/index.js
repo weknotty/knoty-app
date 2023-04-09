@@ -179,8 +179,11 @@ const Manager = () => {
         }
         if (docData.matchStatus == "approved") {
           setMatchID(dispatch, doc.docs[0].id);
-          const userCards = docData.cards.filter((el) => el.cardOwner === userID);
-          const partnerCards = docData.cards.filter((el) => el.cardOwner !== userID);          
+          const userCards = docData.cards.filter((el) => el.cardOwner == userID);
+          const partnerCards = docData.cards.filter((el) => el.cardOwner != userID);
+          console.log("userCards",userCards)
+          console.log("partnerCards",partnerCards)
+
           setPartnersCards(partnerCards);
           setInteractedCards(dispatch, userCards);
           await turnOnActivePartner(userID, docData.partner.id);
