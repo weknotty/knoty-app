@@ -41,7 +41,6 @@ const AcceptedStarted = ({ isAcceped, gameData, gameSignature }) => {
       interval = setInterval(() => {
         const startTime = parseInt(gameData.startedIn);
         const duration = parseInt(gameData.duration) * 60 * 60;
-        console.group(startTime,duration)
         const now = new Date().getTime() / 1000;
         const maybe = startTime + duration;
         const untilNow = Math.round(maybe - now);
