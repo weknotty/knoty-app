@@ -52,13 +52,13 @@ const ProfileButton = ({ isLocal, isCurrentMatch, matchSignature, setchangeUser,
   if (isCurrentMatch) {
     return (
       <div className="col-12 d-flex flex-column justify-content-center align-items-center">
-        <div
+        {/* <div
           className="col-10 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill   p-2 midFont pointer mt-2"
           onClick={() => setchangeUser((prev) => !prev)}
         >
           <span className="">SWITCH</span>
           <img src="/assets/icons/switch.svg" height="18" width="18" />
-        </div>
+        </div> */}
         <div
           onClick={() => cancelMatch(userID, "approved", "done", matchSignature, partnerID, hasActiveGame)}
           className="col-10 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill  mt-3 p-2 mb-3 midFont pointer"
@@ -70,17 +70,18 @@ const ProfileButton = ({ isLocal, isCurrentMatch, matchSignature, setchangeUser,
   }
   return (
     <div className="col-12 d-flex flex-column justify-content-center align-items-center">
-      <div className="pinkBorder rounded shadow-sm pe-2 ps-2 pointer col-5 text-center" onClick={() => setReinvite(true)}>
-        <ButtonLoader state={reinvite} text="Invite Again"/>
+      <div className="col-10 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill   p-2 midFont pointer mt-2" onClick={() => setReinvite(true)}>
+        {/* <ButtonLoader state={reinvite} text="Invite Again"/> */}
+        <span className="">Invite Again</span>
       </div>
 
-      <div
+      {/* <div
         className="col-10 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill   p-2 midFont pointer mt-2"
         onClick={() => setchangeUser((prev) => !prev)}
       >
         <span className="">SWITCH</span>
         <img src="/assets/icons/switch.svg" height="18" width="18" />
-      </div>
+      </div> */}
       <div
         onClick={() => changeViewState(1)}
         className="col-10 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill  mt-3 p-2 mb-3 midFont pointer"

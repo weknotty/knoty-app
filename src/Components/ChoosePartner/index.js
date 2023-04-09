@@ -15,7 +15,17 @@ const ChoosePartner = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [partnersList, setpartnersList] = useState([]);
   const secretCode = useSelector((state) => state.user.secretCode);
-  console.log("hasActivePartner",hasActivePartner)
+  console.log("hasActivePartner",hasActivePartner);
+
+  useEffect(()=>{
+    const item = window.sessionStorage.getItem("codeTemp");
+    console.log(item + "temp")
+    if(item){
+      setShowPopup(true);
+      // window.sessionStorage.removeItem("codeTemp");
+    }
+},[])
+
 
   useEffect(() => {
     if (userID) {

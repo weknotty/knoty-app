@@ -18,7 +18,7 @@ const ChoosePartnerPopup = ({ setShowPopup }) => {
   // invitation code
   useEffect(()=>{
       const item = window.sessionStorage.getItem("codeTemp");
-      console.log("temp")
+      console.log(item + "temp")
       if(item){
         setSecretCodeLocal(item);
         window.sessionStorage.removeItem("codeTemp");

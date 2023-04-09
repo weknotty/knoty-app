@@ -1,9 +1,11 @@
 .App {
   min-height: 100vh;
 }
-
+body {
+  padding-bottom: env(safe-area-inset-bottom);
+}
 .fullHeight {
-  min-height: 100vh;
+  min-height:100vh;;
 }
 
 .imgBg {
@@ -13,7 +15,7 @@
 }
 
 .profileContainer {
-  min-height: 70vh
+  min-height:60vh;
 }
 
 .pointer {
@@ -21,9 +23,14 @@
 }
 
 @media screen and (max-width: 600px) {
-  /* .profileContainer {
-    min-height: 65vh
+  /* .App {
+    min-height: calc(100vh - 50px);
+  }
+  
+  .fullHeight {
+    min-height: calc(100vh - 50px);
   } */
+  
 }
 
 .animated {

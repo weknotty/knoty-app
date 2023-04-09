@@ -20,7 +20,7 @@ const Card = ({ userID, currentCard, setNextCard,hasActiveGame }) => {
 
         <img src={currentCard.imageUrl} className="cardImg m-1 col-11 mt-3 rounded" onClick={() => setNextCard(true)} />
         <span className=" text-center mb-2 cardTextFont align-self-center">{currentCard.innerText}</span>
-        <Rating currentCard={currentCard} setisAcceped={setisAcceped} userID={userID} key={currentCard.id} />
+        <Rating isSpecificCard={true} currentCard={currentCard} setisAcceped={setisAcceped} userID={userID} key={currentCard.id} />
       </div>
     </div>
   );
@@ -42,8 +42,8 @@ const SpecificCard = () => {
   const [swipedRight, setSwipedRight] = useState(false);
   const [swipedLeft, setSwipedLeft] = useState(false);
   
-  const newspaperLeft = [{ transform: " translateX(-300px)" }];
-  const newspaperRight = [{ transform: " translateX(300px)" }];
+  const newspaperLeft = [{ transform: "translate(-300px,-20px)" }];
+  const newspaperRight = [{ transform: "translate(300px,-20px)" }];
 
   const newspaperTiming = {
     duration: 250,
@@ -119,7 +119,7 @@ const SpecificCard = () => {
   }, [swipedLeft, swipedRight]);
 
   return (
-    <div className="animated col-xxl-5 col-xl-5 col-lg-6 col-md-6 col-sm-11 col-11 d-flex flex-column justify-content-start align-items-center profileContainer position-relative">
+    <div className="animated col-xxl-5 col-xl-5 col-lg-6 col-md-6 col-sm-12 col-11 d-flex flex-column justify-content-start align-items-center CardContainer position-relative">
       <div className="col-12 d-flex flex-row justify-content-center align-items-center" id="containerus" {...swipeHanlder}>
         <Card userID={userID} currentCard={currentCard} setNextCard={setNextCard} hasActiveGame={hasActiveGame} />
       </div>

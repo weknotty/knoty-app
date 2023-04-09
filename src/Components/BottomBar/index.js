@@ -36,9 +36,9 @@ const BottomBar = () => {
   return (
     <div className="col-12 d-flex flex-row justify-content-center align-items-center velevtBg bottomBarContainer">
       <div className="col-xxl-3 col-xl-5 col-lg-6 col-md-6 col-sm-12 col-12 d-flex flex-row justify-content-evenly align-items-center">
-        <div onClick={() => changeViewState(0)} className="col-auto d-flex flex-column justify-content-center align-items-center pointer ">
+        {/* <div onClick={() => changeViewState(0)} className="col-auto d-flex flex-column justify-content-center align-items-center pointer ">
           <img src="/assets/icons/home.svg" height="25" width="25" />
-        </div>
+        </div> */}
         <div onClick={() => changeViewState(0)} className="col-auto d-flex flex-column justify-content-center align-items-center pointer ">
           <img src="/assets/icons/profile.svg" height="25" width="25" />
         </div>

@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { setCardRating } from "../../firebase";
 import StarsRating from "../StarsRating";
+import SpecificCard from "../SpecificCard";
 
-const Rating = ({ userID, currentCard, setisAcceped, likeCard }) => {
+const Rating = ({ userID, currentCard, setisAcceped, likeCard, isSpecificCard }) => {
   const interactedCards = useSelector((state) => state.user.interactedCards);
   const cardID = currentCard.id;
   const [stars, setStars] = useState([
@@ -16,7 +17,7 @@ const Rating = ({ userID, currentCard, setisAcceped, likeCard }) => {
 
   useEffect(() => {
     const item = interactedCards.filter((el) => el.card == cardID);
-    console.log(item)
+    console.log(item);
     if (item == false) {
       return;
     }
@@ -32,17 +33,10 @@ const Rating = ({ userID, currentCard, setisAcceped, likeCard }) => {
 
   return (
     <div className="col-11 d-flex flex-row justify-content-between align-items-center mb-1">
-      <StarsRating currentCard={currentCard} userID={userID} key="dsfjsdmfisofmidfsmdf"/>
+      <StarsRating currentCard={currentCard} userID={userID} key="dsfjsdmfisofmidfsmdf" isSpecificCard={isSpecificCard} />
       <div className="col-auto d-flex flex-row justify-content-center align-items-center">
-        <img
-          src={likeCard ? "/assets/icons/doneCard.svg" : "/assets/icons/openCard.svg"}
-          className=""
-          height="25"
-          width="25"
-        />
-        
+        <img src={likeCard ? "/assets/icons/doneCard.svg" : "/assets/icons/openCard.svg"} className="" height="25" width="25" />
       </div>
-      
     </div>
   );
 };

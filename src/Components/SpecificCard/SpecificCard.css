@@ -16,6 +16,30 @@
 -ms-user-select: none; /* IE10+/Edge */
 user-select: none; /* Standard */
 }
+@media screen and (max-width: 768px) {
+  .cardImg {
+    height: 70%;
+    max-width: 325px;
+    object-fit: cover;
+    border-radius: 9px;
+  }
+  .cardTextFont {
+    font-size: 16px;
+    font-weight: 500;
+    width: 325px;
+  }
+  .CardContainer{
+    height:60vh ;
+  }
+  .specificCardContainer {
+    width:70vw;
+    height:50vh;
+    -webkit-user-select: none; /* Safari */        
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+  user-select: none; /* Standard */
+  }
+}
 
 .accepedMissionOverlay {
   background: rgba(0, 0, 0, 0.7);
