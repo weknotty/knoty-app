@@ -77,6 +77,9 @@ const UserLogin = () => {
         >
           <ButtonLoader state={submit} text="APPROVAL" />
         </div>
+        <div className='col-12 smFont m-1 d-flex flex-row justify-content-center align-items-center'>
+        By continuing you are agreeing to our <a href="/assets/termsofuse.html" className="m-1 text-dark" target="_blank">Terms of use</a> and <a href="/assets/disclaimer.html" className="m-1 text-dark" target="_blank">Legal disclaimer.</a>
+      </div>
         <a href="/register" className="text-white mt-5">
           REGISTRATION
         </a>
