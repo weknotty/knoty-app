@@ -7,6 +7,9 @@ import ButtonLoader from "../ButtonLoader";
 import "./UserProfile.css";
 const ProfileButton = ({ isLocal, isCurrentMatch, matchSignature, setchangeUser, userID, partnerID, secretCode }) => {
   const hasActiveGame = useSelector((state) => state.user.hasActiveGame);
+  const hasActivePartner = useSelector((state) => state.user.hasActivePartner);
+  const hasPendingMatch = useSelector((state) => state.user.hasPendingMatch);
+
   const dispatch = useDispatch();
   const [reinvite, setReinvite] = useState(false);
   useEffect(() => {
@@ -70,10 +73,10 @@ const ProfileButton = ({ isLocal, isCurrentMatch, matchSignature, setchangeUser,
   }
   return (
     <div className="col-12 d-flex flex-column justify-content-center align-items-center">
-      <div className="col-10 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill   p-2 midFont pointer mt-2" onClick={() => setReinvite(true)}>
+      {!hasPendingMatch && !hasActivePartner && <div className="col-10 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill   p-2 midFont pointer mt-2" onClick={() => setReinvite(true)}>
         {/* <ButtonLoader state={reinvite} text="Invite Again"/> */}
         <span className="">Invite Again</span>
-      </div>
+      </div>}
 
       {/* <div
         className="col-10 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill   p-2 midFont pointer mt-2"
