@@ -5,6 +5,7 @@ import { changeViewState } from "../../Utils";
 import ApproveButton from "../ApproveButton";
 import ConnectionImage from "../ConnectionImage";
 import "./ContactingPartner.css";
+import { useEffect } from "react";
 
 const ContactingPartner = () => {
   window.history.pushState({ appState: "1" }, "pushManageStore", "");
@@ -18,8 +19,8 @@ const ContactingPartner = () => {
   const pendingMatchStatus = useSelector((state) => state.user.pendingMatchStatus);
   const hasActiveGame = useSelector((state) => state.user.hasActiveGame);
   const [submit, setSubmit] = useState(false);
-
-  const onApproveMatch = () => {
+  const [approveMATCH, setapproveMATCH] = useState(false);
+  const onApproveMatch = async () => {
     if (!pendingMatchStatus) {
       setSubmit(true);
       findMatchByCode(secretCode, currentUser.userID, matchSignature, partnerID).then(async (res) => {
@@ -47,6 +48,16 @@ const ContactingPartner = () => {
       return;
     }
   };
+useEffect(()=>{
+  if(approveMATCH){
+    onApproveMatch().then(()=>{
+      console.log("done")
+      setapproveMATCH(false)
+    })
+  }
+},[approveMATCH])
+
+
 
   return (
     <div className="animated col-xxl-3 col-xl-5 col-lg-6 col-md-6 col-sm-11 col-11 d-flex flex-column m-auto justify-content-start justify-content-start align-items-center align-self-end ">
@@ -57,6 +68,7 @@ const ContactingPartner = () => {
         <img src={partnerImage} className="profileImageMid" />
       </div>
       <ApproveButton
+      setApproveMatch={setapproveMATCH}
         onApproveMatch={onApproveMatch}
         status={pendingMatchStatus}
         submit={submit}

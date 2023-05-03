@@ -20,17 +20,6 @@ const Register = () => {
   const emailRef = createRef();
   const [isOver18, setisOver18] = useState(null);
 
-  const handlePasswordDisplay = (e) => {
-    try {
-      const elems = document.querySelectorAll(".pss");
-      const centerAbs = document.querySelectorAll(".centerAbs");
-      elems.forEach((el) => {
-        el.type = "password";
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  };
   useEffect(() => {
     if (submit) {
       if (!userName || userName.length < 3) {
@@ -48,7 +37,7 @@ const Register = () => {
         emailRef.current.classList.remove("border-0");
         return;
       }
-      if (password.length < 6) {
+      if (password.length < 6 || matchingPassword.length < 6) {
         setToast({ state: "failed", text: "Password should have minimum 6 characters." });
         setSubmit(false);
         passwordRef.current.classList.add("border-danger", "border-5");
@@ -128,7 +117,7 @@ const Register = () => {
         <img src="/assets/icons/logo.svg" height="200" width="200" />
         <span className="col-10 mb-4 fs-3">Registration</span>
         <div className="col-10 d-flex flex-column justify-content-center align-items-center">
-          <GoogleButton text={"REGISTER WITH GOOGLE"} />
+          <GoogleButton text={"REGISTER WITH GOOGLE"}  width={"12"}/>
           --OR--
           <input
             type="text"
@@ -180,9 +169,18 @@ const Register = () => {
         >
           <ButtonLoader state={submit} text="SUBMIT" />
         </div>
-        <div className='col-12 smFont m-1 d-flex flex-row justify-content-center align-items-center'>
-        By continuing you are agreeing to our <a href="/assets/termsofuse.html" className="m-1 text-dark" target="_blank">Terms of use</a> and <a href="/assets/disclaimer.html" className="m-1 text-dark" target="_blank">Legal disclaimer.</a>
-      </div>
+        <div className="col-12 smFont m-1 d-flex flex-column justify-content-center align-items-center">
+          By continuing you are agreeing to our{" "}
+          <div className='col-12 d-flex flex-row justify-content-center align-items-center'>
+          <a href="/assets/termsofuse.html" className="m-1 text-dark" target="_blank">
+            Terms of use
+          </a>{" "}
+          and{" "}
+          <a href="/assets/disclaimer.html" className="m-1 text-dark" target="_blank">
+            Legal disclaimer
+          </a>
+          </div>
+        </div>
         <div className="col-12 d-flex flex-column justify-content-center align-items-center">
           <a href="/" className="text-white mt-5 pointer">
             User-Login

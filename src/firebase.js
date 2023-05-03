@@ -14,6 +14,7 @@ import {
   setPersistence,
   FacebookAuthProvider,
   sendPasswordResetEmail,
+  deleteUser,
 } from "firebase/auth";
 import { logEvent } from "firebase/analytics";
 import { getAnalytics } from "firebase/analytics";
@@ -660,6 +661,7 @@ export const deleteAccountFromDB = async (matchSignature, partnerID, hasActiveGa
   const matchForDelte = await getDocs(matchQuery);
   await deleteDoc(ref);
   if (matchForDelte.empty) {
+    await deleteUser(auth.currentUser);
     sessionStorage.clear();
     window.location.href = "/";
     return;
@@ -674,6 +676,7 @@ export const deleteAccountFromDB = async (matchSignature, partnerID, hasActiveGa
   if (!qudata.empty) {
     await deleteDoc(qudata.docs[0].id);
   }
+  await deleteUser(auth.currentUser);
   await Promise.all(mapped);
   sessionStorage.clear();
   window.location.href = "/";

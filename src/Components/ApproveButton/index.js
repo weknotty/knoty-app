@@ -2,7 +2,7 @@ import { cancelMatch } from "../../firebase";
 import { changeViewState } from "../../Utils";
 import ButtonLoader from "../ButtonLoader";
 
- const ApproveButton = ({ status, onApproveMatch, submit, userID, matchSignature, partnerID,hasActiveGame }) => {
+ const ApproveButton = ({ status, onApproveMatch, submit, userID, matchSignature, partnerID,hasActiveGame,setApproveMatch }) => {
     if (submit) {
       return <ButtonLoader state={true} />;
     }
@@ -10,7 +10,7 @@ import ButtonLoader from "../ButtonLoader";
       return (
         <div className="col-12 d-flex flex-column justify-content-center align-items-center">
           <div
-            onClick={onApproveMatch}
+            onClick={()=>setApproveMatch(true)}
             className="col-10 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill  mt-3 p-2 mb-1 midFont pointer"
             disabled={true}
           >
@@ -40,7 +40,7 @@ import ButtonLoader from "../ButtonLoader";
       return (
         <div className="col-12 d-flex flex-column justify-content-center align-items-center">
           <div
-            onClick={onApproveMatch}
+            onClick={()=>setApproveMatch(true)}
             className="col-10 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill  mt-3 p-2 mb-1 midFont pointer"
             disabled={true}
           >

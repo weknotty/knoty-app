@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { handleNewEntry, loginWithGoogle } from "../../firebase";
 import ButtonLoader from "../ButtonLoader";
 
-const GoogleButton = ({ text }) => {
+const GoogleButton = ({ text,width }) => {
   const [googleSignin, setGoogleSignin] = useState(false);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -25,7 +25,7 @@ const GoogleButton = ({ text }) => {
   }, [googleSignin]);
   return (
     <div
-      className="col-10 d-flex flex-row justify-content-evenly align-items-center greyBtn text-dark rounded-pill p-2 btnShadow mt-3 pointer"
+      className={`col-${width} d-flex flex-row justify-content-evenly align-items-center greyBtn text-dark rounded-pill p-2 btnShadow mt-3 pointer`}
       onClick={() => setGoogleSignin(true)}
     >
       {googleSignin ? (
