@@ -661,9 +661,10 @@ export const deleteAccountFromDB = async (matchSignature, partnerID, hasActiveGa
   const matchForDelte = await getDocs(matchQuery);
   await deleteDoc(ref);
   if (matchForDelte.empty) {
-    await deleteUser(auth.currentUser);
-    sessionStorage.clear();
-    window.location.href = "/";
+    deleteUser(auth.currentUser).then(()=>{
+      sessionStorage.clear();
+      window.location.href = "/";
+    })
     return;
   }
   const mapped = matchForDelte.docs.map((el) => {
@@ -676,10 +677,13 @@ export const deleteAccountFromDB = async (matchSignature, partnerID, hasActiveGa
   if (!qudata.empty) {
     await deleteDoc(qudata.docs[0].id);
   }
-  await deleteUser(auth.currentUser);
   await Promise.all(mapped);
-  sessionStorage.clear();
-  window.location.href = "/";
+   deleteUser(auth.currentUser).then(()=>{
+    sessionStorage.clear();
+    window.location.href = "/";
+  })
+
+
 };
 const createNewGame = ({ gameSignature, duration, imageUrl, cardID, cardName, points }) => {
   const now = new Date().getTime() / 1000;
