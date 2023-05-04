@@ -8,13 +8,12 @@ const TopBar = () => {
   const hasActivePartner = useSelector((state) => state.user.hasActivePartner);
   const partnerName = useSelector((state) => state.user.partnerName);
   const hasActiveGame = useSelector((state) => state.user.hasActiveGame);
-
   return (
     <div className="col-12 d-flex flex-column justify-content-center align-items-center imgBg position-relative">
     {hasActiveGame && <div className="position-absolute h-100 col-12" style={{zIndex:"999"}}/>}
       <div className="col-xxl-3 col-xl-5 col-lg-6 col-md-6 col-sm-11 col-11 d-flex flex-row justify-content-center align-items-center ">
         <div className="col d-flex flex-column justify-content-between align-items-center">
-          <div className="position-relative col d-flex flex-column justify-content-center align-items-center pointer" onClick={() => changeViewState(5)}>
+          <div className="position-relative col d-flex flex-column justify-content-center align-items-center pointer" onClick={() =>hasActivePartner?  changeViewState(5) : null}>
             {partnerImage && hasActivePartner ? <img src={partnerImage} className="profileSm" /> : <span className="bg-light rounded rounded-circle profileSm"></span>}
             <span className="position-absolute"></span>
           </div>

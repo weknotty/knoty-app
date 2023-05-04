@@ -28,11 +28,8 @@ const Login = () => {
     <div className="col-12 d-flex flex-column justify-content-center align-items-center imgBg">
       <div className="col-xxl-3 col-xl-5 col-lg-5 col-md-7 col-sm-12 col-12 m-auto d-flex flex-column justify-content-center align-items-center fullHeight text-center text-white animated">
         <img src="/assets/icons/logo.svg" height="200" width="200" />
-        <span className="col-10 mb-4">
-          text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text
-          text text text text text
-        </span>
-        <GoogleButton text="LOGIN WITH GOOGLE" width={10}/>
+        <span className="col-10 mb-4 fs-3">Come, get closer</span>
+        <GoogleButton text="LOGIN WITH GOOGLE" width={10} />
         <FacebookButton text="LOGIN WITH FACEBOOK" />
         <a
           href="/login"
@@ -44,21 +41,20 @@ const Login = () => {
         </a>
         <div className="col-12 smFont m-1 d-flex flex-column justify-content-center align-items-center">
           By continuing you are agreeing to our{" "}
-          <div className='col-12 d-flex flex-row justify-content-center align-items-center'>
-          <a href="/assets/termsofuse.html" className="m-1 text-dark" target="_blank">
-            Terms of use
-          </a>{" "}
-          and{" "}
-          <a href="/assets/disclaimer.html" className="m-1 text-dark" target="_blank">
-            Legal disclaimer
-          </a>
+          <div className="col-12 d-flex flex-row justify-content-center align-items-center">
+            <a href="/assets/termsofuse.html" className="m-1 text-dark" target="_blank">
+              Terms of use
+            </a>{" "}
+            and{" "}
+            <a href="/assets/disclaimer.html" className="m-1 text-dark" target="_blank">
+              Legal disclaimer
+            </a>
           </div>
         </div>
         <a href="/register" className="text-white mt-5">
           REGISTRATION
         </a>
       </div>
-
     </div>
   );
 };

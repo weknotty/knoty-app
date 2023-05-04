@@ -33,7 +33,7 @@ import {
   setMatchID,
   setPartnerName,
 } from "../Redux/Utils";
-import { changeViewState } from "../Utils";
+import { changeViewState, setToast } from "../Utils";
 
 const Manager = () => {
   const dispatch = useDispatch();
@@ -53,7 +53,6 @@ const Manager = () => {
   const [firstLoad, setfirstLoad] = useState(true);
   const matchID = useSelector((state) => state.user.matchID);
 
-  
   // listen to changes on game object on DB
   useEffect(() => {
     let unsubscribe;
@@ -80,7 +79,7 @@ const Manager = () => {
           return;
         }
         if (status === "canceled") {
-          handleCanceledGame(cardID, interactedCards, partnerCards, userID, partnerID,matchID).then(async (res) => {
+          handleCanceledGame(cardID, interactedCards, partnerCards, userID, partnerID, matchID).then(async (res) => {
             setGameID(dispatch, "");
             setDoneGame(dispatch, false);
             changeViewState(0);
@@ -98,7 +97,7 @@ const Manager = () => {
           return;
         }
         if (status === "done") {
-          handleFinishGame(interactedCards, partnerCards, cardID, userID, partnerID, points, userPoints, partnerPoints,matchID).then((res) => {
+          handleFinishGame(interactedCards, partnerCards, cardID, userID, partnerID, points, userPoints, partnerPoints, matchID).then((res) => {
             setDoneGame(dispatch, true);
             setGameID(dispatch, "");
           });
@@ -146,8 +145,7 @@ const Manager = () => {
           setPartnersPoints(partner.points);
           if (hasActivePartner) {
             setPartnerImage(dispatch, partner.profileImageUrl);
-          setPartnerName(dispatch,partner.profile.username)
-
+            setPartnerName(dispatch, partner.profile.username);
           }
         });
       };
@@ -181,8 +179,8 @@ const Manager = () => {
           setMatchID(dispatch, doc.docs[0].id);
           const userCards = docData.cards.filter((el) => el.cardOwner == userID);
           const partnerCards = docData.cards.filter((el) => el.cardOwner != userID);
-          console.log("userCards",userCards)
-          console.log("partnerCards",partnerCards)
+          console.log("userCards", userCards);
+          console.log("partnerCards", partnerCards);
 
           setPartnersCards(partnerCards);
           setInteractedCards(dispatch, userCards);
@@ -238,6 +236,7 @@ const Manager = () => {
         setSecretCode(dispatch, res.secretCode);
         setPartnerImage(dispatch, res.profileImageUrl);
         setPendingMatchStatus(dispatch, res.matchStatus);
+        setToast({ state: "success", text: "You have a new match waiting for you!" });
       });
     }
   }, [matchSignature]);

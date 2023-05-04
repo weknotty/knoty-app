@@ -63,7 +63,7 @@ const DeleteAccount = () => {
         </div>
       ) : (
         <div
-          className="col-12 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill p-2 mt-3 mb-3 midFont pointer"
+          className="col-12 d-flex flex-row justify-content-center align-items-center text-white btnShadow rounded rounded-pill p-2 mt-3 mb-3 midFont pointer bg-danger"
           onClick={() => setisReady((prev) => !prev)}
         >
           DELETE ACCOUNT

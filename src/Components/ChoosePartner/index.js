@@ -44,7 +44,7 @@ const ChoosePartner = () => {
     const text = `${window.location.origin}?code=${secretCode}`;
     window.navigator.clipboard.writeText(text);
     setToast({ state: "success", text: "Copied to clipboard!" });
-    return;
+    // return;
   };
 
   return (

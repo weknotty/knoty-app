@@ -31,11 +31,16 @@ const Toast = () => {
   }, []);
 
   useEffect(() => {
+    const func = function () {
+      // setLocalState("");
+    };
     if (localState) {
-      window.$(document).one("click", function (e) {
-        setLocalState("");
-      });
+      document.addEventListener("click", func);
     }
+
+    return () => {
+      document.removeEventListener("click", func);
+    };
   }, [localState]);
 
   if (!localState) {
