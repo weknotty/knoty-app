@@ -236,7 +236,7 @@ const Manager = () => {
         setSecretCode(dispatch, res.secretCode);
         setPartnerImage(dispatch, res.profileImageUrl);
         setPendingMatchStatus(dispatch, res.matchStatus);
-        setToast({ state: "success", text: "You have a new match waiting for you!" });
+        setToast({ state: "pending", text: "You have a new match waiting for you!" });
       });
     }
   }, [matchSignature]);

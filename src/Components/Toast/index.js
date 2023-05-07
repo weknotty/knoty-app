@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import "./Toast.css";
+import { changeViewState } from "../../Utils";
 const handleBorderState = (state) => {
   if (state == "success") {
+    return "success";
+  }
+  if (state == "pending") {
     return "success";
   }
   if (state == "warning") {
@@ -47,7 +51,11 @@ const Toast = () => {
     return null;
   }
   return (
-    <div className="col-12 d-flex flex-row justify-content-center align-items-center position-absolute top-0" style={{ zIndex: "9999" }}>
+    <div
+      className="col-12 d-flex flex-row justify-content-center align-items-center position-absolute top-0"
+      style={{ zIndex: "9999" }}
+      onClick={() => (localState === "pending" ? changeViewState(2) : null)}
+    >
       <div
         className={`toastContainer d-flex flex-column justify-content-center align-items-center rounded-2 mt-1 btnShadow slide-bottom border-bottom border-${handleBorderState(
           localState
