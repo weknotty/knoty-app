@@ -15,6 +15,8 @@ app.use(express.json());
 app.use("/assets", express.static(path.join(__dirname, "build/assets")));
 app.use("/static", express.static(path.join(__dirname, "build/static")));
 
+
+
 app.get("*", async (req, res) => {
 
   let html = fs.readFileSync(path.join(__dirname, "build", "index.html"));

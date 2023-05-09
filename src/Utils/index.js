@@ -1,3 +1,4 @@
+import axios from "axios";
 import { setPageView, uploadProfileImage } from "../firebase";
 import { setProfileImageUrl } from "../Redux/Utils";
 
@@ -174,3 +175,5 @@ export const handleAnalyticsPath = (target) => {
     setPageView(pathObject.favorites);
   }
 };
+
+

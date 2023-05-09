@@ -1,5 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
+import {httpsCallable,getFunctions} from "firebase/functions";
 
 import { collection, query, where, getFirestore, getDocs, doc, getDoc, setDoc, addDoc, deleteDoc, updateDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes } from "firebase/storage";
@@ -14,7 +15,6 @@ import {
   setPersistence,
   FacebookAuthProvider,
   sendPasswordResetEmail,
-  deleteUser,
 } from "firebase/auth";
 import { logEvent } from "firebase/analytics";
 import { getAnalytics } from "firebase/analytics";
@@ -34,6 +34,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
+const functions = getFunctions(app)
 const db = getFirestore(app);
 const storage = getStorage(app);
 setPersistence(auth, browserSessionPersistence)
@@ -661,10 +662,10 @@ export const deleteAccountFromDB = async (matchSignature, partnerID, hasActiveGa
   const matchForDelte = await getDocs(matchQuery);
   await deleteDoc(ref);
   if (matchForDelte.empty) {
-    deleteUser(auth.currentUser).then(()=>{
+    deleteUser(auth.currentUser.uid).then(() => {
       sessionStorage.clear();
       window.location.href = "/";
-    })
+    });
     return;
   }
   const mapped = matchForDelte.docs.map((el) => {
@@ -678,12 +679,10 @@ export const deleteAccountFromDB = async (matchSignature, partnerID, hasActiveGa
     await deleteDoc(qudata.docs[0].id);
   }
   await Promise.all(mapped);
-   deleteUser(auth.currentUser).then(()=>{
+  deleteUser(auth.currentUser.uid).then(() => {
     sessionStorage.clear();
     window.location.href = "/";
-  })
-
-
+  });
 };
 const createNewGame = ({ gameSignature, duration, imageUrl, cardID, cardName, points }) => {
   const now = new Date().getTime() / 1000;
@@ -768,3 +767,12 @@ export const checkCardsMatch = async (myCard, partnerCards, signature, userID, p
 
   return;
 };
+export async function deleteUser(uid) {
+  try {
+    const deleteUserFunction = httpsCallable(functions,"deleteUser");
+    const response = await deleteUserFunction({ uid });
+    console.log("User deleted successfully:", response.data);
+  } catch (error) {
+    console.error("Error deleting user:", error);
+  }
+}
