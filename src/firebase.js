@@ -293,7 +293,7 @@ export const setMatchSignature = async (id, partnerID, signature) => {
 export const removeMatchSignature = async (id, partnerID) => {
   const userRef = doc(db, "users", id);
   const partnerRef = doc(db, "users", partnerID);
-  await Promise.all[(updateDoc(userRef, { matchSignature: "", points: 0 }), updateDoc(partnerRef, { matchSignature: "", points: 0 }))];
+  await Promise.all[(updateDoc(userRef, { matchSignature: "", points: 0,hasPendingMatch:false }), updateDoc(partnerRef, { matchSignature: "", points: 0,hasPendingMatch:false }))];
 };
 export const turnOnActivePartner = async (id, partnerID) => {
   const userRef = doc(db, "users", id);
@@ -657,6 +657,8 @@ export const setNewCategoryClick = ({ category, categoryID, userID }) => {
 export const deleteAccountFromDB = async (matchSignature, partnerID, hasActiveGame) => {
   const ref = doc(db, "users", auth.currentUser.uid);
   await cancelMatch(auth.currentUser.uid, "approved", "done", matchSignature, partnerID, hasActiveGame);
+  await cancelMatch(auth.currentUser.uid, "approved", "done", matchSignature, partnerID, hasActiveGame);
+
   const matchRef = collection(db, "matches");
   const matchQuery = query(matchRef, where("participants", "array-contains", auth.currentUser.uid));
   const matchForDelte = await getDocs(matchQuery);

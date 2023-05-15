@@ -84,8 +84,7 @@ const Manager = () => {
             setDoneGame(dispatch, false);
             changeViewState(0);
             setHasActiveGame(dispatch, false);
-            console.log(partnerID);
-            console.log(userID);
+
             const all = [
               updateProfileProp(userID, "gameSignature", ""),
               updateProfileProp(partnerID, "gameSignature", ""),
@@ -169,25 +168,24 @@ const Manager = () => {
     const unsubscribe = onSnapshot(FindMatch(matchSignature), async (doc) => {
       try {
         const docData = doc.docs[0].data();
-        console.log("docData", docData);
         if (docData.matchStatus == "rejected" || docData.matchStatus == "done") {
           await turnOffPendingMatch(userID, docData.partner.id);
           await turnOffActivePartner(userID, docData.partner.id);
           setPartnerImage(dispatch, "");
+          setPartnerName(dispatch, "");
         }
         if (docData.matchStatus == "approved") {
           setMatchID(dispatch, doc.docs[0].id);
           const userCards = docData.cards.filter((el) => el.cardOwner == userID);
           const partnerCards = docData.cards.filter((el) => el.cardOwner != userID);
-          console.log("userCards", userCards);
-          console.log("partnerCards", partnerCards);
-
           setPartnersCards(partnerCards);
           setInteractedCards(dispatch, userCards);
           await turnOnActivePartner(userID, docData.partner.id);
         }
       } catch (err) {
-        console.log(err);
+        setHasPendingMatch(dispatch, false);
+        setMatchSiganture(dispatch, "");
+        setPartnerName(dispatch, "");
       }
     });
     return () => {

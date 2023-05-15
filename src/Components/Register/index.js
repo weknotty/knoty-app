@@ -102,7 +102,7 @@ const Register = () => {
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center w-5">Are you over 18 years old?</div>
-            <div class="modal-footer">
+            <div class="modal-footer d-flex flex-row justify-content-center align-items-center">
               <button type="button" class="btn pinkBorder" onClick={() => setisOver18(true)}>
                 Yes,I'm over 18
               </button>
