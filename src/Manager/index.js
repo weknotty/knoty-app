@@ -163,6 +163,7 @@ const Manager = () => {
   // listen to changes on match object on DB
   useEffect(() => {
     if ((!hasPendingMatch && !hasActivePartner) || !matchSignature) {
+      setPartnerName(dispatch, "");
       return;
     }
     const unsubscribe = onSnapshot(FindMatch(matchSignature), async (doc) => {

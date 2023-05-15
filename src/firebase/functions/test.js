@@ -8,133 +8,26 @@ admin.initializeApp({ credential: cert(fb) });
 let db = admin.firestore();
 const auth = admin.auth();
 
-const createNewGame = async ({ gameSignature, duration, imageUrl, cardID, cardName, db, points }) => {
-  const now = new Date().getTime() / 1000;
-  const payload = {
-    duration: duration,
-    status: "start",
-    signature: gameSignature,
-    imageUrl: imageUrl,
-    cardID: cardID,
-    cardName: cardName,
-    points: points,
-    startedIn: now,
-  };
-  await db.collection("games").add(payload);
-};
-const FindMatchingGame = () => {
-  db.collection("matches")
-    .get()
-    .then((querySnapshot) => {
-      querySnapshot.forEach(async (doc) => {
-        let currentMatchData = doc.data();
-        if (currentMatchData.matchStatus == "approved") {
-          const match = await db.collection("users").where("matchSignature", "==", currentMatchData.signature).get();
-          if (match.empty) {
-            return;
-          }
-          const batch = db.batch();
-          const userA = match.docs[0].data();
-          const userB = match.docs[1].data();
-          if (userA.gameSignature) {
-            return;
-          }
-          for (let cardA of userA.cards) {
-            for (let cardB of userB.cards) {
-              if (cardA.isLiked && cardB.isLiked) {
-                const cardData = await db.collection("cards").where("id", "==", cardB.card).get();
-                if (cardData.empty) {
-                  return;
-                }
-                const gameSignature = userA.matchSignature;
-                // console.log(gameSignature)
-                const card = cardData.docs[0].data();
-                console.log(card, "card");
+async function deleteAllUsers() {
+  try {
+    const listUsersResult = await admin.auth().listUsers();
 
-                batch.update(db.collection("users").doc(match.docs[0].id), { hasActiveGame: true, gameSignature: gameSignature });
-                batch.update(db.collection("users").doc(match.docs[1].id), { hasActiveGame: true, gameSignature: gameSignature });
-                await createNewGame({
-                  gameSignature: gameSignature,
-                  cardID: card.id,
-                  duration: card.duration,
-                  imageUrl: card.imageUrl,
-                  db: db,
-                  cardName: card.name,
-                  points: card.points,
-                });
-                await batch.commit();
-                return;
-              }
-            }
-          }
-        }
-      });
+    if (listUsersResult.users.length === 0) {
+      console.log('No users to delete.');
+      return;
+    }
+
+    const deletePromises = listUsersResult.users.map(user => {
+      return admin.auth().deleteUser(user.uid);
     });
-};
 
-const handleGameStatus = () => {
-  db.collection("games")
-    .get()
-    .then((querySnapshot) => {
-      querySnapshot.forEach(async (doc) => {
-        let currentGameData = doc.data();
+    await Promise.all(deletePromises);
 
-        if (currentGameData.status != "start") {
-          return;
-        }
-        const match = await db.collection("users").where("gameSignature", "==", currentGameData.signature).get();
-        if (match.empty) {
-          return;
-        }
-        const batch = db.batch();
-        const madeIn = doc.createTime.seconds;
-        const gameDuration = currentGameData.duration * 60 * 60;
-        const madeInWithGametime = parseInt(madeIn) + parseInt(gameDuration);
-        if (madeIn >= madeInWithGametime) {
-          batch.update(db.collection("users").doc(match.docs[0].id), { hasActiveGame: false, gameSignature: "" });
-          batch.update(db.collection("users").doc(match.docs[1].id), { hasActiveGame: false, gameSignature: "" });
-        }
-      });
-    });
-};
+    console.log('All users have been deleted successfully.');
+  } catch (error) {
+    console.error('Error deleting users:', error);
+  }
+}
 
-const getOnlineUsers = () => {
-  auth.listUsers().then(async (res) => {
-    const batch = db.batch();
-    const statuses = await db.collection("statuses").get();
-    res.users.forEach((user) => {
-      const loggedInLast = new Date(user.metadata.lastSignInTime);
-      const seconds = Math.round(loggedInLast.getTime() / 1000);
-      const maximumAlive = parseInt(seconds) + 300;
-
-      const now = Math.round(new Date().getTime() / 1000);
-
-      if (now < maximumAlive) {
-        console.log("stay online");
-        return;
-      }
-      if (now > maximumAlive) {
-        const item = statuses.docs.filter((el) => {
-          
-          const data = el.data();
-
-
-          if (data.userID == user.uid) {
-            return el;
-          }
-        });
-        if (item == false) {
-          return;
-        }
-
-        batch.update(db.collection("statuses").doc(item[0].id), { userActive: false });
-      }
-    });
-    await batch.commit();
-  });
-};
-getOnlineUsers();
-// FindMatchingGame();
-// functions.firestore.document("")
-// // handleGameStatus();
-// return "alright";
+// Call the function to delete all users
+deleteAllUsers();
