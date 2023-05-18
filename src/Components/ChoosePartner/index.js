@@ -15,6 +15,9 @@ const ChoosePartner = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [partnersList, setpartnersList] = useState([]);
   const secretCode = useSelector((state) => state.user.secretCode);
+  const hasPendingMatch = useSelector((state) => state.user.hasPendingMatch);
+
+  
   console.log("hasActivePartner",hasActivePartner);
 
   useEffect(()=>{
@@ -64,6 +67,10 @@ const ChoosePartner = () => {
           onClick={() => {
             if (hasActivePartner) {
               setToast({ state: "warning", text: "You already have an active partner." });
+              return;
+            }
+            if (hasPendingMatch) {
+              setToast({ state: "warning", text: "You already have a pending connection" });
               return;
             }
             setShowPopup((prev) => !prev);

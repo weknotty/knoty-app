@@ -7,7 +7,6 @@ const PendingMatch = ({ hasPendingMatch }) => {
   if (!hasPendingMatch) {
     return null;
   }
-  console.log("partnerID",partnerID)
   return (
     <div
       className="pendingMatch d-flex flex-column justify-content-center align-items-center smFont text-center pinkBorder m-1 shadow-sm pointer rounded"

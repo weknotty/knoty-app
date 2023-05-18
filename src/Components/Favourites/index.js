@@ -34,7 +34,7 @@ const Favourites = () => {
         </div>
 
         {localCards == false
-          ? "You done have any favourites card yet."
+          ? "You don't have any favourites card yet."
           : localCards.map((el) => {
               return <GalleryCard category={el.name} handleCardClick={() => {}} imageUrl={el.imageUrl} />;
             })}

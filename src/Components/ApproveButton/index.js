@@ -30,9 +30,9 @@ import ButtonLoader from "../ButtonLoader";
       return (
         <div
           className="col-10 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill  mt-3 p-2 mb-1 midFont pointer"
-          disabled={true}
+          onClick={() => cancelMatch(userID, "pending", "rejected", matchSignature, partnerID,hasActiveGame)}
         >
-          WAITING FOR APPROVAL
+          Cancel Request
         </div>
       );
     }

@@ -82,7 +82,7 @@ const AcceptedStarted = ({ isAcceped, gameData, gameSignature }) => {
       <div className="col-12 d-flex flex-column justify-content-between align-items-center timerContent">
         <div className="col-12 d-flex flex-column justify-content-center align-items-center">
           <span className="fs-1">Go be Knoty</span>
-          <img src="/assets/icons/sand.svg" className="" />
+          <img src="/assets/icons/sand.svg" className="" style={{opacity:"0"}} />
           <span className="timerValue">{timer}</span>
         </div>
       </div>

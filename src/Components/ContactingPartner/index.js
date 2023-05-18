@@ -78,7 +78,7 @@ useEffect(()=>{
         hasActiveGame={hasActiveGame}
       />
 
-      <span onClick={() => changeViewState(0)} className="smFont mt-2 w-5 text-decoration-underline">
+      <span onClick={() => changeViewState(0)} className="col-5 d-flex flex-row justify-content-center align-items-center bg-white btnShadow rounded rounded-pill  mt-3 mb-1 midFont pointer">
         back
       </span>
     </div>
