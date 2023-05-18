@@ -22,6 +22,14 @@
   bottom: 15px;
   right: 10px;
 }
+.indicatorLgRed {
+  height: 30px;
+  width: 30px;
+  background-color: #DC3545;
+  border-radius: 50%;
+  bottom: 15px;
+  right: 10px;
+}
 .editProfileImage {
   position: absolute;
   background-color: #45eca6;

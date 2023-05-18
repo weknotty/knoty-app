@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { cancelMatch, findMatchByCode, getUserProfile, getUserProfileByCode } from "../../firebase";
+import { cancelMatch, findMatchByCode, getUserProfile, getUserProfileByCode, getUsersStatus } from "../../firebase";
 import { setPartnerImage, setPendingMatchStatus, setSecretCode } from "../../Redux/Utils";
 import { changeViewState, setToast } from "../../Utils";
 import ButtonLoader from "../ButtonLoader";
@@ -106,19 +106,25 @@ const UserProfile = () => {
   const [changeUser, setchangeUser] = useState(false);
   const [isCurrentMatch, setIsCurrentMatch] = useState(false);
   const [isLocal, setisLocal] = useState(false);
+  const [isOnline, setisOnline] = useState(false);
+
 
   useEffect(() => {
     console.log("userID", userID);
     console.log("partnerID", partnerID);
     console.log("matchSignature", matchSignature);
 
-    getUserProfile(changeUser ? userID : partnerID).then((res) => {
+    getUserProfile(changeUser ? userID : partnerID).then(async (res) => {
       if (!res) {
         setisLocal(true);
         return;
       }
       console.log(res);
-      console.log("res.matchSignature", res.matchSignature);
+      const status = await getUsersStatus(changeUser ? userID : partnerID)
+      if(status.userActive){
+        setisOnline(true)
+      }
+      console.log("status", status);
 
       if (res.matchSignature === matchSignature) {
         setIsCurrentMatch(true);
@@ -144,7 +150,7 @@ const UserProfile = () => {
       <div className="col-auto d-flex flex-column justify-content-center align-items-center position-relative userProfileContainer">
         <div className="col-auto d-flex flex-column justify-content-center align-items-center position-relative">
           <img src={user.profileImageUrl} className="userProfileImage" />
-          <span className="indicatorLg position-absolute" />
+          <span className={`${isOnline ? 'indicatorLg':'indicatorLgRed'} me-2 rounded-circle position-absolute`} />
         </div>
         <span className="">{user.profile.username}</span>
         <span className="w-5">{user.profile.age}</span>
