@@ -13,7 +13,7 @@ const MatchName = ({ loading }) => {
       className="d-flex flex-column justify-content-center  align-items-center smFont text-center  m-1 pointer  matchNameContainer"
       onClick={() => changeViewState(5)}
     >
-      {loading ? <ButtonLoader state={true} className="" /> : <img src={partnerImage} height="50" width="50" className="mt-1 " />}
+      {loading ? <ButtonLoader state={true} className="" /> : <img src={partnerImage} height="50" width="50" style={{objectFit:"cover"}} className="mt-1 " />}
     </div>
   );
 };
