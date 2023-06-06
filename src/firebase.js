@@ -21,6 +21,7 @@ import { getAnalytics } from "firebase/analytics";
 import { v4 } from "uuid";
 import { setProfileImageUrl, setShowFeedbackPopup } from "./Redux/Utils";
 import { changeViewState, generateCode, setToast } from "./Utils";
+//just a comment for diff
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_apiKey,
   authDomain: process.env.REACT_APP_authDomain,
