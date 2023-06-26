@@ -9,6 +9,8 @@ const Favourites = () => {
   const [localCards, setCards] = useState([]);
   const dispatch = useDispatch();
   const cards = useSelector((state) => state.user.interactedCards);
+
+  
   console.log(cards)
   useEffect(() => {
     getFavouritesCards(cards).then((res) => {

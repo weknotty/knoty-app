@@ -23,6 +23,8 @@ const FacebookButton = ({ text }) => {
       fireAsync();
     }
   }, [facebookLogin]);
+
+  
   return (
     <div
       className="col-10 d-flex flex-row justify-content-evenly align-items-center greyBtn text-dark rounded-pill p-2 btnShadow mt-3 pointer"

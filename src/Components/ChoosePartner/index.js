@@ -42,6 +42,8 @@ const ChoosePartner = () => {
         .catch((err) => console.log(err));
     }
   }, [userID]);
+
+  
   const handleCopy = () => {
     const secretCode = window.sessionStorage.getItem("myscs");
     const text = `${window.location.origin}?code=${secretCode}`;

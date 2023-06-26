@@ -6,6 +6,7 @@ import {
   FindMatch,
   FindMatchPartner,
   getCurrentGame,
+  getUnApprovedGames,
   handleCanceledGame,
   handleFinishGame,
   profileRef,
@@ -52,11 +53,10 @@ const Manager = () => {
   const [partnerPoints, setPartnersPoints] = useState(0);
   const [firstLoad, setfirstLoad] = useState(true);
   const matchID = useSelector((state) => state.user.matchID);
+  const [gavePoints, setgavePoints] = useState(false);
 
   // listen to changes on game object on DB
   useEffect(() => {
-    let unsubscribe;
-
     if (!hasActiveGame || !gameSignature) {
       return;
     }
@@ -73,6 +73,9 @@ const Manager = () => {
         const cardID = game.cardID;
         const points = game.points;
         setGameID(dispatch, id);
+
+        console.log("game", game);
+
         if (status === "start") {
           setDoneGame(dispatch, false);
 
@@ -110,7 +113,7 @@ const Manager = () => {
         unsubscribe();
       }
     };
-  }, [hasActiveGame, gameSignature]);
+  }, [hasActiveGame, gameSignature, matchSignature]);
 
   // check card matches
   useEffect(() => {
@@ -218,6 +221,7 @@ const Manager = () => {
       setAcceptedManual(dispatch, acceptedManual);
       setuserPoints(points);
       setPoints(dispatch, points);
+
       window.sessionStorage.setItem("myscs", docData.secretCode);
     });
     return () => {

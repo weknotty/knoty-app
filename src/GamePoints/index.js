@@ -9,6 +9,7 @@ const GamePoints = ({ gameData, userID }) => {
     const dispatch = useDispatch();
     const [done, setDone] = useState(false);
     const doneGame = useSelector((state) => state.user.doneGame);
+
     console.log(doneGame)
     useEffect(() => {
       if (done) {
@@ -22,7 +23,7 @@ const GamePoints = ({ gameData, userID }) => {
       return null;
     }
     return (
-      <div className="col-10 d-flex flex-column justify-content-start align-items-center startedGameOverlay m-auto shadow rounded rounded-3 animated">
+      <div className="col-10 d-flex flex-column justify-content-start align-items-center startedGameOverlay flex-grow-1 m-auto shadow rounded rounded-3 animated">
         <div className="bg-white" />
         <div className="col-12 d-flex flex-column justify-content-between align-items-center timerContent bg-white h-100 rounded rounded-3">
           <div className="col-12 d-flex flex-row justify-content-start align-items-center position-absolute">
@@ -46,7 +47,7 @@ const GamePoints = ({ gameData, userID }) => {
           </div>
           <div className="col-12 d-flex flex-column justify-content-center align-items-center m-auto">
             <span className="">My Card Rating</span>
-            <StarsRating currentCard={{ id: gameData.cardID }} userID={userID} key="sdfnsdjfnndfudf" />
+            <StarsRating currentCard={{ id: gameData.cardID }}  userID={userID} key="sdfnsdjfnndfudf" />
           </div>
         </div>
       </div>

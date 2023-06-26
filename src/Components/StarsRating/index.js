@@ -5,6 +5,7 @@ import { setCardRating } from "../../firebase";
 const StarsRating = ({ userID, currentCard, isSpecificCard }) => {
   const interactedCards = useSelector((state) => state.user.interactedCards);
   const matchID = useSelector((state) => state.user.matchID);
+  const gameSignature = useSelector((state) => state.user.gameSignature);
 
   const cardID = currentCard.id;
   const [stars, setStars] = useState([
@@ -56,7 +57,7 @@ const StarsRating = ({ userID, currentCard, isSpecificCard }) => {
                 height="25"
                 width="25"
                 className="pointer"
-                onClick={() => setCardRating(matchID, interactedCards, el.id, cardID)}
+                onClick={() => setCardRating(matchID, interactedCards, el.id, cardID,gameSignature)}
               />
             );
           })}

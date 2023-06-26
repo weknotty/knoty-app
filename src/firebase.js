@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import {httpsCallable,getFunctions} from "firebase/functions";
+import { httpsCallable, getFunctions } from "firebase/functions";
 
 import { collection, query, where, getFirestore, getDocs, doc, getDoc, setDoc, addDoc, deleteDoc, updateDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes } from "firebase/storage";
@@ -16,11 +16,13 @@ import {
   FacebookAuthProvider,
   sendPasswordResetEmail,
 } from "firebase/auth";
+
 import { logEvent } from "firebase/analytics";
 import { getAnalytics } from "firebase/analytics";
 import { v4 } from "uuid";
 import { setProfileImageUrl, setShowFeedbackPopup } from "./Redux/Utils";
 import { changeViewState, generateCode, setToast } from "./Utils";
+
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_apiKey,
   authDomain: process.env.REACT_APP_authDomain,
@@ -34,7 +36,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-const functions = getFunctions(app)
+const functions = getFunctions(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 setPersistence(auth, browserSessionPersistence)
@@ -53,6 +55,7 @@ export const registerUserWithCred = async (password, email, dispatch) => {
   await handleNewEntry(basicRegister.user.uid, dispatch);
   return true;
 };
+
 export const loginWithEmail = async (email, password, dispatch) => {
   const basicLogin = await signInWithEmailAndPassword(auth, email, password).catch((err) => {
     console.log(err);
@@ -64,13 +67,16 @@ export const loginWithEmail = async (email, password, dispatch) => {
 
   return true;
 };
+
 export const loginWithGoogle = async () => {
   return await signInWithPopup(auth, googleProvider);
 };
+
 export const loginWithFacebook = async () => {
   const provider = new FacebookAuthProvider();
   return await signInWithPopup(auth, provider);
 };
+
 export const createProfile = async (payload) => {
   const ref = doc(db, "users", v4());
   await setDoc(ref, payload);
@@ -119,14 +125,17 @@ export const uploadProfileImage = async (file, id, dispatch) => {
   await updateProfileProp(id, "profileImageUrl", url).catch((err) => console.log(err));
   setProfileImageUrl(dispatch, url);
 };
+
 export const updateProfileProp = async (id, prop, value) => {
   const ref = doc(db, "users", id);
   await updateDoc(ref, { [prop]: value });
 };
+
 export const updateProfileCards = async (id, value) => {
   const ref = doc(db, "matches", id);
   await updateDoc(ref, { cards: value });
 };
+
 export const updateProfileData = async (id, payload) => {
   const ref = doc(db, "users", id);
   await updateDoc(ref, { profile: payload, profileFull: true }).catch((err) => console.log(err));
@@ -152,6 +161,7 @@ export const getUserProfileByCode = async (code) => {
   }
   return res.docs[0].data();
 };
+
 export const findMatchByCode = async (code, id, signature, partnerID) => {
   const ref = collection(db, "users");
   const q = query(ref, where("secretCode", "==", code), where("profileFull", "==", true));
@@ -167,6 +177,7 @@ export const findMatchByCode = async (code, id, signature, partnerID) => {
   }
 
   const matchesRef = collection(db, "matches");
+
   const mq = query(matchesRef, where("participants", "array-contains", res.docs[0].id), where("matchStatus", "in", ["approved"]));
 
   const matchesData = await getDocs(mq);
@@ -207,12 +218,15 @@ export const updateUserStatus = async (id, value, withCount, dispatch) => {
   const ref = collection(db, "statuses");
   const q = query(ref, where("userID", "==", id));
   const res = await getDocs(q);
+
   if (res.empty) {
     return false;
   }
+
   const docRef = doc(db, "statuses", res.docs[0].id);
   const data = res.docs[0].data();
   const newLoginCount = parseInt(data.loginCount) + 1;
+
   if (withCount) {
     if (newLoginCount === 7) {
       setShowFeedbackPopup(true);
@@ -238,6 +252,7 @@ export const getMatchBySignature = async (id, matchSignature) => {
   }
   return { ...data.user, matchStatus: "pending", id: data.userID };
 };
+
 export const checkPendingMatches = async (id, matchSignature) => {
   const matchesRef = collection(db, "matches");
   const mq = query(matchesRef, where("signature", "==", matchSignature), where("partnerStatus", "==", "pending"));
@@ -251,6 +266,7 @@ export const checkPendingMatches = async (id, matchSignature) => {
   }
   return { ...data.user, matchStatus: "pending" };
 };
+
 export const cancelMatch = async (id, matchType, status, matchSignature, partnerID, hasActiveGame) => {
   try {
     if (hasActiveGame) {
@@ -258,6 +274,7 @@ export const cancelMatch = async (id, matchType, status, matchSignature, partner
       setToast({ state: "warning", text: "Before unmatching please end your current game." });
       return;
     }
+
     const matchesRef = collection(db, "matches");
     const mq = query(matchesRef, where("signature", "==", matchSignature), where("matchStatus", "==", matchType));
     const res = await getDocs(mq);
@@ -293,7 +310,10 @@ export const setMatchSignature = async (id, partnerID, signature) => {
 export const removeMatchSignature = async (id, partnerID) => {
   const userRef = doc(db, "users", id);
   const partnerRef = doc(db, "users", partnerID);
-  await Promise.all[(updateDoc(userRef, { matchSignature: "", points: 0,hasPendingMatch:false }), updateDoc(partnerRef, { matchSignature: "", points: 0,hasPendingMatch:false }))];
+  await Promise.all[
+    (updateDoc(userRef, { matchSignature: "", points: 0, hasPendingMatch: false }),
+    updateDoc(partnerRef, { matchSignature: "", points: 0, hasPendingMatch: false }))
+  ];
 };
 export const turnOnActivePartner = async (id, partnerID) => {
   const userRef = doc(db, "users", id);
@@ -366,7 +386,9 @@ export const getMatchesList = async (userID) => {
   if (res.empty && res2.empty) {
     return false;
   }
+
   const total = [...res.docs, ...res2.docs];
+
   const mapped = total.map((el) => {
     const elem = el.data();
     if (elem.initiator == userID) {
@@ -374,13 +396,16 @@ export const getMatchesList = async (userID) => {
     }
     return { ...elem.user, userID: el.id, partnerID: elem.userID };
   });
+
   const maybe = mapped.filter((v, i, a) => a.findIndex((v2) => v2.partnerID === v.partnerID) === i);
 
   const all = maybe.map((el) => {
     const ref = doc(db, "users", el.partnerID);
     return getDoc(ref);
   });
+
   const result = await Promise.all(all);
+
   const parsed = result.map((el) => {
     console.log(el.data());
     return { ...el.data(), id: el.id };
@@ -417,17 +442,15 @@ export const setCards = async (list) => {
   });
 };
 
-export const setCardRating = async (id, data, rating, cardID) => {
+export const setCardRating = async (id, data, rating, cardID, gameSignature) => {
   const ref = doc(db, "matches", id);
   const res = await getDoc(ref);
-
   const filtered = res.data().cards.filter((el) => {
     return el.card != cardID && el.cardOwner == auth.currentUser.uid;
   });
   const filteredPartner = res.data().cards.filter((el) => {
     return el.cardOwner != auth.currentUser.uid;
   });
-  console.log("filtered", filtered);
   const payload = {
     card: cardID,
     rating,
@@ -435,7 +458,6 @@ export const setCardRating = async (id, data, rating, cardID) => {
     cardOwner: auth.currentUser.uid,
   };
   const total = [...filtered, payload, ...filteredPartner];
-  console.log(total);
   await setDoc(ref, { cards: total }, { merge: true });
 };
 
@@ -697,10 +719,38 @@ const createNewGame = ({ gameSignature, duration, imageUrl, cardID, cardName, po
     cardName: cardName,
     points: points,
     startedIn: now,
+    haveClickedOk: [],
   };
   return payload;
 };
+export const getUnApprovedGames = async (gameSignature, userID) => {
+  const gamesRef = collection(db, "games");
+  const q = query(gamesRef, where("signature", "==", gameSignature));
 
+  const res = await getDocs(q);
+  console.log(res.docs[0].data())
+
+  if (res.empty) {
+    return false;
+  }
+
+  const item = res.docs.filter((el) => el.data().haveClickedOk.includes(userID));
+  if(item == false){
+    return false;
+
+  }
+  return item
+};
+
+export const addApprovedGame = async (gameSignature, userID) => {
+  const gamesRef = collection(db, "games");
+  const q = query(gamesRef, where("signature", "==", gameSignature));
+  const res = await getDocs(q);
+  res.forEach(async (el) => {
+    const data = el.data();
+    await updateDoc(el.ref, { ...data, haveClickedOk: [...data.haveClickedOk, userID] });
+  });
+};
 const returnSignale = async (signature, myCards, partnerCards) => {
   console.log("signature", signature);
   console.log("myCards", myCards);
@@ -771,7 +821,7 @@ export const checkCardsMatch = async (myCard, partnerCards, signature, userID, p
 };
 export async function deleteUser(uid) {
   try {
-    const deleteUserFunction = httpsCallable(functions,"deleteUser");
+    const deleteUserFunction = httpsCallable(functions, "deleteUser");
     const response = await deleteUserFunction({ uid });
     console.log("User deleted successfully:", response.data);
   } catch (error) {
