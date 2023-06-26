@@ -12,7 +12,7 @@ const GoogleButton = ({ text,width }) => {
         const isLogged = await loginWithGoogle();
         if (isLogged) {
           const fireAsync = async () => {
-            await handleNewEntry(isLogged.user.uid, dispatch);
+            await handleNewEntry(isLogged.user.uid, dispatch,isLogged.user.email);
             setGoogleSignin(false);
 
             window.location.href = "/app";

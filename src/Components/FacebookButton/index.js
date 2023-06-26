@@ -13,7 +13,7 @@ const FacebookButton = ({ text }) => {
         const isLogged = await loginWithFacebook();
         if (isLogged) {
           const fireAsync = async () => {
-            await handleNewEntry(isLogged.user.uid, dispatch);
+            await handleNewEntry(isLogged.user.uid, dispatch,isLogged.user.email);
             setFacebookLogin(false);
             window.location.href = "/app";
           };

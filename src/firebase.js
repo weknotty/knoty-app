@@ -52,7 +52,7 @@ export const registerUserWithCred = async (password, email, dispatch) => {
   if (!basicRegister) {
     return false;
   }
-  await handleNewEntry(basicRegister.user.uid, dispatch);
+  await handleNewEntry(basicRegister.user.uid, dispatch,basicRegister.user.email);
   return true;
 };
 
@@ -83,7 +83,7 @@ export const createProfile = async (payload) => {
   return;
 };
 
-export const handleNewEntry = async (uid, dispatch) => {
+export const handleNewEntry = async (uid, dispatch,email) => {
   try {
     const ref = doc(db, "users", uid);
     const res = await getDoc(ref);
@@ -100,6 +100,7 @@ export const handleNewEntry = async (uid, dispatch) => {
         hasActiveGame: false,
         gameSignature: "",
         points: "0",
+        email
       };
       const statusRef = collection(db, "statuses");
 
