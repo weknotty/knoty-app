@@ -52,7 +52,7 @@ export const registerUserWithCred = async (password, email, dispatch) => {
   if (!basicRegister) {
     return false;
   }
-  await handleNewEntry(basicRegister.user.uid, dispatch,basicRegister.user.email);
+  await handleNewEntry(basicRegister.user.uid, dispatch, basicRegister.user.email);
   return true;
 };
 
@@ -83,7 +83,7 @@ export const createProfile = async (payload) => {
   return;
 };
 
-export const handleNewEntry = async (uid, dispatch,email) => {
+export const handleNewEntry = async (uid, dispatch, email) => {
   try {
     const ref = doc(db, "users", uid);
     const res = await getDoc(ref);
@@ -100,7 +100,7 @@ export const handleNewEntry = async (uid, dispatch,email) => {
         hasActiveGame: false,
         gameSignature: "",
         points: "0",
-        email
+        email,
       };
       const statusRef = collection(db, "statuses");
 
@@ -436,13 +436,6 @@ export const getCategoriesByType = async (category) => {
   return mapped;
 };
 
-export const setCards = async (list) => {
-  const ref = collection(db, "categories");
-  list.forEach(async (el) => {
-    await addDoc(ref, el);
-  });
-};
-
 export const setCardRating = async (id, data, rating, cardID, gameSignature) => {
   const ref = doc(db, "matches", id);
   const res = await getDoc(ref);
@@ -467,17 +460,23 @@ export const setCardLiked = async (id, data, cardSource, cardsCategory, isLike, 
 
   const ref = doc(db, "matches", id);
   const res = await getDoc(ref);
-
+  // get all cards that are not the current one
   const filtered = res.data().cards.filter((el) => {
     return el.card != cardID && el.cardOwner == auth.currentUser.uid;
   });
+  // get all cards of the partner
   const filteredPartner = res.data().cards.filter((el) => {
     return el.cardOwner != auth.currentUser.uid;
   });
+  // get all cards of the user
+
   const item = data.filter((el) => {
     return el.card == cardID && el.cardOwner == auth.currentUser.uid;
   });
+
   let payload = {};
+  // if cards is not been interacted before
+
   if (item == false) {
     payload = {
       card: cardID,
@@ -487,6 +486,7 @@ export const setCardLiked = async (id, data, cardSource, cardsCategory, isLike, 
       cardOwner: userID,
     };
   }
+  // if cards has been interacted before and just update
   if (item != false) {
     payload = {
       ...item[0],
@@ -494,7 +494,7 @@ export const setCardLiked = async (id, data, cardSource, cardsCategory, isLike, 
       cardOwner: userID,
     };
   }
-  console.log("payload", payload);
+  // update db
   const total = [...filtered, payload, ...filteredPartner];
   await updateDoc(ref, { cards: total }).catch((err) => console.log(err));
   return;
@@ -509,6 +509,8 @@ export const getGameData = async (signature) => {
   }
   return data.docs[0].data();
 };
+
+//this works from the manager and handle games that are on canceled status
 export const handleCanceledGame = async (cardID, userCards, partnerCards, userID, partnerID, matchID) => {
   try {
     const mappedCardsA = userCards.map((els) => {
@@ -525,7 +527,6 @@ export const handleCanceledGame = async (cardID, userCards, partnerCards, userID
       return els;
     });
     const allCard = [...mappedCardsA, ...mappedCardsB];
-    console.log("allCard", allCard);
     const all = [updateProfileCards(matchID, allCard), removeGameTrailes(userID, partnerID)];
     await Promise.all(all);
   } catch (err) {
@@ -533,6 +534,7 @@ export const handleCanceledGame = async (cardID, userCards, partnerCards, userID
     return;
   }
 };
+// cancel game from game page
 export const cancelGame = async (gameID) => {
   try {
     const gameRef = doc(db, "games", gameID);
@@ -560,18 +562,23 @@ export const updateGameStatus = async (signature, status) => {
   await updateDoc(gameRef, { status: status });
 };
 export const handleFinishGame = async (userCards, partnerCards, cardID, userID, partnerID, gamePoints, userPoints, partnerPoints, matchID) => {
+  // get user a cards and turn the card that just played to islike:false
   const mappedCardsA = userCards.map((els) => {
     if (els.card == cardID) {
       return { ...els, isLiked: false };
     }
     return els;
   });
+  // get partner a cards and turn the card that just played to islike:false
+
   const mappedCardsB = partnerCards.map((els) => {
     if (els.card == cardID) {
       return { ...els, isLiked: false };
     }
     return els;
   });
+
+  // update db
 
   const allCard = [...mappedCardsA, ...mappedCardsB];
   const userAPayload = parseInt(gamePoints) + parseInt(userPoints);
@@ -729,18 +736,17 @@ export const getUnApprovedGames = async (gameSignature, userID) => {
   const q = query(gamesRef, where("signature", "==", gameSignature));
 
   const res = await getDocs(q);
-  console.log(res.docs[0].data())
+  console.log(res.docs[0].data());
 
   if (res.empty) {
     return false;
   }
 
   const item = res.docs.filter((el) => el.data().haveClickedOk.includes(userID));
-  if(item == false){
+  if (item == false) {
     return false;
-
   }
-  return item
+  return item;
 };
 
 export const addApprovedGame = async (gameSignature, userID) => {
@@ -752,10 +758,10 @@ export const addApprovedGame = async (gameSignature, userID) => {
     await updateDoc(el.ref, { ...data, haveClickedOk: [...data.haveClickedOk, userID] });
   });
 };
+
+// this function checks the match beween user cards when they swipe
 const returnSignale = async (signature, myCards, partnerCards) => {
-  console.log("signature", signature);
-  console.log("myCards", myCards);
-  console.log("partnerCards", partnerCards);
+  //  data
   const matchRef = collection(db, "matches");
   const q = query(matchRef, where("matchStatus", "==", "approved"), where("signature", "==", signature));
   const qres = await getDocs(q);
@@ -763,11 +769,14 @@ const returnSignale = async (signature, myCards, partnerCards) => {
   const gamesRef = collection(db, "games");
   const gameQuery = query(gamesRef, where("signature", "==", signature), where("status", "==", "start"));
   const res = await getDocs(gameQuery);
+
+
+  // has game already
   if (!res.empty) {
     console.log("have game already great!!!!");
     return false;
   }
-
+  // check which card has the game details
   for (let cardA of myCards) {
     if (!cardA.hasOwnProperty("cardOwner")) {
       return;
@@ -775,17 +784,13 @@ const returnSignale = async (signature, myCards, partnerCards) => {
     for (let cardB of partnerCards) {
       if (cardA.isLiked && cardB.isLiked) {
         if (cardA.card == cardB.card) {
-          // console.log("cardA",cardA)
-          // console.log("cardB",cardB)
-
+          // game data
           const cardID = cardA.card;
-          // console.log("Card owner", cardA.cardOwner);
-          // console.log("Card owner2", cardB.cardOwner);
-
           const cardsRef = query(collection(db, "cards"), where("id", "==", cardID));
           const gameSignature = signature;
           const card = await getDocs(cardsRef);
           const cardData = card.docs[0].data();
+          // open new game from this card
           const gamePayload = createNewGame({
             gameSignature: gameSignature,
             cardID: cardData.id,
@@ -800,6 +805,9 @@ const returnSignale = async (signature, myCards, partnerCards) => {
     }
   }
 };
+
+
+
 export const checkCardsMatch = async (myCard, partnerCards, signature, userID, partnerID) => {
   const userRef = doc(db, "users", userID);
   const gamesRef = collection(db, "games");
@@ -820,6 +828,9 @@ export const checkCardsMatch = async (myCard, partnerCards, signature, userID, p
 
   return;
 };
+
+
+
 export async function deleteUser(uid) {
   try {
     const deleteUserFunction = httpsCallable(functions, "deleteUser");
